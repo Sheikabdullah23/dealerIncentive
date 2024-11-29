@@ -1,0 +1,235 @@
+<template>
+    <lightning-spinner if:true={isLoading} variant="brand" size="medium" style="background: white; z-index: 11111;"></lightning-spinner>
+    <template if:true={recalculateLoading}>
+			<lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+	</template>
+    <div class="slds-grid" style="height:70vh;">
+        <div class={disbaleNavigate} style="border-right: 1px solid #c1c1c1;">
+            <lightning-vertical-navigation onselect={handleSelect} selected-item={selectedName}>
+                <lightning-vertical-navigation-section label="">
+                    <lightning-vertical-navigation-item style="border-bottom: 1px solid #c1c1c1;" label="Configure Additional Incentive" name="kpi"></lightning-vertical-navigation-item>
+                    <lightning-vertical-navigation-item if:true={customLabel} style="border-bottom: 1px solid #c1c1c1;" label="Configure Growth Additional Incentive" name="growth"></lightning-vertical-navigation-item>
+                    <lightning-vertical-navigation-item style="border-bottom: 1px solid #c1c1c1;" label="Configure Additional with Multiple KPI" name="customer"></lightning-vertical-navigation-item>
+                    <!-- <lightning-vertical-navigation-item style="border-bottom: 1px solid #c1c1c1;" label="Product To CE Ratio" name="CER"></lightning-vertical-navigation-item> -->
+                </lightning-vertical-navigation-section>
+            </lightning-vertical-navigation>
+        </div>
+        <div class="slds-size_10-of-12 scrollfixgrid">
+            <template if:false={showMultipleKPI}>
+                <div class="slds-grid slds-wrap slds-p-left_xx-large slds-p-right_large" style="display:flex; justify-content:space-between;">
+                    <template for:each={selectedKPITarget} for:item="product" for:index="prodIndex">
+                        <template if:true={product.showKPI}>
+                            <div key={target} if:true={product.showContainer} class="slds-grid slds-wrap slds-size_1-of-1 slds-m-top_small slds-p-left_large slds-p-right_large slds-p-top_small slds-p-bottom_small" style="border-radius:8px; background-color:rgb(247, 247, 247); width:85%;">
+                                <div class="slds-grid slds-wrap slds-size_1-of-1">
+                                    <div class="slds-col">
+                                        <h6 style="font-weight: 700;">{product.kpiTargetName}</h6>
+                                    </div>
+                                    <div class="slds-col" if:false={product.callComponent} style="display:flex; justify-content:flex-end">
+                                        <lightning-icon style="cursor:pointer;" size='x-small' data-prodindex={prodIndex} data-prodid={product.productId} data-kpiindex={kpiIndex} data-pkpiid={product.productKPIId} data-kpiid={product.kpiId} class="blueColor" icon-name='utility:edit' alternative-text='edit' title='edit' onclick={editKPITarget}></lightning-icon>
+                                        <lightning-icon class="redColor slds-p-left_small"
+                                            style="cursor: pointer;" icon-name="utility:delete"
+                                            alternative-text="delete" title="delete" size='x-small'
+                                            onclick={handleKpiOptionsToDelete} data-kpi={product.productKPI.kpiName}
+                                            data-pkpiid={product.productKPIId} data-prodindex={prodIndex}>
+                                        </lightning-icon>
+                                    </div>
+                                    <div class="slds-col" if:true={product.callComponent} style="display:flex; justify-content:flex-end">
+                                        <lightning-icon style="cursor:pointer;"  size='x-small' data-prodindex={prodIndex} data-prodid={product.productId} data-kpiindex={kpiIndex} data-pkpiid={product.productKPIId} data-kpiid={product.kpiId} class="blueColor" icon-name='utility:back' alternative-text='back' title='back' onclick={clearValues}></lightning-icon>
+                                    </div>
+                                </div>
+                                <template if:false={product.callComponent}>
+                                    <div if:true={product.isSlab} class="slds-card slds-m-top_x-small slds-p-around_small" style="background: white;border-radius: 8px;">
+                                        <div if:true={product.isSlabNotEmpty} class="slds-card" style="background: white;border-radius: 8px;">
+                                            <table>
+                                                <tr> 
+                                                    <template for:each={product.firstTwoSlabs} for:item="inc">
+                                                        <td key={inc} class="border" data-id={inc.id} style="font-weight: 500; width:30vh;">
+                                                            <div>If a dealer achieves &nbsp;<b>{inc.rangeSlab}</b></div>
+                                                                <div if:true={inc.isGrowthIncentive}>
+                                                                    for the month of <b>{product.prevMonth} {product.prevYear}</b>. &nbsp;
+                                                                    If there is <b>{inc.growthSlab}</b> growth vs previous year
+                                                                </div>
+                                                                <div>they will be eligible for&nbsp;
+                                                                    <b>{inc.incentiveKpiValue}</b>&nbsp; Additional Incentive Amount
+                                                                </div>
+                                                        </td>
+                                                    </template>
+                                                    <td if:true={product.displayShowMore} style="text-align:center;" class="slds-p-left_small">
+                                                        <a  data-prodindex={prodIndex} data-ind={ind}
+                                                            data-pkpiid={product.productKPIId}
+                                                            onclick={editKPITarget}>{product.remainingSlabs.length}
+                                                            more</a>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div if:true={product.isRange} class="slds-card slds-m-top_small slds-p-around_small" style="background: white;border-radius: 8px;">
+                                        <table>
+                                            <tr>
+                                                <td style="font-weight: 500;">
+                                                    <div>If a dealer achieves
+                                                        &nbsp;<b>{product.incentiveRange.targetRange}</b>
+                                                    </div>
+                                                    <div>they will be eligible for &nbsp;
+                                                        <b>{product.incentiveRange.amountOfIncentive}</b>&nbsp; Additional Incentive Amount</div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div if:true={product.showTHIncentive} class="slds-p-top_large">
+                                            <p class="slds-p-bottom_small" style="font-weight: bold;">Target Achievement of TH</p>
+                                            <table>
+                                                <tr>
+                                                    <template for:each={product.additionalTHIncentive} for:item="th">
+                                                        <td key={th} class="border" style="font-weight: 500; width:30vh;">
+                                                            <div>If a dealer achieves &nbsp;<b>{th.targetVolume}</b> more Machine of <b>{product.incentiveRange.targetRangeVolume}</b></div>
+                                                                <div>they will be eligible for INR&nbsp;
+                                                                    <b>{th.amount}</b>&nbsp; Additional Incentive Amount
+                                                                </div>
+                                                        </td>
+                                                    </template>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    
+                                </template>
+                                <template if:true={product.callComponent}>
+                                    <div class="slds-grid slds-wrap slds-size_1-of-1 scrollfix">
+                                        <section  role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open" style="position: relative;z-index:1">
+                                            <div style="width: fit-content;">
+                                                <div class="" style="background:none;width: fit-content;">
+                                                    <c-d-i-product-formula-edit-page send-data={selectedKPITarget} width="Add" incentive-name={selectedName} onmonthvaluechange={handleMonthChange} onslabinfoid={handleSlabInfo}></c-d-i-product-formula-edit-page>       
+                                                </div>
+                                            </div>
+                                        </section> 
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </template>
+                     
+
+                    <div class="slds-docked-form-footer slds-m-top_small slds-m-bottom_small" if:true={showFooter} style="position: fixed;right: 13px; left:13px; width: -webkit-fill-available; justify-content:center; display:flex;box-shadow: 0px 1px 0px 0px #DDDBDA inset;background-color:#ffffff; z-index:0">
+                        <lightning-button class="slds-p-right_small" label="Cancel" variant="brand-outline"
+                            icon-name="action:close" onclick={handleIncentiveCancel}></lightning-button>
+                        <lightning-button label="Save" variant="brand" class="slds-p-right_xx-large" icon-name="utility:save"
+                            onclick={handleSave} disabled={disableSave}></lightning-button>
+                    </div>
+                </div>
+                <div if:true={showAddKpi} class="slds-card slds-m-left_xx-large slds-p-right_large slds-m-top_small" style="border-radius: 8px;background-color: rgb(247, 247, 247);display: flex;justify-content: center;margin-right:27vh">
+                    <lightning-button-menu icon-name="utility:add" label="Add KPI" variant="border-filled" onselect={handleKpiMenuItemoptions} data-name="Test">
+                        <template for:each={kpiMenuItemOptionsToShow} for:item="kpis" for:index="index">
+                            <template if:true={kpis.toShow}>
+                                <lightning-menu-item if:true={kpis.toShow} key={kpis} value={kpis.value} label={kpis.label}
+                                data-name={kpis.name} data-index={index} daat-kpid={kpis.id}></lightning-menu-item>
+                            </template>
+                        </template>
+                    </lightning-button-menu>
+                </div>
+            </template>
+            <template if:true={showMultipleKPI}>
+                  <section  role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open" style="position: relative;z-index:1">
+                                            
+                                                <div class="" style="background:none;">
+                <c-d-i-multiple-kpi-target product-name={productName} product-id={productId} month={month} year={year} onhideinputs={handleHideInputs}></c-d-i-multiple-kpi-target>
+                                                </div>
+                  </section>
+            </template>
+
+        
+
+            <!-- <template if:true={showBHLTOCE}>
+                 <section  role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open" style="position: relative;z-index:1">
+                                            
+                <div class="" style="background:none;">
+                <c-d-i-configuration-page product-name={productName} product-id={productId} month={month} year={year}> </c-d-i-configuration-page>
+                                                </div>
+                  </section>
+            </template> -->
+            <template if:true={showUnsavedWarning}>
+                <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+                    class="slds-modal slds-fade-in-open slds-modal_small">
+                    <div class="slds-modal__container" style="width: 40rem !important;">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button--icon-inverse slds-modal__close" name="alert"
+                                onclick={showUnsavedWarningCloseModal}>
+                                <lightning-icon name="alert" icon-name="utility:close" size="small"
+                                   ></lightning-icon>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <div class="slds-text-align_center">
+                                <h1 class="slds-text-heading_medium" id="prompt-heading-id">
+                                    Changes Unsaved</h1>
+                            </div>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <p>You have unsaved changes. Do you want to save them before
+                                leaving?</p>
+                        </div>
+                        <div class="slds-modal__footer">
+                            <button class="slds-button slds-button_brand" onclick={handleSave}>Save &
+                                                                    Exit</button>
+                            <button class="slds-button slds-button_destructive" onclick={handleUnsaveClose}>Discard Changes</button>
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+            </template>
+            <template if:true={showDeleteWarning}>
+                <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+                    class="slds-modal slds-fade-in-open slds-modal_small">
+                    <div class="slds-modal__container" style="width: 40rem !important;">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button--icon-inverse slds-modal__close" name="alert"
+                                onclick={showDeleteWarningCloseModal}>
+                                <lightning-icon name="alert" icon-name="utility:close" size="small"
+                                    ></lightning-icon>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <div class="slds-text-align_center">
+                                <h1 class="slds-text-heading_medium" id="prompt-heading-id-2">
+                                    Changes Delete</h1>
+                            </div>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                            <p>Are you sure want to removing this tab? this will also delete the record from the database?</p>
+                        </div>
+                        <div class="slds-modal__footer">
+                            <button class="slds-button slds-button_destructive" onclick={handleModalCancel}>No</button>
+                            <button class="slds-button slds-button_brand" onclick={handleDelete}>Yes</button>
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+            </template>
+            <template if:true={showDeleteKpiTarget}>
+                <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+                    class="slds-modal slds-fade-in-open slds-modal_small">
+                    <div class="slds-modal__container" style="width: 40rem !important;">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button--icon-inverse slds-modal__close" name="alert"
+                                onclick={showDeletekpiCloseModal}>
+                                <lightning-icon name="alert" icon-name="utility:close" size="small"
+                                    ></lightning-icon>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <div class="slds-text-align_center">
+                                <h1 class="slds-text-heading_medium" id="prompt-heading-id-3">
+                                    Changes Delete </h1>
+                            </div>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-3">
+                            <p>Are you sure want to delete <span style="font-weight:bold;">{kpiLabel}</span> ?</p>
+                        </div>
+                        <div class="slds-modal__footer">
+                            <button class="slds-button slds-button_destructive" onclick={handlekpiCancel}>Cancel</button>
+                            <button class="slds-button slds-button_brand" onclick={handlekpiDelete}>Delete</button>
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+            </template>
+        </div>
+    </div>
+</template>

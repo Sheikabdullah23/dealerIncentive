@@ -1,0 +1,290 @@
+<template>
+    <lightning-spinner if:true={isLoading} variant="brand" size="medium" style="background: white;" alternative-text="Loading Stock Condition Page"></lightning-spinner>
+    <template if:true={recalculateLoading}>
+			<lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+	</template>
+    <div class="template">
+        <div if:true={showRecords} class="outerDiv">
+            <div class="container">
+                <table class="table">
+                    <thead class="thead">
+                        <tr class="thead-tr">
+                            <th class="thead-th frst-clmn slds-p-left_medium thead-std-dealer-name">
+                                <div if:true={isDealerSearch} class="dealer-text">
+                                    <div>Dealer Name</div>
+                                    <div class="icon-clr-overRide thead-tr-th-div-sort-icon">
+                                        <lightning-icon
+                                            icon-name="utility:sort"
+                                            alternative-text="Sort By Name"
+                                            size="x-small"
+                                            title="Sort By Name"
+                                            onclick={handleSort}
+                                        ></lightning-icon>
+                                    </div>
+                                    <div class="icon-clr-overRide thead-tr-th-div-search-icon">
+                                        <lightning-icon
+                                            icon-name="utility:search"
+                                            alternative-text="Search Dealers"
+                                            size="x-small"
+                                            title="Search Dealers"
+                                            onclick={handleSearchClick}
+                                        ></lightning-icon>
+                                    </div>
+                                </div>
+                                <div if:false={isDealerSearch} class="dealer-search">
+                                    <div class="thead-tr-th-div-search-input">
+                                        <lightning-input
+                                            type="search"
+                                            name="enter-search"
+                                            onchange={handleSearchDealer}
+                                            variant="label-hidden"
+                                            placeholder="Search Dealer Name"
+                                            title="Search Dealer Name"
+                                        ></lightning-input>
+                                    </div>
+                                    <div class="thead-tr-th-div-close-icon">
+                                        <lightning-icon
+                                            icon-name="utility:close"
+                                            alternative-text="Close Search"
+                                            size="x-small"
+                                            title="Close Search"
+                                            onclick={handleSearchClick}
+                                            variant="error"
+                                        ></lightning-icon>
+                                    </div>
+                                </div>
+                            </th>
+                            <template for:each={productsAndSubCategoriesList} for:item='product'>
+                                <th key={product} class="thead-th thead-th-achievementname slds-p-left_large" title={product.Name}>
+                                    <div class="thead-th-productName-wrapper">
+                                        <div class="thead-th-achievementname-div slds-m-right_x-large productName">
+                                            <lightning-formatted-text data-name={product.name} data-productid={product.Id} title={product.name} data-producttarget="0"  data-value={product.Name} data-productname ={product.Name} value={product.Name}>
+                                            </lightning-formatted-text>
+                                        </div>
+                                        <div class="thead-th-opening-stock-div-wrapper">
+                                            <div class="thead-th-opening-stock-name slds-m-right_x-large">Opening Stock</div>
+                                            <div class="thead-th-div-span-wrapper">
+                                                <div class="thead-th-achievementname-div-span">Should Have</div>
+                                                <div class="thead-th-achievementname-div-span thead-th-in-hand-span-wrapper">
+                                                    <span> In Hand</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </th>
+                            </template>
+                            <th class="thead-th thead-th-edit slds-p-around_small">
+                                <div class="icon-clr-overRide" if:true={isEdit}>
+                                    <lightning-icon
+                                        icon-name="utility:edit"
+                                        alternative-text="Edit"
+                                        size="x-small"
+                                        title="Edit"
+                                        name = "commonEdit"
+                                        onclick={enableCommonEdit}
+                                    ></lightning-icon>
+                                </div>
+                                <div if:false={isEdit}>
+                                    <lightning-icon
+                                        icon-name="utility:close"
+                                        alternative-text="Close"
+                                        size="x-small"
+                                        title="Close"
+                                        name = "commonClose"
+                                        onclick={enableCommonEdit}
+                                        variant="error"
+                                    ></lightning-icon>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="tbody">
+                        <template for:each={dealers} for:item='dealer' for:index="dealerIndex">
+                                <tr key={dealer.Id} class="tbody-tr" data-dealerindex={dealerIndex} data-dealername={dealer.Dealer_Account__r.Name} data-searchname="" data-dealerid={dealer.Id}>
+                                    <td class="tbody-td frst-clmn tbody-tr-td-dealer-name" data-dealerindex={dealerIndex} data-dealername={dealer.Dealer_Account__r.Name}>
+                                        <div class="div-input dealer-name" data-dealername={dealer.Dealer_Account__r.Name} data-dealerindex={dealerIndex} data-dealerid ={dealer.Id}>
+                                            {dealer.Dealer_Account__r.Name}
+                                        </div>
+                                    </td>
+                                    <template for:each={productsAndSubCategoriesList} for:item='product' for:index="productIndex">
+                                        <td key={product.Id} class="tbody-td tbody-td-input-clmn slds-p-left_large" data-dealerindex={dealerIndex} data-productindex={productIndex}>
+                                            <div class="tbody_td_div_input_wrapper">
+                                                <div class="div-input" >
+                                                    <lightning-input
+                                                        class="div-lwc-input"
+                                                        type="number"
+                                                        name="stock"
+                                                        data-name="shouldhave"
+                                                        title="Should Have Stock"
+                                                        value={shouldHaveValues}
+                                                        data-value ="0"
+                                                        data-inhandvalue = "0"
+                                                        variant="label-hidden"
+                                                        data-accountid ={dealer.Dealer_Account__c}
+                                                        data-field="achievementInput"
+                                                        data-recordid =""
+                                                        data-dealerid ={dealer.Id}
+                                                        data-productid ={product.Id}
+                                                        readonly ={isReadOnly}
+                                                        message-when-bad-input="Invalid Number"
+                                                        data-dealerindex={dealerIndex}
+                                                        data-productindex={productIndex}
+                                                        data-dealername ={dealer.Dealer_Account__r.Name}
+                                                        data-totalretailachieved ="0"
+                                                        data-totalretailtarget ="0"
+                                                        maxlength="5"
+                                                        min="0"
+                                                        data-productname ={product.Name}
+                                                        autocomplete="on"
+                                                        onchange ={handleInputChange}
+                                                        oninput={handleInput}
+                                                        onkeypress={handleKeyPress}
+                                                        onpaste={handlePaste}
+                                                        data-stockpolicy = ""
+                                                    ></lightning-input>
+                                                </div>
+                                                <div class="div-input" data-dealerindex={dealerIndex} data-productindex={productIndex} data-dealerid ={dealer.Id}>
+                                                    <lightning-input
+                                                        class="div-lwc-input slds-m-right_x-small"
+                                                        type="number"
+                                                        name="stock"
+                                                        data-name="inhand"
+                                                        title="Enter InHand Stock"
+                                                        value={inHandvalues}
+                                                        data-value ="0"
+                                                        data-shouldhavevalue = "0"
+                                                        variant="label-hidden"
+                                                        onchange ={handleInputChange}
+                                                        onclick={handleCellClick}
+                                                        data-achid ={product.Id}
+                                                        data-accountid ={dealer.Dealer_Account__c}
+                                                        data-field="achievementInput"
+                                                        data-recordid =""
+                                                        data-dealerid ={dealer.Id}
+                                                        data-productid ={product.Id}
+                                                        readonly ={isReadOnly}
+                                                        message-when-bad-input="Invalid Number!"
+                                                        data-dealerindex={dealerIndex}
+                                                        data-productindex={productIndex}
+                                                        data-dealername ={dealer.Dealer_Account__r.Name}
+                                                        maxlength="4"
+                                                        min="0"
+                                                        data-productname ={product.Name}
+                                                        autocomplete="on"
+                                                        oninput={handleInput}
+                                                        onkeypress={handleKeyPress}
+                                                        onpaste={handlePaste}
+                                                    ></lightning-input>
+                                                </div>
+                                            </div>
+                                            
+                                        </td>
+                                    </template>
+                                    <td class="tbody-td tbody-last-td-row-edit slds-p-around_small" data-dealerindex={dealerIndex} data-dealername={dealer.Dealer_Account__r.Name} data-dealerid ={dealer.Id}>
+                                        <div if:true={isEdit} class="tbody-td-div-row-edit icon-clr-overRide" data-dealerindex={dealerIndex} data-name="rowEdit">
+                                            <lightning-icon icon-name='utility:edit' alternative-text='rowEdit' title='Dealer Wise Edit' onclick={handleRowEdit} size="xx-small" name="rowEdit" data-dealerindex={dealerIndex} data-name="rowEdit" data-dealerid ={dealer.Id}>
+                                            </lightning-icon>
+                                        </div>
+                                    </td>
+                                </tr>
+                        </template>
+                    </tbody>
+                </table>
+                
+            </div>
+            <div class="footer" if:true={isFooter}>
+                <div class="footer-div">
+                    <div class="footer-div-btn">
+                        <lightning-button variant="brand-outline" label="Cancel" title="Cancel" onclick={handleCancel} class="tfoot-cancel" icon-name="utility:close" >
+                        </lightning-button>
+                    </div>
+                    <div class="footer-div-btn">
+                        <lightning-button variant="brand" label="Save" title="Save" onclick={handleSave} class="tfoot-save" icon-name="utility:save" disabled={isDisableSave}>
+                        </lightning-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div if:true={hideRecords} style="text-align: center;margin-top: 30vh;font-weight: 600;font-size: 20px;">
+            <p>{dealerNotification}</p>
+        </div>
+        <template if:true={showDownloadUpload}>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header" style="width: 80%;">
+                        <div class="slds-text-align_center slds-text-title_caps" style="font-weight: 600;font-size:13px;">Upload Stock Template</div>
+                        <div class="slds-modal__close">
+                            <lightning-icon name="import" icon-name="utility:close" size="small"  onclick={closeDownloadUploadModal} title="Close">
+                            </lightning-icon>
+                        </div>
+
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" style="width: 80%;">
+                        <div class="slds-align_absolute-center">
+                            <div>
+                                <lightning-input type="file" accept={acceptedFormats} label="Attachment" onchange={openfileUpload}> </lightning-input>
+                            </div>
+                        </div>
+
+                        <div class="slds-align_absolute-center download-upload-div-filename" if:true={excelData}>
+                            <span><b>{excelData.filename}</b></span>
+                        </div>
+                    </div>
+
+                    <footer class="slds-modal__footer slds-grid slds-grid_align-spread" style="width: 80%;">
+                        <div>
+                            <lightning-helptext
+                                content="Note: Download New Template from here & Do not Alter the Rows and Columns in this Standard Excel Template While Upload. "
+                            ></lightning-helptext>
+                            <lightning-button
+                                variant="base"
+                                label="Download Template"
+                                title="Download Template"
+                                onclick={downloadTemplate}
+                                class="slds-m-left_x-small"
+                            ></lightning-button>
+                        </div>
+                        <div>
+                            <button class="slds-button slds-button_neutral" name="import" onclick={closeDownloadUploadModal}
+                            title="Cancel">Cancel</button>
+                        <button class="slds-button slds-button_brand" onclick={readFileHandler} title="Upload"
+                            disabled={disableImport}>Upload</button>
+                        </div>
+                        
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+        <template if:true={askConfirmation}>
+            <section
+                role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container" style="width: 35rem;">
+                    <header class="slds-modal__header slds-text-heading_medium">
+                        <div class="slds-text-align_center modalheader">Changes Unsaved</div>
+                        <div class="slds-modal__close">
+                            <lightning-icon
+                                icon-name="utility:close"
+                                alternative-text="Close"
+                                size="small"
+                                title="Close"
+                                onclick={closeConfirmation}
+                            ></lightning-icon>
+                        </div>
+                    </header>
+                    <div class="slds-modal__content modalbody slds-p-around_large">
+                        <p>You have Unsaved changes. Do you want to save them before continuing?</p>
+                    </div>
+                    
+                    <footer class="slds-modal__footer modalfooter">
+                        <lightning-button  variant="destructive" label="Discard Changes" onclick={handleClose} title="Discard Changes"></lightning-button>
+                        <lightning-button variant="brand" label="Save & Continue"  onclick={handleSave} title="Save & Continue"></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </div>
+</template>

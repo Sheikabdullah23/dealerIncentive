@@ -1,0 +1,252 @@
+<template>
+    <template if:true={recalculateLoading}>
+        <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+    </template>
+    <div class="slds-card slds-m-left_x-large" style="background-color: rgb(247, 247, 247);width: 85%;">
+        <p style="font-size: 13px; font-weight: 700" class="slds-m-around_small">Combination Target</p>
+        <template for:each={newArray} for:item="newArr" for:index="index">
+            <div key={newArr} class="slds-card slds-m-around_small slds-scrollable scrollfix"
+                style="background-color: white;">
+                <div class="slds-grid">
+                    <lightning-combobox class="slds-size_x-small slds-m-around_medium" label="Condition Logic"
+                        options={logicOptions} name="operator" value={newArr.conditionLogic} data-index={index}
+                        onchange={handleChange}></lightning-combobox>
+                    <div class="slds-col slds-p-right_small slds-p-top_small"
+                        style="display: flex;justify-content: flex-end;">
+                        <lightning-icon icon-name='utility:delete' style="cursor:pointer" alternative-text='delete'
+                            size='small' title="delete" data-index={index} data-multi={newArr.multiKpiId}
+                            onclick={removeEntireRow}></lightning-icon>
+                    </div>
+                </div>
+                <div class="slds-media">
+                    <div class="slds-grid">
+                        <div if:true={newArr.isKpi} class="slds-col">
+                            <div class="slds-grid slds-col">
+                                <template for:each={newArr.slab} for:item="start" for:index="indx">
+                                    <div key={kpi} class="slds-grid slds-col slds-m-around_medium"
+                                        style="background: #FBFBFB;">
+                                        <div class="slds-grid slds-size_11-of-12  slds-m-around_small"
+                                            style="border-radius: 8px;">
+                                            <div class="slds-size_7-of-12">
+                                                <div class="slds-grid">
+                                                    <p class="slds-size_1-of-1">{start.kpiName}</p>
+                                                    <div class="slds-size_1-of-2"
+                                                        style="display: flex;justify-content: flex-end;margin-left: 3vh;">
+                                                        <lightning-icon icon-name='utility:delete'
+                                                            style="cursor:pointer" alternative-text='delete'
+                                                            size='x-small' title="delete" data-indx={indx}
+                                                            data-index={index} data-slab={start.slabId}
+                                                            onclick={removeRow}></lightning-icon>
+                                                    </div>
+                                                </div>
+                                                <div if:false={start.isStartEnd} class="slds-media"
+                                                    style="align-items:end;">
+                                                    <div>
+                                                        <lightning-combobox name="rangeStart" data-index={index}
+                                                            data-indx={indx} value={start.rangeStart}
+                                                            options={optionsRange} data-id={start.id}
+                                                            onchange={handleRangeVolume}>
+                                                        </lightning-combobox>
+                                                    </div>
+                                                    <div class="slds-p-left_small">
+                                                        <lightning-input data-index={index} data-indx={indx}
+                                                            style="width:51px;" value={start.rangeStartPercent}
+                                                            name="rangeInput" onchange={handleRangeVolume}
+                                                            data-id={start.id} pattern="^\d*(\.\d+)?$"
+                                                            onkeypress={handleKeyPress} oninput={handleInput}
+                                                            maxlength="5"></lightning-input>
+                                                    </div>
+                                                    <p class="slds-p-left_xx-small slds-p-bottom_x-small"
+                                                        style="font-weight: 800;">%
+                                                    </p>
+                                                </div>
+                                                <div if:true={start.isStartEnd}>
+                                                    <div class="slds-media" style="align-items:end;">
+                                                        <div>
+                                                            <lightning-combobox name="rangeStart" data-index={index}
+                                                                data-indx={indx} value={start.rangeStart}
+                                                                options={optStartRange} data-id={start.id}
+                                                                onchange={handleRangeVolume}>
+                                                            </lightning-combobox>
+                                                        </div>
+                                                        <div class="slds-p-left_small">
+                                                            <lightning-input data-index={index} data-indx={indx}
+                                                                style="width:51px;" value={start.rangeStartPercent}
+                                                                name="rangeInput" data-id={start.id}
+                                                                onchange={handleRangeVolume} pattern="^\d*(\.\d+)?$"
+                                                                step="0.01" onkeypress={handleKeyPress}
+                                                                oninput={handleInput} maxlength="5">
+                                                            </lightning-input>
+                                                        </div>
+                                                        <p class="slds-p-left_xx-small slds-p-bottom_x-small"
+                                                            style="font-weight: 800;">
+                                                            %
+                                                        </p>
+                                                    </div>
+                                                    <div class="slds-media" style="align-items:end;">
+                                                        <div if:true={start.isStartEnd}>
+                                                            <lightning-combobox name="rangeEnd" value={start.rangeEnd}
+                                                                data-indx={indx} data-index={index}
+                                                                options={optEndRange} data-id={start.id}
+                                                                onchange={handleRangeVolume}>
+                                                            </lightning-combobox>
+                                                        </div>
+                                                        <div if:true={start.isStartEnd} class="slds-p-left_small">
+                                                            <lightning-input data-index={index} data-indx={indx}
+                                                                style="width:51px;" value={start.rangeEndPercent}
+                                                                name="rangeInput1" data-id={start.id}
+                                                                onchange={handleRangeVolume} pattern="^\d*(\.\d+)?$"
+                                                                onkeypress={handleKeyPress} oninput={handleInput}
+                                                                maxlength="5">
+                                                            </lightning-input>
+                                                        </div>
+                                                        <p class="slds-p-left_xx-small slds-p-bottom_x-small"
+                                                            style="font-weight: 800;">
+                                                            %
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div if:true={start.logic} class="slds-col slds-p-top_xx-large">
+                                            <p style="font-size: 13px;font-weight: 700;">{newArr.conditionLogic}</p>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-p-left_small" onmouseover={handleKpiMouseOver}
+                            onmouseleave={handleKpiLeave} data-key="product">
+                            <div if:true={newArr.isAdd} class={newArr.adjustSize}
+                                style="z-index: 1;position: relative; cursor:pointer;" data-key="product">
+                                <div data-key="product">
+                                    <lightning-icon class="user-icon" icon-name='utility:add' alternative-text='add'
+                                        size='xx-small' title='add' data-index={index} onclick={handleProduct}
+                                        style="display: contents;" data-key="product">
+                                    </lightning-icon>
+                                </div>
+                                <div class="slds-p-left_xx-small slds-p-top_xxx-small" data-key="product">
+                                    <p style="font-weight: 500; color:#0176D3; font-size: 13px" onclick={handleProduct}
+                                        data-index={index} data-key="product"> Add </p>
+                                </div>
+                                <div if:true={newArr.showMenuItem} data-key="product"
+                                    class="slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open"
+                                    style="right:6vh;">
+                                    <div class="slds-dropdown slds-dropdown_left" data-key="product">
+                                        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open"
+                                            style="position: relative;z-index:1">
+                                            <div style="width: fit-content;">
+                                                <div class="" style="background:none;width: fit-content;">
+                                                    <ul class="slds-dropdown__list" role="menu" aria-label="Show More"
+                                                        data-key="product">
+                                                        <template for:each={newArr.kpiMenuItemOptions}
+                                                            for:item="targets" for:index="ind">
+
+                                                            <li key={targets} data-key="product"
+                                                                if:true={targets.toShow}
+                                                                class="slds-dropdown__item slds-has-submenu"
+                                                                role="presentation" data-name={targets.name}
+                                                                data-kpi={targets.label} data-kpid={targets.id}
+                                                                data-prodkpid={targets.productKpiId} data-index={index}>
+                                                                <a data-key="product" role="menuitem" href="#"
+                                                                    aria-haspopup="true" aria-expanded="true"
+                                                                    tabindex="-1" data-name={targets.name}
+                                                                    data-kpi={targets.label} data-kpid={targets.id}
+                                                                    data-prodkpid={targets.productKpiId}
+                                                                    data-index={index} onclick={showSubItems}>
+                                                                    <span data-key="product" class="slds-truncate" title={targets.label}  data-name={targets.name} data-kpi={targets.label} data-kpid={targets.id} data-prodkpid={targets.productKpiId} data-index={index}>{targets.label}</span>
+                                                                    <lightning-icon data-key="product"
+                                                                        class="slds-p-left_x-small"
+                                                                        if:true={targets.isSubMenu}
+                                                                        icon-name='utility:chevronright'
+                                                                        alternative-text='chevronright' size='x-small'
+                                                                        title='chevronright'></lightning-icon>
+                                                                </a>
+                                                                <div if:true={targets.isSubMenu}
+                                                                    class="slds-dropdown slds-dropdown_submenu slds-dropdown_submenu-right">
+                                                                    <ul class="slds-dropdown__list" role="menu">
+                                                                        <li class="slds-dropdown__item"
+                                                                            role="presentation" data-name="Single"
+                                                                            onclick={addRow} data-index={index}>
+                                                                            <a href="#" role="menuitem" tabindex="0"
+                                                                                data-name="Single" data-index={index}>
+                                                                                <span class="slds-truncate" title="Single" data-name="Single" data-index={index}>Single</span>
+                                                                            </a>
+                                                                        </li>
+                                                                        <li class="slds-dropdown__item"
+                                                                            role="presentation" data-name="Start End"
+                                                                            onclick={addRow} data-index={index}>
+                                                                            <a href="#" role="menuitem" tabindex="-1"
+                                                                                data-name="Start End"
+                                                                                data-index={index}>
+                                                                                <span class="slds-truncate" title="Start End" data-name="Start End" data-index={index}>Start End</span>
+                                                                            </a>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </li>
+                                                        </template>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </section>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div if:true={newArr.isKpi} class="slds-col slds-p-left_small">
+                            <legend class="slds-form-element__legend slds-form-element__label slds-p-top_x-large">
+                                Incentive Amount</legend>
+                            <lightning-input class=" slds-p-top_xx-large" value={newArr.amount} data-index={index}
+                                name="amount" onchange={handleChange}></lightning-input>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <div class="slds-media slds-m-around_medium slds-p-bottom_small">
+            <div class="slds-p-top_xxx-small">
+                <lightning-icon class="user-icon" icon-name='utility:add' alternative-text='add' size='x-small'
+                    title='add' onclick={handleNewProduct} style="display: contents;cursor:pointer">
+                </lightning-icon>
+            </div>
+            <div class="slds-p-left_xx-small">
+                <p style="font-weight: 600; color:#0176D3; font-size: 16px; cursor:pointer" onclick={handleNewProduct}>
+                    New </p>
+            </div>
+        </div>
+        <div if:true={showCancelSave} class="slds-docked-form-footer slds-m-top_small" style="position: fixed;right: 13px; left:13px; width: -webkit-fill-available; justify-content:center; display:flex;box-shadow: 0px 1px 0px 0px #DDDBDA inset;background-color:#ffffff; z-index:0">
+            <lightning-button class="slds-p-right_small" label="Cancel" variant="brand-outline" icon-name="action:close"
+                onclick={handleProductCancel}></lightning-button>
+            <lightning-button label="Save" variant="brand" class="slds-p-right_xx-large" icon-name="utility:save"
+                onclick={handleProductSave}></lightning-button>
+        </div>
+        <template if:true={showDeleteConfirmation}>
+            <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+                class="slds-modal slds-fade-in-open slds-modal_small">
+                <div class="slds-modal__container" style="width: 40rem !important;">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button--icon-inverse slds-modal__close" name="alert"
+                            onclick={handleCancel} style="background:none;" >
+                            <lightning-icon name="alert" icon-name="utility:close" size="small"
+                                variant="bare"></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <div class="slds-text-align_center">
+                            <h1 class="slds-text-heading_medium" id="prompt-heading-id-3">
+                                Changes Delete </h1>
+                        </div>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-3">
+                        <p>Are you sure want to delete?</p>
+                    </div>
+                    <div class="slds-modal__footer">
+                        <button class="slds-button slds-button_destructive" onclick={handleCancel}>Cancel</button>
+                        <button class="slds-button slds-button_brand" onclick={handleDelete}>Delete</button>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        </template>
+    </div>
+</template>

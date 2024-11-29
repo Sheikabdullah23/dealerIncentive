@@ -1,0 +1,75 @@
+.styleFooter{
+  position: fixed;
+  right: 13px;
+  left: 13px;
+  width: -webkit-fill-available;
+  justify-content: center;
+  display: flex;
+  box-shadow: rgb(221, 219, 218) 0px 1px 0px 0px inset;
+  height: 60px;
+  background-color: rgb(255, 255, 255);
+  bottom: 15px;
+}
+
+.border {
+  border-right: 2px solid #E6E6E6;
+  text-align: center;
+}
+
+.border:last-child {
+  border: none !important;
+}
+
+.scrollfix{
+  height:50vh;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+.scrollfix::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  scroll-behavior: smooth;
+}
+
+.scrollfix::-webkit-scrollbar-track {
+  background: #f1f1f1;
+    
+}
+
+.scrollfix::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+}
+
+.blueColor{
+  --sds-c-icon-color-foreground-default: #0176D3;
+}
+
+.redColor{
+  --sds-c-icon-color-foreground-default: #c42f21;
+}
+
+.scrollfixgrid{
+  height:62vh;
+  overflow-y: auto;
+}
+
+.scrollfixgrid::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  scroll-behavior: smooth;
+}
+
+.scrollfixgrid::-webkit-scrollbar-track {
+  background: #f1f1f1;
+    
+}
+
+.scrollfixgrid::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+}
+
+.blurNavigation{
+  pointer-events: none;
+  opacity: 0.5;
+}

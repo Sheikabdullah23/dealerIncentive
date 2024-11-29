@@ -1,0 +1,31 @@
+.user-icon{
+    --sds-c-icon-color-foreground-default: #0176D3;
+  }
+
+.slds-has-error lightning-input:not([type="checkbox"]),
+.slds-has-error lightning-combobox {
+  border-color: red;
+}
+
+lightning-combobox {
+  --sds-c-input-radius-border: 18px;
+}
+
+.scrollfix{
+  
+}
+
+.scrollfix::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  scroll-behavior: smooth;
+}
+
+.scrollfix::-webkit-scrollbar-track {
+  background: #f1f1f1;
+    
+}
+
+.scrollfix::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+}

@@ -1,0 +1,670 @@
+<template>
+	<lightning-spinner if:true={isLoading} alternative-text="Loading....." variant="brand" size="medium"
+		style="background: white;"></lightning-spinner>
+	<template if:true={recalculateLoading}>
+			<lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+	</template>
+	<div style="height:65vh; overflow:hidden" class="slds-modal__content">
+		<div class="slds-grid slds-wrap" style="height:100%;">
+			<div class="slds-grid slds-size_12-of-12 slds-p-around_small table-body">
+				<div class="slds-size_5-of-12 container2">
+					<div class="scrollfix slds-p-left_small slds-p-right_small">
+						<template for:each={selectedKPITarget} for:item="kpi" for:index="index">
+							<template if:true={kpi.showKPI}>
+								<div key={kpi} if:true={kpi.showContainer}
+									class="slds-card slds-m-top_small slds-p-left_small slds-p-right_small slds-p-bottom_large"
+									data-key={kpi.kpiTargetName} style="background: #F7F7F7;border-radius: 8px;">
+									<div class="slds-grid slds-grid_align-spread" style="align-items:end;">
+										<div class="slds-col">
+											<h6 class="slds-p-left_x-small slds-p-top_x-small"
+												style="font-weight: 600;font-size: 17px;">
+												{kpi.kpiTargetName}</h6>
+										</div>
+										<div if:false={kpi.callComponent} class="slds-col" style="display:flex;">
+											<lightning-icon if:true={isShowKpiIcon} size='x-small'
+												class="blueColor slds-p-right_small slds-p-top_medium"
+												style="cursor: pointer;" data-index={index} data-ind={ind}
+												icon-name='utility:edit' data-id={kpi.productKPIId}
+												alternative-text='edit' title='edit' onclick={showComponent}>
+											</lightning-icon>
+											<lightning-icon if:true={isShowKpiIcon}
+												class="redColor slds-p-right_small slds-p-top_medium"
+												style="cursor: pointer;" icon-name="utility:delete"
+												alternative-text="delete" title="delete" size='x-small'
+												onclick={handleKpiOptionsToDelete} data-kpi={kpi.productKPI.kpiName}
+												data-id={kpi.productKPIId} data-index={index}
+												data-kpi-name={kpi.kpiTargetName}>
+											</lightning-icon>
+										</div>
+										<div if:true={kpi.callComponent} class="slds-col">
+											<lightning-icon
+												style="display: flex;justify-content: flex-end;cursor:pointer"
+												class="blueColor slds-p-right_small slds-p-top_medium"
+												icon-name='utility:back' alternative-text='back' size='x-small'
+												data-index={index} data-ind={ind} title='back' onclick={showBack}
+												data-kpi={kpi.kpiTargetName}>
+											</lightning-icon>
+										</div>
+									</div>
+									<template if:false={kpi.callComponent}>
+										<div if:true={kpi.isSlab}>
+											<div if:true={kpi.isSlabNotEmpty}
+												class="slds-card slds-m-top_small slds-p-around_small"
+												style="background: white;border-radius: 8px;">
+												<table>
+													<tr>
+														<template for:each={kpi.firstTwoSlabs} for:item="inc">
+															<td key={inc} class="border" data-id={inc.id}
+																style="font-weight: 500;">
+																<div>If a dealer achieves &nbsp;<b>{inc.rangeSlab}</b>
+																</div>
+																<div>they will be eligible for&nbsp;
+																	<b>{inc.incentiveKpiValue}</b>&nbsp;
+																	Incentive
+																</div>
+															</td>
+														</template>
+														<td if:true={kpi.displayShowMore} style="text-align:center;">
+															<a data-index={index} data-ind={ind}
+																data-id={kpi.productKPIId} onclick={showComponent}
+																class={linkDisable}>{kpi.remainingSlabs.length}
+																more</a>
+														</td>
+													</tr>
+												</table>
+											</div>
+										</div>
+										<div if:true={kpi.isRange}
+											class="slds-card slds-m-top_small slds-m-left_small slds-p-around_small"
+											style="background: white;border-radius: 8px;">
+											<table>
+												<tr>
+													<td style="font-weight: 500;text-align: center;">
+														<div>If a dealer achieves
+															&nbsp;<b>{kpi.incentiveRange.targetRange}</b>
+														</div>
+														<div>they will be eligible for&nbsp;
+															<b>{kpi.incentiveName}</b>&nbsp;Payout
+														</div>
+													</td>
+												</tr>
+											</table>
+										</div>
+									</template>
+									<template if:true={kpi.callComponent}>
+										<c-d-i-product-formula-edit-page send-data={selectedKPITarget} width="Product"
+											onslabinfoid={handleSlabInfo}>
+										</c-d-i-product-formula-edit-page>
+									</template>
+									<div class="slds-grid slds-wrap slds-p-top_small">
+										<div if:true={isShowSales} class="slds-p-top_small slds-size_1-of-2">
+											<div class="slds-media">
+												<lightning-input style="font-weight: 500; font-size: 13px;"
+													type="checkbox" data-index={index} value={kpi.value}
+													checked={kpi.checked} onchange={showSalesModal}
+													disabled={kpi.disableOthers} class={linkDisable}></lightning-input>
+												<p if:false={kpi.salesConfigure} data-index={index}
+													style="font-weight: 400; font-size: 13px;">Salesperson Incentive</p>
+												<a style="font-weight: 400; font-size: 13px;"
+													if:true={kpi.salesConfigure} onclick={showExistingConfigured}
+													data-index={index} class={linkDisable}>Salesperson Incentive
+												</a>
+												<svg if:true={kpi.salesConfigure} class="slds-p-left_xx-small"
+													xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+													viewBox="0 0 32 32">
+													<path fill="#0176D3"
+														d="M16 22a6 6 0 1 1 6-6a5.936 5.936 0 0 1-6 6m0-10a3.91 3.91 0 0 0-4 4a3.91 3.91 0 0 0 4 4a3.91 3.91 0 0 0 4-4a3.91 3.91 0 0 0-4-4" />
+													<path fill="#0176D3"
+														d="m29.305 11.044l-2.36-4.088a2 2 0 0 0-2.374-.894l-2.434.823a11 11 0 0 0-1.312-.758l-.503-2.519A2 2 0 0 0 18.36 2h-4.72a2 2 0 0 0-1.962 1.608l-.503 2.519a11 11 0 0 0-1.327.753l-2.42-.818a2 2 0 0 0-2.372.894l-2.36 4.088a2 2 0 0 0 .411 2.503l1.931 1.696C5.021 15.495 5 15.745 5 16q0 .387.028.766l-1.92 1.688a2 2 0 0 0-.413 2.502l2.36 4.088a2 2 0 0 0 2.374.895l2.434-.824a11 11 0 0 0 1.312.759l.503 2.518A2 2 0 0 0 13.64 30H18v-2h-4.36l-.71-3.55a9.1 9.1 0 0 1-2.695-1.572l-3.447 1.166l-2.36-4.088l2.725-2.395a8.9 8.9 0 0 1-.007-3.128l-2.718-2.389l2.36-4.088l3.427 1.16A9 9 0 0 1 12.93 7.55L13.64 4h4.72l.71 3.55a9.1 9.1 0 0 1 2.695 1.572l3.447-1.166l2.36 4.088l-2.798 2.452L26.092 16l2.8-2.454a2 2 0 0 0 .413-2.502" />
+													<path fill="#0176D3"
+														d="m23 26.18l-2.59-2.59L19 25l4 4l7-7l-1.41-1.41z" />
+												</svg>
+											</div>
+										</div>
+										<div if:true={kpi.isShowIndustry} class="slds-p-top_small slds-size_1-of-2"
+											style="display: flex; justify-content: flex-end;">
+											<div class="slds-media">
+												<lightning-input
+													style="cursor:pointer; font-weight: 500; font-size: 13px;"
+													type="checkbox" checked={kpi.indChecked} data-index={index}
+													onchange={showIndustryModal}></lightning-input>
+
+												<div if:false={kpi.indusConfigure} data-index={index}
+													style="font-weight: 400; font-size: 13px;">TIV Incentive</div>
+												<a style="font-weight: 400; font-size: 13px;"
+													if:true={kpi.indusConfigure} onclick={showIndustryConfigured}
+													data-index={index} class={linkDisable}>TIV Incentive
+												</a>
+												<svg if:true={kpi.indusConfigure} class="slds-p-left_xx-small"
+													xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+													viewBox="0 0 32 32">
+													<path fill="#0176D3"
+														d="M16 22a6 6 0 1 1 6-6a5.936 5.936 0 0 1-6 6m0-10a3.91 3.91 0 0 0-4 4a3.91 3.91 0 0 0 4 4a3.91 3.91 0 0 0 4-4a3.91 3.91 0 0 0-4-4" />
+													<path fill="#0176D3"
+														d="m29.305 11.044l-2.36-4.088a2 2 0 0 0-2.374-.894l-2.434.823a11 11 0 0 0-1.312-.758l-.503-2.519A2 2 0 0 0 18.36 2h-4.72a2 2 0 0 0-1.962 1.608l-.503 2.519a11 11 0 0 0-1.327.753l-2.42-.818a2 2 0 0 0-2.372.894l-2.36 4.088a2 2 0 0 0 .411 2.503l1.931 1.696C5.021 15.495 5 15.745 5 16q0 .387.028.766l-1.92 1.688a2 2 0 0 0-.413 2.502l2.36 4.088a2 2 0 0 0 2.374.895l2.434-.824a11 11 0 0 0 1.312.759l.503 2.518A2 2 0 0 0 13.64 30H18v-2h-4.36l-.71-3.55a9.1 9.1 0 0 1-2.695-1.572l-3.447 1.166l-2.36-4.088l2.725-2.395a8.9 8.9 0 0 1-.007-3.128l-2.718-2.389l2.36-4.088l3.427 1.16A9 9 0 0 1 12.93 7.55L13.64 4h4.72l.71 3.55a9.1 9.1 0 0 1 2.695 1.572l3.447-1.166l2.36 4.088l-2.798 2.452L26.092 16l2.8-2.454a2 2 0 0 0 .413-2.502" />
+													<path fill="#0176D3"
+														d="m23 26.18l-2.59-2.59L19 25l4 4l7-7l-1.41-1.41z" />
+												</svg>
+											</div>
+										</div>
+									</div>
+								</div>
+							</template>
+						</template>
+						<template if:true={showStockPolicy}>
+							<div class="slds-card slds-p-around_x-small slds-p-left_x-small slds-p-top_x-small "
+								style="background: #F7F7F7;border-radius: 8px;">
+								<div class="slds-grid slds-grid_align-spread">
+									<div class="slds-col slds-size_11-of-12 " style="display:flex;">
+										<span class="slds-p-top_medium" style="font-weight: 600; font-size:17px;">Stock
+											Condition </span>
+										<template if:true={editStockPolicy}>
+											<lightning-formatted-number class="slds-p-around_medium"
+												data-productid={stock.DI_Product_Category__c}
+												data-name={stock.stockPolicyName} data-month={stock.Month__c}
+												data-year={stock.Year__c} value={stock.Stock_Policy__c}
+												data-recordid={stock.Id} style="font-size: 17px;font-weight:700">
+											</lightning-formatted-number>
+										</template>
+										<template if:false={editStockPolicy}>
+											<lightning-input class="slds-size_xxx-small slds-m-horizontal_small"
+												data-productid={stock.DI_Product_Category__c}
+												data-name={stock.stockPolicyName}
+												style="position: relative; bottom: 5px;" varient="label-hidden"
+												data-month={stock.Month__c} data-year={stock.Year__c}
+												value={stock.Stock_Policy__c} onchange={handleStockInputChange}
+												data-recordid={stock.Id} onkeypress={handleKeyPressValidation}
+												oninput={handleInputValidation} onpaste={handlePasteValidation}>
+											</lightning-input>
+										</template>
+										<span class="slds-p-top_medium" style="font-weight: 600; font-size:17px;">days
+											Policy</span>
+									</div>
+									<div if:true={isShowKpiIcon} class="slds-col slds-size_1-of-12">
+										<lightning-icon size='x-small'
+											class="blueColor slds-p-right_small slds-p-top_medium"
+											style="cursor: pointer;" icon-name='utility:edit' alternative-text='edit'
+											onclick={handleStockPolicyEdit}>
+										</lightning-icon>
+									</div>
+								</div>
+							</div>
+						</template>
+						<div if:true={showNewKpi} class="slds-card slds-p-around_x-small slds-align_absolute-center"
+							style="background: #F7F7F7;border-radius: 8px;">
+							<lightning-button-menu icon-name="utility:add" label="New KPI" variant="border-filled"
+								onselect={handleKpiMenuItemoptions} data-name="Test">
+								<template for:each={kpiMenuItemOptionsToShow} for:item="kpis" for:index="index">
+									<lightning-menu-item if:true={kpis.toShow} key={kpis} value={kpis.value}
+										label={kpis.label} data-name={kpis.name} data-index={index}>
+									</lightning-menu-item>
+								</template>
+							</lightning-button-menu>
+						</div>
+					</div>
+				</div>
+
+				<div class="slds-size_7-of-12 slds-p-left_medium">
+					<div class="container">
+						<div class="slds-p-horizontal_small slds-p-vertical_x-small"
+							style="height:10%;background:rgb(247,247,247); border-radius:5px 5px 0px 0px;">
+							<p style="font-weight: 550;font-size: 20px;font-family: 'Work Sans', sans-serif;">Sub
+								Category Payout Configurations</p>
+						</div>
+						<div class="tableFix">
+							<table class="slds-table_bordered" style="border-top: none;border-bottom: none;">
+								<thead style="position: sticky; top:0px; z-index: 1; background: rgb(247,247,247);">
+									<tr style="height:60px;">
+										<th scope="col" style="background: rgb(247,247,247); height:50px; width:180px;"
+											class="cellPadding slds-size_x-small">
+											<div class="slds-truncate tableFont" title="Model">Model
+												<p style="color: #0176D3;font-size: 12px;font-weight: 500;">Per
+													Unit(₹)</p>
+											</div>
+										</th>
+										<template for:each={payoutByProduct} for:item="product">
+											<th if:true={product.toShow} key={product.key} scope="col"
+												style="background: rgb(247,247,247); height:50px; max-width:75px;"
+												class="cellPadding">
+												<div class="slds-truncate tableFont slds-p-around_xx-small"
+													title={product.key}>
+													{product.key}<br>
+													<lightning-input key={product.key} data-key={product.key}
+														type="checkbox" label="Zone Wise" name="Zone Wise"
+														data-name="zonewise" checked={product.isChecked}
+														onchange={handleVariesByRegion} disabled={product.disabled}>
+													</lightning-input>
+													<lightning-input key={product.key} data-key={product.key}
+														if:true={product.isVaries4WD} data-name="variesBy4WD"
+														type="checkbox" label="Varies by 4WD" name="Varies by 4WD"
+														checked={product.variesBy4WD} onchange={handleVariesByRegion}
+														disabled={product.disabled}>
+													</lightning-input>
+												</div>
+											</th>
+										</template>
+										<th
+											style="background: rgb(247,247,247); height:50px;padding-right: 5px; width: 3%;">
+											<div if:false={isEditedAll}>
+												<lightning-icon if:true={isShowIcon} icon-name='utility:edit'
+													data-ind={indexVar} class="blueColor" data-indx={inc}
+													alternative-text='editAll' size='x-small' title='Edit All'
+													onclick={editAllHandler} style="cursor:pointer;">
+												</lightning-icon>
+											</div>
+											<div if:true={isEditedAll}>
+												<lightning-icon icon-name='utility:close' data-ind={indexVar}
+													class="redColor" data-indx={inc} alternative-text='Cancel Edit'
+													size='small' title='Cancel Edit' onclick={editAllHandler}
+													style="cursor:pointer;"></lightning-icon>
+											</div>
+										</th>
+									</tr>
+								</thead>
+								<tbody style="line-height: 15px;" class="record-hover">
+									<template for:each={selectedKPIPayout} for:item="incentive" for:index="inc">
+										<tr key={incentive} class="slds-hint-parent" style="height:60px;">
+											<td class="cellPadding">
+												<div style="font-size: 13px;font-weight: 700;" title={incentive.key}>
+													<lightning-formatted-text value={incentive.key}>
+													</lightning-formatted-text>
+												</div>
+											</td>
+											<template for:each={incentive.kpiPayouts} for:item="payout" for:index="i">
+												<td if:true={payout.toShow} key={model} class="cellPadding">
+													<div class="slds-p-around_xx-small"
+														style="text-overflow: ellipsis; white-space:nowrap; overflow:hidden; width:120px;"
+														data-indx={inc} data-subid={payout.subProductId}
+														data-kpiid={payout.productKPIId} data-subname={incentive.key}
+														data-ind={indexVar} data-index={i}>
+														<template if:false={incentive.isEdited}>
+															<template if:false={payout.bothChecked}>
+																<template if:true={payout.bothUnchecked}>
+																	<span>{payout.payoutAmount}</span>
+																</template>
+																<template if:true={payout.variesByRegion}
+																	class="container">
+																	<img src={savedIcon} class="blueColor"
+																		style="cursor:pointer; width: 25px; height: 25px;"
+																		onclick={showModalPopup} data-indx={inc}
+																		data-subid={payout.subProductId}
+																		data-kpiid={payout.productKPIId}
+																		data-subname={incentive.key} data-ind={indexVar}
+																		data-index={i} size='small'
+																		onmouseover={togglePasswordHint}
+																		onmouseout={togglePasswordHint}>
+																</template>
+																<template if:true={payout.variesBy4WD}
+																	class="container">
+																	<img src={savedIcon} class="blueColor"
+																		style="cursor:pointer; width: 25px; height: 25px;"
+																		onclick={showModalPopup} data-indx={inc}
+																		data-subid={payout.subProductId}
+																		data-kpiid={payout.productKPIId}
+																		data-subname={incentive.key} data-ind={indexVar}
+																		data-index={i} size='small'
+																		onmouseover={togglePasswordHint}
+																		onmouseout={togglePasswordHint}>
+																</template>
+															</template>
+															<template if:true={payout.bothChecked} class="container">
+																<img src={savedIcon} class="blueColor"
+																	style="cursor:pointer; width: 25px; height: 25px;"
+																	onclick={showModalPopup} data-indx={inc}
+																	data-subid={payout.subProductId}
+																	data-kpiid={payout.productKPIId}
+																	data-subname={incentive.key} data-ind={indexVar}
+																	data-index={i} size='small'
+																	onmouseover={togglePasswordHint}
+																	onmouseout={togglePasswordHint}>
+															</template>
+														</template>
+														<template if:true={incentive.isEdited}>
+															<template if:false={payout.bothChecked}>
+																<template if:true={payout.bothUnchecked}>
+																	<lightning-input value={payout.payoutAmount}
+																		data-id={payout.id} data-indx={inc}
+																		data-subid={payout.subProductId}
+																		data-kpiid={payout.productKPIId}
+																		data-subname={incentive.key} data-ind={indexVar}
+																		data-index={i} variant="label-hidden"
+																		onchange={handleNameChange}
+																		onkeypress={handleKeyPressValidation}
+																		oninput={handleInputValidation}
+																		onpaste={handlePasteValidation}>
+																	</lightning-input>
+																</template>
+																<template if:true={payout.variesByRegion}>
+																	<img src={unSavedIcon} class="blueColor"
+																		style="cursor:pointer;  width: 25px; height: 25px;"
+																		onclick={showModalPopup} data-indx={inc}
+																		data-subid={payout.subProductId}
+																		data-kpiid={payout.productKPIId}
+																		data-subname={incentive.key} data-ind={indexVar}
+																		data-index={i}>
+																</template>
+																<template if:true={payout.variesBy4WD}>
+																	<img src={unSavedIcon} class="blueColor"
+																		style="cursor:pointer;  width: 25px; height: 25px;"
+																		onclick={showModalPopup} data-indx={inc}
+																		data-subid={payout.subProductId}
+																		data-kpiid={payout.productKPIId}
+																		data-subname={incentive.key} data-ind={indexVar}
+																		data-index={i}>
+																</template>
+															</template>
+															<template if:true={payout.bothChecked}>
+																<img src={unSavedIcon} class="blueColor"
+																	style="cursor:pointer;  width: 25px; height: 25px;"
+																	onclick={showModalPopup} data-indx={inc}
+																	data-subid={payout.subProductId}
+																	data-kpiid={payout.productKPIId}
+																	data-subname={incentive.key} data-ind={indexVar}
+																	data-index={i}>
+															</template>
+														</template>
+													</div>
+												</td>
+											</template>
+											<td style="padding-right:10px;">
+											</td>
+										</tr>
+									</template>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<template if:true={showTarget}>
+					<section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+						class="slds-modal slds-fade-in-open">
+						<div class="slds-modal__container" style="width: 90% !important;">
+							<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse">
+								<lightning-icon class="whiteIcon" icon-name='utility:close' alternative-text='close'
+									size='small' title='close' onclick={closeRegion}></lightning-icon>
+							</button>
+							<div class="slds-modal__header">
+								<h1 class="slds-modal__title slds-hyphenate">Incentive Model Wise</h1>
+							</div>
+							<div class="slds-modal__content" style="overflow: auto;">
+								<template if:false={subCategory4WD.bothChecked}>
+									<table if:true={subCategory4WD.variesByRegion}
+										style="border: 1px solid rgb(201, 201, 201);">
+										<thead>
+											<tr class="slds-border_bottom">
+												<th scope="col"
+													class="slds-p-around_x-small slds-p-vertical_medium cellPadding">
+													<div class="slds-truncate" title=""></div>
+												</th>
+												<template for:each={subCategory4WD.regionPayout} for:item="zone">
+													<th key={zone} scope="col"
+														style="white-space: nowrap;background:white;"
+														class="slds-p-around_x-small slds-p-vertical_medium  cellPadding">
+														<div class="slds-truncate" title={zone.region}>{zone.region}
+														</div>
+													</th>
+												</template>
+											</tr>
+										</thead>
+										<tbody>
+											<tr style="line-height: 45px;" class="slds-border_bottom">
+												<td style="font-weight:500;"
+													class="slds-p-around_x-small slds-p-vertical_medium  cellPadding">
+													<div>
+														<lightning-formatted-text value={subCategory4WD.subProductName}>
+														</lightning-formatted-text>
+													</div>
+												</td>
+												<template for:each={subCategory4WD.regionPayout} for:item="payout"
+													for:index="indvar">
+													<td key={payout}
+														class="slds-p-around_x-small slds-p-vertical_medium  cellPadding">
+														<div style="width:100px; height:36px;">
+															<lightning-input value={payout.amount}
+																data-region={payout.region} variant="label-hidden"
+																data-indvar={indvar} onchange={handleAmountChange}
+																onkeypress={handleKeyPressValidation}
+																oninput={handleInputValidation}
+																disabled={zoneModalDisable} data-name="amount"
+																onpaste={handlePasteValidation}>
+															</lightning-input>
+														</div>
+													</td>
+												</template>
+											</tr>
+										</tbody>
+									</table>
+									<table if:true={subCategory4WD.variesBy4WD}
+										style="border: 1px solid rgb(201, 201, 201); width: 30rem; margin: auto; margin-top: 1rem; margin-bottom: 1rem;">
+										<thead>
+											<tr class="slds-border_bottom">
+												<th scope="col"
+													class="slds-p-around_x-small slds-p-vertical_medium cellPadding"
+													style="text-align: center;">
+													<div class="slds-truncate" title=""></div>
+												</th>
+												<th scope="col"
+													class="slds-p-around_x-small slds-p-vertical_medium cellPadding"
+													style="text-align: center;">
+													4WD
+												</th>
+												<th scope="col"
+													class="slds-p-around_x-small slds-p-vertical_medium cellPadding"
+													style="text-align: center;">
+													2WD
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr style="line-height: 45px;" class="slds-border_bottom">
+												<td style="font-weight:500;"
+													class="slds-p-around_x-small slds-p-vertical_medium  cellPadding">
+													<div>
+														<lightning-formatted-text value={subCategory4WD.subProductName}>
+														</lightning-formatted-text>
+													</div>
+												</td>
+												<td class="slds-p-around_x-small slds-p-vertical_medium  cellPadding">
+													<lightning-input onkeypress={handleKeyPressValidation}
+														onchange={handleAmountChange} disabled={zoneModalDisable}
+														variant="label-hidden" data-name="fourWDPayoutAmount"
+														value={subCategory4WD.fourWDPayoutAmount}
+														onpaste={handlePasteValidation} oninput={handleInputValidation}>
+													</lightning-input>
+												</td>
+												<td class="slds-p-around_x-small slds-p-vertical_medium  cellPadding">
+													<lightning-input onkeypress={handleKeyPressValidation}
+														onchange={handleAmountChange} disabled={zoneModalDisable}
+														variant="label-hidden" data-name="twoWDPayoutAmount"
+														value={subCategory4WD.twoWDPayoutAmount}
+														onpaste={handlePasteValidation} oninput={handleInputValidation}>
+													</lightning-input>
+												</td>
+
+											</tr>
+										</tbody>
+									</table>
+								</template>
+								<template if:true={subCategory4WD.bothChecked}>
+									<table class="" style="border: 1px solid rgb(201, 201, 201);">
+										<thead>
+											<tr class="slds-border_bottom">
+												<th scope="col"
+													class="slds-p-around_x-small slds-p-vertical_medium cellPadding">
+													<div>
+														<lightning-formatted-text value={subCategory4WD.subProductName}>
+														</lightning-formatted-text>
+													</div>
+												</th>
+												<template for:each={subCategory4WD.regionPayout} for:item="zone">
+													<th key={zone} scope="col"
+														style="white-space: nowrap;background:white;"
+														class="slds-p-around_x-small slds-p-vertical_medium  cellPadding">
+														<div class="slds-truncate" title={zone.region}>{zone.region}
+														</div>
+													</th>
+												</template>
+											</tr>
+										</thead>
+										<tbody>
+											<tr style="line-height: 45px;" class="slds-border_bottom">
+												<td style="font-weight:500;"
+													class="slds-p-around_x-small slds-p-vertical_medium  cellPadding">
+													4WD
+												</td>
+												<template for:each={subCategory4WD.regionPayout} for:item="payout"
+													for:index="indvar">
+													<td key={payout}
+														class="slds-p-around_x-small slds-p-vertical_medium  cellPadding">
+														<div style="width:100px; height:36px;">
+															<lightning-input value={payout.fourWDPayoutAmount}
+																variant="label-hidden" data-indvar={indvar}
+																onkeypress={handleKeyPressValidation}
+																onchange={handleAmountChange}
+																data-region={payout.region}
+																oninput={handleInputValidation}
+																disabled={zoneModalDisable}
+																data-name="fourWDPayoutAmount"
+																onpaste={handlePasteValidation}>
+															</lightning-input>
+														</div>
+													</td>
+												</template>
+											</tr>
+											<tr style="line-height: 45px;" class="slds-border_bottom">
+												<td style="font-weight:500;"
+													class="slds-p-around_x-small slds-p-vertical_medium  cellPadding">
+													2WD
+												</td>
+												<template for:each={subCategory4WD.regionPayout} for:item="payout"
+													for:index="indvar">
+													<td key={payout}
+														class="slds-p-around_x-small slds-p-vertical_medium  cellPadding">
+														<div style="width:100px; height:36px;">
+															<lightning-input value={payout.twoWDPayoutAmount}
+																variant="label-hidden" data-indvar={indvar}
+																onkeypress={handleKeyPressValidation}
+																onchange={handleAmountChange}
+																data-region={payout.region}
+																oninput={handleInputValidation}
+																disabled={zoneModalDisable}
+																data-name="twoWDPayoutAmount"
+																onpaste={handlePasteValidation}>
+															</lightning-input>
+														</div>
+													</td>
+												</template>
+											</tr>
+										</tbody>
+									</table>
+								</template>
+							</div>
+							<div class="slds-modal__footer">
+								<button class="slds-button slds-button_neutral" aria-label="Cancel and close"
+									onclick={closeRegion}>Cancel</button>
+								<button class="slds-button slds-button_brand" onclick={handleApplyInputs}
+									disabled={zoneModalDisable}>Apply</button>
+							</div>
+						</div>
+					</section>
+					<div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+				</template>
+			</div>
+			<div class="slds-docked-form-footer" if:true={showFooter}
+				style="right: 13px; left:13px; width: -webkit-fill-available; display:flex;box-shadow: 0px 1px 0px 0px #DDDBDA inset;background-color:#ffffff;">
+				<lightning-button class="slds-p-right_small" label="Cancel" variant="brand-outline"
+					icon-name="action:close" onclick={handleIncentiveCancel}></lightning-button>
+				<lightning-button label="Save" variant="brand" class="slds-p-right_xx-large" icon-name="utility:save"
+					onclick={handleSave}></lightning-button>
+			</div>
+		</div>
+	</div>
+	<template if:true={showUnsavedWarning}>
+		<section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+			class="slds-modal slds-fade-in-open slds-modal_small">
+			<div class="slds-modal__container" style="width: 40rem !important;">
+				<header class="slds-modal__header">
+					<button class="slds-button slds-button--icon-inverse slds-modal__close" name="alert"
+						onclick={showUnsavedWarningCloseModal}>
+						<lightning-icon name="alert" icon-name="utility:close" size="small"></lightning-icon>
+						<span class="slds-assistive-text">Close</span>
+					</button>
+					<div class="slds-text-align_center">
+						<h1 class="slds-text-heading_medium" id="prompt-heading-id">
+							Changes Unsaved</h1>
+					</div>
+				</header>
+				<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+					<p>You have unsaved changes. Do you want to save them before
+						leaving?</p>
+				</div>
+				<div class="slds-modal__footer">
+					<button class="slds-button slds-button_brand" onclick={handleSave}>Save &
+						Exit</button>
+					<button class="slds-button slds-button_destructive" onclick={handleUnsaveClose}>Discard
+						Changes</button>
+				</div>
+			</div>
+		</section>
+		<div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+	</template>
+	<template if:true={showKpiDelete}>
+		<section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+			class="slds-modal slds-fade-in-open slds-modal_small">
+			<div class="slds-modal__container" style="width: 40rem !important;">
+				<header class="slds-modal__header">
+					<button class="slds-button slds-button--icon-inverse slds-modal__close" name="alert"
+						onclick={handleCloseIcon}>
+						<lightning-icon name="alert" icon-name="utility:close" size="small"></lightning-icon>
+						<span class="slds-assistive-text">Close</span>
+					</button>
+					<div class="slds-text-align_center">
+						<h1 class="slds-text-heading_medium" id="prompt-heading-id1">
+							Need Confirmation</h1>
+					</div>
+				</header>
+				<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+					<p>Are you sure want to delete the <span style="font-weight:bold;">{kpiLabel}</span> ?</p>
+				</div>
+				<div class="slds-modal__footer">
+					<button class="slds-button slds-button_brand" onclick={handleCancel}>Cancel</button>
+					<button class="slds-button slds-button_destructive" onclick={handleDelete}>Delete</button>
+				</div>
+			</div>
+		</section>
+		<div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+	</template>
+	<template if:true={showWarningToDelete}>
+		<section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+			class="slds-modal slds-fade-in-open slds-modal_small">
+			<div class="slds-modal__container" style="width: 40rem !important;">
+				<header class="slds-modal__header">
+					<button class="slds-button slds-button--icon-inverse slds-modal__close" name="alert"
+						onclick={handleSalesCancel}>
+						<lightning-icon name="alert" icon-name="utility:close" size="small"></lightning-icon>
+						<span class="slds-assistive-text">Close</span>
+					</button>
+					<div class="slds-text-align_center">
+						<h1 class="slds-text-heading_medium" id="prompt-heading-id6">
+							Confirmation</h1>
+					</div>
+				</header>
+				<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-6">
+					<p>Are you sure want to delete the {isIncentiveName} Incentive for
+						<span style="font-weight:bold;"> {SalesKpiLabel}</span> ?
+					</p>
+				</div>
+				<div class="slds-modal__footer">
+					<button class="slds-button slds-button_brand" onclick={handleSalesCancel}>Cancel</button>
+					<button class="slds-button slds-button_destructive" onclick={handleSalesDelete}>Delete</button>
+				</div>
+			</div>
+		</section>
+		<div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+	</template>
+	<template if:true={showSalesmanIncentive}>
+		<c-d-i-saleman-incentive-config-modal is-sales={showSalesmanIncentive} kpi-data={selectedKPITarget}
+			is-industry={isIndustry} kpi-index={saleInd} month={month} year={year} product-name={productName}
+			onclosemodal={handleCloseModal}></c-d-i-saleman-incentive-config-modal>
+	</template>
+</template>

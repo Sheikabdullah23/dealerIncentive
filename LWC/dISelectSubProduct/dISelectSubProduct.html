@@ -1,0 +1,40 @@
+<template>
+    <template if:true={isSelect}>
+        <section
+            role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container ">
+                <header class="slds-modal__header slds-text-heading_medium">
+                    <div class="slds-text-align_center modalheader">Select {currentTab} Sub Products</div>
+                    <div if:true={isCancel} class="slds-modal__close">
+                        <lightning-icon
+                            icon-name="utility:close"
+                            alternative-text="Close"
+                            size="small"
+                            title="Close"
+                            onclick={handleClose}
+                        ></lightning-icon>
+                    </div>
+                </header>
+                <div class="slds-modal__content modalbody slds-p-around_large">
+                    <lightning-dual-listbox
+                        name="SubProducts"
+                        label="Select SubProducts"
+                        source-label="Available"
+                        selected-label="Selected"
+                        field-level-help="Selected Subproducts only shown in the Table"
+                        options={options}
+                        value={values}
+                        onchange={handleSelect}>
+                    </lightning-dual-listbox>
+                </div>
+                <footer class="slds-modal__footer modalfooter">
+                    <lightning-button label="Cancel"  onclick={handleCancel} disabled={isCancel}>
+                    </lightning-button>
+                    <lightning-button  variant="brand" label="OK" onclick={handleProceed} disabled={isOk}></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

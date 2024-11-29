@@ -1,0 +1,238 @@
+.outerDiv{
+	margin: 0px 15px 15px 15px;
+	border: 1px solid rgba(195, 197, 200, 1);
+	border-radius: 8px;
+}
+
+tr{
+	border-bottom: 1px solid #DDDBDA;
+}
+
+.thead{
+	position: sticky;
+	top: 0px;
+	border-bottom: 1px solid rgb(179, 179, 179);
+	z-index: 1;
+	height: 50px;
+	font-size: medium;
+	cursor: pointer;
+	box-shadow: 1px 1px 5px 0px rgb(221,219,218);
+}
+
+.thead-tr{
+}
+
+.thead-th{
+	background-color: white;
+	border-radius: 9px 9px 0px 0px;
+}
+
+
+tbody > tr:hover{
+	transition: all 0.2s ease-in-out;
+	background-color: #f1f6f7;
+}
+
+.tbody-td-div-row-edit{
+	display: none;
+	margin-right: 10px;
+}
+
+tbody>tr:hover>td>.tbody-td-div-row-edit{
+	display: block;
+}
+
+.div-input{
+	padding-top: 7px;
+	padding-bottom: 7px;
+}
+
+.div-lwc-input{
+	width: 90px;
+}
+
+.container{
+	height: 620px;
+	overflow-y: auto;
+	overflow-x: auto;
+}
+
+.container::-webkit-scrollbar {
+	width: 5px;
+	height: 5px;
+	scroll-behavior: smooth;
+}
+
+.container::-webkit-scrollbar-track {
+	background: #f1f1f1;
+}
+
+.container::-webkit-scrollbar-thumb {
+	background: #c1c1c1;
+}
+.frst-clmn{
+	border-right: 1px solid rgba(221, 219, 218, 1);
+	box-shadow: 4px 0px 4px 0px rgba(0, 0, 0, 0.06);
+	width: 224px;
+}
+
+tbody>tr:hover{
+}
+
+.footer{
+	position: sticky;
+	bottom: -1px;
+	border-top: 1px solid rgb(179, 179, 179);
+	z-index: 1;
+	height: 45px;
+	background-color: rgb(250, 250, 250);
+	margin-top: 0px;
+	cursor: pointer;
+	border-radius: 0px 0px 8px 8px;
+}
+
+.footer-div{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 8px;
+	margin-top: 7px;
+	margin-bottom: 7px;
+}
+
+.icon-clr-overRide{
+	--slds-c-icon-color-foreground-default: #0176D3;
+}
+
+.dealer-name{
+	padding-left: 10px;
+	cursor: pointer;
+	font-weight: 400;
+	font-size: 13px;
+	line-height: 20px;
+	color: rgba(8, 7, 7,1);
+	text-wrap: nowrap;
+    overflow: hidden;
+    width: 220px;
+    text-overflow: ellipsis;
+}
+
+.dealer-text{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	cursor: pointer;
+}
+
+.thead-tr-th-div-search-icon{
+	margin-right: 20px;
+}
+
+.highlightSelectedDealerRow{
+	background-color: #d6ebfc;
+}
+
+.thead-tr-th-div-search-input{
+
+}
+
+.dealer-search{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	cursor: pointer;
+}
+.thead-tr-th-div-search-input{
+	width: 80%;
+}
+.thead-tr-th-div-close-icon{
+	margin-right: 20px;
+}
+
+.thead-th-achievementname{
+	width: 220px;
+}
+
+.table{
+}
+
+.thead-th-achievementname-div{
+	text-wrap: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 200px;
+	font-family: Segoe UI;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 17.29px;
+	text-align: left;
+
+}
+
+.thead-th-edit{
+	padding-left: 20px;
+}
+
+.template{
+}
+
+.thead-th-achievementname-div-span{
+	font-size: 12px !important;
+	font-family: Segoe UI;
+	font-weight: 400 !important;
+	line-height: 15.96px;
+	text-align: left;
+	color: rgb(5,139,254);
+
+}
+
+.tbody-td-input-clmn{
+	font-family: Segoe UI;
+	font-size: 12px;
+	font-weight: 400;
+	line-height: 15.96px;
+	text-align: left;
+	color: #000000;
+}
+
+.modalfooter{
+	display: flex;
+    justify-content: end;
+    gap: 8px;
+}
+
+.download-upload-div{
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+}
+
+.downloadUpload{
+	margin-top: auto;
+}
+
+.download-upload-div-filename{
+	margin-top: 12px;
+	text-transform: uppercase;
+}
+
+@media only screen  and (max-width: 1300px) {
+    .container {
+        height: 342px;
+    }
+}
+@media only screen and (min-width: 1301px) and (max-width: 1599px) {
+    .container {
+        height: 450px;
+    }
+}
+@media only screen and (min-width: 1600px) and (max-width: 1800px) {
+    .container {
+        height: 576px;
+    }
+}
+@media only screen and (min-width: 1801px)  {
+    .container {
+        height: 650px;
+    }
+}

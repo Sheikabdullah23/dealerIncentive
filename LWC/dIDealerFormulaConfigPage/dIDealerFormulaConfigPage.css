@@ -1,0 +1,416 @@
+.volumeTarget:last-child {
+  border-right:2px solid #0176D3;
+  border-radius: 5px;
+}
+
+.dealer-select {
+  border-left: 2px solid #0176D3;
+  border-top: 2px solid #0176D3;
+  border-bottom: 2px solid #0176D3;
+  font-weight: 700 !important;
+  line-height: 17.7px !important;
+  background: #E6F1FB;
+}
+
+.volumeTarget {
+  background-color: #E6F1FB;
+  border-top:2px solid #0176D3;
+  border-bottom:2px solid #0176D3;
+  font-size: 13px !important;
+  color: black !important;
+}
+
+.dealerName {
+  width: 237.688px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 20px;
+  text-align: left;
+  color:black;
+  position: sticky;
+  left: 0px;
+  background-color: white;
+  z-index: 1;
+}
+
+.displayFlex{
+  display: flex;
+  justify-content: space-evenly;
+}
+.regionName {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.dealer-amt {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 24.52px;
+  text-align: left;
+  color: black;
+  padding-left: 13px;
+}
+
+.record-hover > tr > td > div >div> .clone {
+    display: none;
+}
+.record-hover > tr:hover > td > div >div> .clone {
+  display: block;
+  cursor: pointer;
+}
+
+.clone {
+  background-color: #0176D3;
+  height: 25px;
+  border: 1px solid #0176D3;
+  border-radius: 0px 4px 4px 0px;
+  color: #ffffff;
+  padding-inline: 7px;
+  padding-block: 0px;
+  font-weight: 600;
+  margin-top:-14px;
+  position: relative;
+  cursor: pointer;
+}
+
+.inner-clone {
+  background-color: #0176D3;
+  height: 25px;
+  border: 1px solid #0176D3;
+  border-radius: 0px 4px 4px 0px;
+  color: #ffffff;
+  padding-inline: 7px;
+  padding-block: 0px;
+  font-weight: 600;
+  margin-top:-12px;
+  display: none;
+}
+
+.dimZero{
+  font-weight: 700 !important;
+  font-size: 12px !important;
+  color: #707070 !important;
+}
+
+.changedValues{
+}
+.record-hover > tr:hover > td > div > div > .edit {
+  display: block;
+}
+
+.record-hover > tr > td > div > div > .edit {
+  display: none;
+}
+
+.msg {
+    text-align: left;
+}
+
+
+.dealerCard {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #C3C5C8;
+    border-radius: 8px;
+}
+
+.iconOverRide{
+  --slds-c-icon-color-foreground-default: #0176D3;
+  cursor: pointer;
+}
+
+.container::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  scroll-behavior: smooth;
+}
+
+.container::-webkit-scrollbar-track {
+  background: #f1f1f1;  
+}
+
+.container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+}
+
+.container{
+  height: 100%;
+}
+
+.record-item:hover .dealer-det {
+  background-color:#E6F1FB;
+  border-left: 2px solid #0176D3;
+}
+
+.record-item:hover .sub {
+  border: 2px solid #0176D3;
+  background-color: #E6F1FB;
+}
+
+.table-div {
+  border-radius: 8px;
+  border:1px solid #C3C5C8;
+}
+
+.fixed_header{
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+.table-body{
+  height: 600px;
+}
+
+tbody > tr{
+  border-bottom: 1px solid #DDDBDA;
+}
+
+tbody>tr:hover{
+  border-top: 3px solid rgb(179, 181, 182,0.5) !important;
+  border-bottom: 3px solid rgb(179, 181, 182,0.5) !important;
+}
+
+.table-body td:hover,.dealer-amt:hover{
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: black !important;
+}
+.table-body::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  scroll-behavior: smooth;
+}
+
+.table-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.table-body::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+}
+
+.table-div{
+}
+
+.tab-border {
+  font-weight: 700 !important;
+  background-color: rgb(2, 118, 211) !important;
+  color: white !important;
+}
+
+.tab-name:hover{
+  box-shadow: inset -1px -3px 0px rgb(2, 118, 211, 40%) !important;
+}
+
+.tab-name{
+  text-align:center;
+  cursor:pointer;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 20px;
+  color:#080707;
+  position: sticky;
+  background-color: white;
+  z-index: 2;
+  left: 0px;
+  padding-bottom: 4px;
+}
+
+
+.header {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 15.96px;
+  text-align: left;
+  color:#706E6B;
+  border-bottom: 1px solid #DDDBDA;
+  position: sticky;
+  background-color: white;
+  z-index: 2;
+  left: 0px;
+}
+
+.checkList {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 20px;
+  text-align: left;
+}
+
+.selectAll {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: left;
+}
+
+.sub {
+  margin-right: auto;
+  font-weight: 700;
+  font-size: 12px;
+  color: black;
+}
+.subtotal{
+  margin-right: auto;
+  font-weight: 700;
+  font-size: 14px;
+  color: #706E6B;
+}
+.subtotalRetail{
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  color: #706E6B !important;
+}
+
+.btn {
+
+}
+
+.btn-icon {
+    position: sticky;
+    right: 0px;
+    background-color: white;
+    width: 120px;
+    cursor: pointer;
+}
+
+.drag-drop {
+  border-top:2px solid #0176D3;
+  border-bottom:2px solid #0176D3;
+  background-color: #E6F1FB;
+}
+
+.right-border .inner-clone {
+  display: block;
+  transform: translateX(56px);
+}
+
+.left-border {
+  border-left: 2px solid #0176D3;
+}
+
+.right-border {
+  border-right: 2px solid #0176D3;
+}
+
+.lastChild-border {
+  border-right: 2px solid #0176D3;
+}
+
+.slds-icon {
+  fill: #0176d3 !important;
+}
+
+.edit-icon {
+  --slds-c-icon-color-foreground-default: #0176D3;
+  cursor: pointer;
+}
+
+.head-div {
+}
+.modalfooter{
+  display: flex;
+  justify-content: end;
+  gap: 10px;
+}
+
+.tfoot-tr{
+  position: sticky;
+  bottom: -1px !important;
+  height:38px;
+  background-color: white;
+  box-shadow: inset -1px -3px 0px 0px rgb(149 ,156, 162 , 30%),inset 0px 3px 0px 0px rgb(149 ,156, 162 , 30%);
+  z-index: 2;
+}
+
+.highlightNegative{
+}
+
+.highlightNull{
+  border: 2px solid orange !important;
+  color: orange !important;
+  border-radius: 4px !important;
+  height: 34px !important;
+  
+}
+
+.formattedHighlightNegative{
+  color: red !important;
+}
+
+.thead-tr-th-div-close-icon{
+	margin-right: 20px;
+}
+
+.thead-tr-th-div-search-input{
+	width: 80%;
+}
+
+.thead-tr-th-div-search-icon{
+	margin-right: 20px;
+}
+
+.dealer-search{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	cursor: pointer;
+
+}
+
+.dealer-text{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	cursor: pointer;
+}
+
+.icon-clr-overRide{
+	--slds-c-icon-color-foreground-default: #0176D3;
+  cursor: pointer;
+}
+
+.highlightSelectedDealerRow{
+  border-top: 2px solid rgb(61, 151, 235) !important;
+  border-bottom: 2px solid rgb(61, 151, 235) !important;
+}
+
+.footer-cancel-save{
+  position: sticky;
+	bottom: -1px;
+	border-top: 1px solid rgb(179, 179, 179);
+	z-index: 1;
+	background-color: white;
+	cursor: pointer;
+	border-radius: 0px 0px 8px 8px;
+}
+
+.disableTab{
+  pointer-events: none;
+  /* opacity: 0.5; */
+}
+
+@media only screen  and (max-width: 1300px) {
+  .table-body {
+      height: 294px;
+  }
+}
+
+@media only screen and (min-width: 1301px) and (max-width: 1599px) {
+  .table-body {
+      height: 400px;
+  }
+}
+@media only screen and (min-width: 1600px) and (max-width: 1800px) {
+  .table-body {
+      height: 525px;
+  }
+}
+@media only screen and (min-width: 1801px)  {
+  .table-body {
+      height: 610px;
+  }
+}

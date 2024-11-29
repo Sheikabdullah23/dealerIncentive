@@ -1,0 +1,58 @@
+<!-- <template>
+    <lightning-card>
+        <lightning-button variant="brand" label="Show Table" onclick={handleClick}
+            class="slds-p-around_small"></lightning-button>
+        <template if:true={showTable}>
+            <lightning-tabset>
+                <lightning-tab for:each={tabNames} for:item="tabName" key={tabNames.key} label={tabName}>
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-table_fixed-layout">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <template for:each={tableHeaderCommon} for:item="headerItem">
+                                    <th scope="col" key={index}>
+                                        <div class="slds-truncate">{headerItem}</div>
+                                    </th>
+                                </template>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={tableDataCommon} for:item="rowData">
+                                <tr key={index} class="slds-hint-parent">
+                                    <template for:each={rowData} for:item="cell">
+                                        <td key={index}>
+                                            <div class="slds-truncate">{cell}</div>
+                                        </td>
+                                    </template>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </lightning-tab>
+            </lightning-tabset>
+        </template>
+    </lightning-card>
+</template> -->
+
+
+<!-- <template>
+    <lightning-input
+        type="number"
+        label="Enter a number"
+        value={inputValue}
+        oninput={handleInput}
+        onkeypress={handleKeyPress}
+        onpaste={handlePaste}
+    ></lightning-input>
+</template> -->
+<template>
+    <lightning-card title="Decimal Input Example">
+        <lightning-input
+            type="text"
+            label="Enter a number"
+            value={inputValue}
+            oninput={handleInput}
+            onkeypress={handleKeyPress}
+            onpaste={handlePaste}
+        ></lightning-input>
+    </lightning-card>
+</template>

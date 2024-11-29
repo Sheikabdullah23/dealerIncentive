@@ -1,0 +1,81 @@
+.container2 {
+  border: 1px solid #C3C5C8;
+  border-radius: 13px;
+  height: 375px;
+}
+
+.THIS .slds-form-element__label {
+  font-weight: 700 !important;
+}
+
+.add-slab .slds-dropdown_left {
+  left: auto !important;
+  right: 0 !important;
+}
+
+.redColor {
+  --sds-c-icon-color-foreground-default: #c42f21;
+  cursor: pointer;
+}
+
+.setWidth {
+  width: 58rem;
+}
+
+.noneWidth {}
+
+.setMargin {
+  top: -1px !important;
+}
+
+.noneleft{}
+
+.setLeft{
+  /* margin-left: 27vh; */
+}
+
+.noneMargin {}
+
+.slds-has-error lightning-input:not([type="checkbox"]),
+.slds-has-error lightning-combobox {
+  border-color: red;
+}
+
+lightning-combobox {
+  --sds-c-input-radius-border: 18px;
+}
+
+.blueColor {
+  --sds-c-icon-color-foreground-default: #0176D3;
+  cursor: pointer;
+}
+
+.redColor {
+  --sds-c-icon-color-foreground-default: red;
+  cursor: pointer;
+}
+
+.iconMargin {
+  margin-top: 1px !important;
+}
+
+.overlap {
+  display: none;
+}
+
+.error-class {
+  text-wrap: nowrap;
+  overflow: hidden;
+  background: #ba0517;
+  color: white;
+  border-radius: 0px 0px 5px 5px;
+  font-weight: 500;
+}
+
+.slab-error {
+  border: 2px solid #ba0517;
+}
+
+.configPage{
+  margin-top: -9vh;
+}

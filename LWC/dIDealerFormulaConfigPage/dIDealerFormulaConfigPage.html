@@ -1,0 +1,594 @@
+<template>
+	<!-- <lightning-spinner if:true={isLoading} variant="brand" size="medium" alternative-text="Loading Retail Target Page" style="background: white;"></lightning-spinner> -->
+	<template if:true={retailLoading}>
+		<lightning-spinner size="medium" style="background: white; z-index: 1000; opacity: 75%;" variant="brand"></lightning-spinner>
+	</template>
+	<template if:true={recalculateLoading}>
+		<lightning-spinner alternative-text="Loading" size="large" variant="brand"></lightning-spinner>
+	</template>
+	<div if:true={showDealerFormulaConfig} class="container slds-p-left_medium slds-p-right_medium"
+		style="font-family: system-ui;">
+		<template if:true={showDealerFormulaConfig}>
+			<template if:true={dataList.length}>
+				<div class="table-div" style="border: 2px solid rgb(105 92 86 / 41%);border-radius: 5px;">
+					<div class="table-body slds-scrollable">
+						<table class="fixed_header">
+
+							<thead
+								style="border-bottom: 2px solid #DDDBDA;box-shadow:1px 1px 5px 0px rgb(221,219,218);position:sticky;top:0px;background-color:white;z-index:2">
+								<tr>
+									<th class={dealerClass} title="dealer" onclick={handleTab}
+										style="width: 220.188px;box-shadow: inset 0px -1px 0px rgb(188 199 204);">
+										<div class="head-div">
+											<span>Dealer</span>
+										</div>
+									</th>
+									<th style="width: 220.188px;left:220px;background-color:white;box-shadow: inset -0.5px -1px 0px rgb(188 199 204);"
+										title="zone" class={zoneClass} onclick={handleTab}>
+										<div class="head-div">
+											<span>Zone</span>
+										</div>
+									</th>
+									<template for:each={subprdlist} for:item="sub">
+										<th key={sub.subProductId} title={sub.subProductName}
+											class="slds-p-left_x-small slds-p-top_xx-small slds-p-bottom_xx-small slds-p-right_x-small"
+											style="text-overflow:ellipsis; white-space:normal; overflow:hidden;width:160px;"
+											rowspan="2">
+											<div class="sub">
+												<span
+												style="font-family: Segoe UI;font-size: 13px;font-weight: 600;line-height: 17.7px;text-align: left;color: #333333;">{sub.subProductName}</span>
+											</div>
+										</th>
+									</template>
+									<th rowspan="2"></th>
+									<th class="btn-icon iconOverRide " style="padding-left: 16px;" rowspan="2">
+										<div class="displayFlex">
+											<div if:false={isZone}>
+												<div if:false={isEdited}>
+													<lightning-icon icon-name="utility:add" alternative-text="Add"
+														size="x-small" title="Add or Remove Sub Products"
+														onclick={addOrRemoveProducts}></lightning-icon>
+												</div>
+
+											</div>
+											<div style="justify-content: center;display: flex;margin-top: 3px;margin-bottom: 0px;"
+												class="edit-icon slds-m-bottom_x-small slds-p-right_small iconOverRide">
+												<template if:false={isZone}>
+													<div if:false={isEdited}>
+														<lightning-icon icon-name="utility:edit" size="xx-small"
+															alternative-text="Edit" title="Edit" onclick={enableEdit}
+															name="overalledit">
+														</lightning-icon>
+													</div>
+													<div if:true={isEdited}>
+														<lightning-icon icon-name="utility:close" size="xx-small"
+															alternative-text="close" title="close" variant="error"
+															onclick={enableEdit} name="overalledit">
+														</lightning-icon>
+													</div>
+												</template>
+											</div>
+										</div>
+									</th>
+								</tr>
+								<tr>
+									<template if:false={isZone}>
+										<th class="header" style="width: 220.188px;">
+											<div if:true={isDealerSearch} class="dealer-text">
+												<div class="head-div slds-p-left_x-small slds-p-top_x-small slds-p-bottom_x-small slds-p-right_x-small"
+													style="text-align: center; margin-left:20px;">Dealer Name</div>
+												<div class="icon-clr-overRide thead-tr-th-div-search-icon">
+													<lightning-icon icon-name="utility:search"
+														alternative-text="Search Dealers" size="x-small"
+														title="Search Dealers" onclick={handleSearchClick}>
+													</lightning-icon>
+												</div>
+											</div>
+											<div if:false={isDealerSearch} class="dealer-search">
+												<div class="thead-tr-th-div-search-input">
+													<lightning-input type="search" name="enter-search"
+														onchange={handleSearchDealer} variant="label-hidden"
+														placeholder="Search Dealer Name" title="Search Dealer Name">
+													</lightning-input>
+												</div>
+												<div class="thead-tr-th-div-close-icon">
+													<lightning-icon icon-name="utility:close"
+														alternative-text="Close Search" size="x-small"
+														title="Close Search" onclick={handleSearchClick}
+														variant="error"></lightning-icon>
+												</div>
+											</div>
+										</th>
+										<th class="header"
+											style="white-space:pre-wrap;width:220.188px;box-shadow: inset -1px 0px 0px 0px rgb(149 ,156, 162 , 30%);left:220px;background-color: white;">
+											<div style="display:flex;justify-content:space-between;">
+												<div style="margin-left: auto;margin-right: auto;text-align:right;">
+													Total Volume Targets
+												</div>
+												<div if:true={isTHProduct}
+													style="text-align:right;padding-right:6px;padding-left:8px;">
+													Demo Targets
+												</div>
+											</div>
+										</th>
+									</template>
+									<template if:true={isZone}>
+										<th class="header"
+											style="width: 220.188px;background-color:white;position:sticky;left:0px;">
+											<div class="slds-p-left_x-small slds-p-top_x-small slds-p-bottom_x-small slds-p-right_x-small"
+												style="width: 150px;text-align: center;">
+												Zone Name
+											</div>
+										</th>
+										<th style=" white-space:pre-wrap;width:221px;box-shadow: inset -1px 0px 0px 0px rgb(149 ,156, 162 , 30%);background-color:white; position:sticky; left:220px;"
+											class="header">
+											<div style="display:flex;justify-content:right;">
+												<div style="margin-right: 10px;">
+													Total Volume Targets
+												</div>
+												<div if:true={isTHProduct} style="margin-right: auto;">
+													Demo Targets
+												</div>
+											</div>
+										</th>
+									</template>
+								</tr>
+							</thead>
+							<tbody class="record-hover second-tbody">
+								<template for:each={dataList} for:item="data" for:index="regIndex">
+									<tr key={data.key} if:true={isZone}>
+										<td class="slds-p-left_medium slds-p-top_x-small slds-p-bottom_x-small slds-p-right_x-small"
+											style="width:150px; cursor:pointer;font-weight: 500;left:0px;background-color:white;position:sticky;"
+											data-region={regIndex} data-regindex={regIndex}>
+											<div class="head-div" data-regindex={regIndex}>
+												<span class="zoneName" data-regindex={regIndex}>{data.key}</span>
+											</div>
+										</td>
+										<template for:each={data.productTargetsAndAchievements} for:item="product"
+											for:index="prodIndex">
+											<template if:true={product.isVisible}>
+												<td key={product.productId}
+													style="width:290.422px;box-shadow: inset -1px 0px 0px 0px rgb(149 ,156, 162 , 30%);left:220px;background-color:white;position:sticky;"
+													class="slds-p-left_x-small slds-p-top_x-small slds-p-bottom_x-small slds-p-right_small"
+													data-region={regIndex}>
+													<div style="display: flex;justify-content:end;" class="head-div">
+														<div style="margin: auto;">
+															<span style="font-size:13px; font-weight:700; line-height:20px;">{data.value.length}</span>
+															<span style="padding-left: 5px;cursor:pointer;">
+															<lightning-icon
+																data-regindex={regIndex} onclick={showDealersByZone}
+																icon-name="utility:user" size="x-small"
+																alternative-text="Dealer"
+																title="Dealer">
+															</lightning-icon>
+														</span>
+														</div>
+														<div class="slds-float_right dealer-amt" style="margin: auto;">
+															<span>{product.totalRetailTarget}</span>
+														</div>
+														<div if:true={isTHProduct}
+															style="width: 85px;text-align:center;" class="dealer-amt">
+															<template if:false={isEdited}>
+																<template if:false={data.isEdited}>
+																	<lightning-formatted-number
+																		value={product.demoTarget}>
+																	</lightning-formatted-number>
+																</template>
+															</template>
+														</div>
+													</div>
+												</td>
+												<template for:each={product.subTargetAndAchievement} for:item="subItem"
+													for:index="subIndex">
+													<td key={subItem.subProductId}
+														class="dealer-amt slds-p-left_x-small slds-p-top_x-small slds-p-bottom_x-small slds-p-right_x-small"
+														data-region={regIndex} data-subindex={subIndex}>
+														<div class="sub">
+															<template if:false={isEdited}>
+																<template if:false={data.isEdited}>
+																	<lightning-formatted-number
+																		value={subItem.subCategoryRetailTarget}
+																		data-name={subItem.subProductName}>
+																	</lightning-formatted-number>
+																</template>
+															</template>
+														</div>
+													</td>
+												</template>
+											</template>
+										</template>
+										<td></td>
+										<td class="btn-icon"></td>
+									</tr>
+									<template for:each={data.value} for:item="record" for:index="recordIndex"
+										if:false={isZone}>
+										<tr key={data.dealerId} class="record-hover second-tbody-tr"
+											data-dealername={record.dealerName} data-searchname="">
+											<td class="dealerName slds-p-left_medium slds-p-top_x-small slds-p-bottom_x-small slds-p-right_x-small"
+												title={record.dealerName} data-recordid={recordIndex}
+												data-regid={regIndex}>
+												<div style="overflow: hidden;text-overflow:ellipsis;text-wrap:nowrap;">
+													{record.dealerName}
+												</div>
+											</td>
+											<template for:each={record.productTargetsAndAchievements}
+												for:item="productVolumeTarget" for:index="prodIndex">
+												<template if:true={productVolumeTarget.isVisible}>
+													<td key={productVolumeTarget.productId}
+														class="dealer-amt slds-p-left_medium slds-p-top_x-small slds-p-bottom_x-small slds-p-right_x-small"
+														data-recordid={recordIndex} data-regid={regIndex}
+														style="width:203px;box-shadow: inset -1px 0px 0px 0px rgb(149 ,156, 162 , 30%);background-color:white;left: 220px; position:sticky;z-index:1;">
+														<div style="display: flex;justify-content:space-around;"
+															class="head-div">
+															<div style="width: 40%;text-align: center">
+																{productVolumeTarget.totalRetailTarget}</div>
+															<div if:true={isTHProduct}
+																style="width: 60%;text-align: center;padding-left:25px;">
+																<template if:false={isEdited}>
+																	<template if:false={record.isEdited}>
+																		<lightning-formatted-number
+																			value={productVolumeTarget.demoTarget}
+																			style="text-align: center;">
+																		</lightning-formatted-number>
+																	</template>
+																</template>
+																<template if:false={isZone}>
+																	<template if:true={isEdited}>
+																		<lightning-input record-field="volume"
+																			data-regindex={regIndex}
+																			data-recordindex={recordIndex}
+																			data-prodindex={prodIndex}
+																			value={productVolumeTarget.demoTarget}
+																			name="demoTarget" variant="label-hidden"
+																			onchange={handleInputChange}
+																			onclick={handleKeyDown}
+																			style="text-align: center;width: 100%;"
+																			oninput={handleInput}
+																			onkeypress={handleKeyPress}
+																			onpaste={handlePaste}>
+																		</lightning-input>
+																	</template>
+																	<template if:true={record.isEdited}>
+																		<lightning-input record-field="volume"
+																			data-regindex={regIndex}
+																			data-recordindex={recordIndex}
+																			data-prodindex={prodIndex}
+																			value={productVolumeTarget.demoTarget}
+																			name="demoTarget" variant="label-hidden"
+																			onchange={handleInputChange}
+																			oninput={handleInput}
+																			onkeypress={handleKeyPress}
+																			onpaste={handlePaste}
+																			style="text-align: center;width: 100%;">
+																		</lightning-input>
+																	</template>
+																</template>
+															</div>
+														</div>
+													</td>
+													<template for:each={productVolumeTarget.subTargetAndAchievement}
+														for:item="subTarget" for:index="subIndex">
+														<td key={subTarget.subProductId}
+															class="dealer-amt slds-p-left_x-small slds-p-top_x-small slds-p-bottom_x-small slds-p-right_x-small"
+															data-row={recordIndex} data-recordid={recordIndex}
+															data-regid={regIndex} data-id={subIndex}>
+															<div style="width: 100px;">
+																<template if:false={isEdited}>
+																	<template if:false={record.isEdited}>
+																		<lightning-formatted-number
+																			value={subTarget.subCategoryRetailTarget}
+																			data-name={subTarget.subProductName}>
+																		</lightning-formatted-number>
+																	</template>
+																</template>
+																<template if:true={isEdited}>
+																	<lightning-input record-field="volume"
+																		data-regindex={regIndex}
+																		data-recordindex={recordIndex}
+																		data-prodindex={prodIndex}
+																		data-subindex={subIndex}
+																		value={subTarget.subCategoryRetailTarget}
+																		data-name={subTarget.subProductName}
+																		name={subTarget.subProductId}
+																		variant="label-hidden"
+																		onchange={handleInputChange}
+																		oninput={handleInput}
+																		onkeypress={handleKeyPress}
+																		onpaste={handlePaste}></lightning-input>
+																</template>
+																<template if:true={record.isEdited}>
+																	<lightning-input record-field="volume"
+																		data-regindex={regIndex}
+																		data-recordindex={recordIndex}
+																		data-prodindex={prodIndex}
+																		data-subindex={subIndex}
+																		value={subTarget.subCategoryRetailTarget}
+																		data-name={subTarget.subProductName}
+																		name={subTarget.subProductId}
+																		variant="label-hidden"
+																		onchange={handleInputChange}
+																		oninput={handleInput}
+																		onkeypress={handleKeyPress}
+																		onpaste={handlePaste}></lightning-input>
+																</template>
+															</div>
+														</td>
+													</template>
+													<td key={productVolumeTarget.productId}></td>
+													<td key={productVolumeTarget.productId} class="btn-icon">
+														<div class="displayFlex">
+															<div>
+																<button class="clone" name="dealerRowClone" data-recordkey={recordIndex}
+															data-zonekey={regIndex} type="button" data-regindex={regIndex}
+															data-recordindex={recordIndex} data-prodindex={prodIndex}
+															onclick={cloneFormula} style="margin-top: auto;margin-left: 2px;border-radius: 15px">Clone</button>
+															</div>
+															<div if:false={isEdited}>
+																<div class="edit iconOverRide"
+																	if:false={record.isEdited}>
+																	<lightning-icon icon-name="utility:edit"
+																		size="xx-small" data-regindex={regIndex}
+																		data-recordindex={recordIndex}
+																		data-prodindex={prodIndex}
+																		alternative-text=" Dealer wise Edit"
+																		title="Dealer wise Edit" onclick={enableEdit}
+																		name="dealerrowedit"></lightning-icon>
+																</div>
+																<div class="edit iconOverRide"
+																	if:true={record.isEdited}>
+																	<lightning-icon icon-name="utility:close"
+																		size="xx-small" data-regindex={regIndex}
+																		data-recordindex={recordIndex}
+																		data-prodindex={prodIndex}
+																		alternative-text="Close" title="Close"
+																		onclick={enableEdit} name="dealerrowedit"
+																		variant="error"></lightning-icon>
+																</div>
+															</div>
+														</div>
+													</td>
+												</template>
+											</template>
+										</tr>
+									</template>
+								</template>
+							</tbody>
+							<tfoot class="tfoot">
+								<tr class="tfoot-tr">
+									<template if:true={isZone}>
+										<td class="slds-p-left_medium slds-p-top_x-small slds-p-bottom_x-small slds-p-right_x-small"
+											style="width:150px; cursor:pointer;background-color:white;position:sticky;left:0px;box-shadow:inset 0px -3px 0px 0px rgb(149 ,156, 162 , 30%),inset 0px 3px 0px 0px rgb(149 ,156, 162 , 30%);">
+											<div class="head-div">
+												<span style="color:black;font-weight:600;font-size: 14px;">Grand Total :</span>
+											</div>
+										</td>
+										<td style=" width:290.422px;box-shadow: inset -1px -3px 0px 0px rgb(149 ,156, 162 , 30%),inset 0px 3px 0px 0px rgb(149 ,156, 162 , 30%);background-color:white;position:sticky;left:220px;"
+											class="slds-p-left_x-small slds-p-top_x-small slds-p-bottom_x-small slds-p-right_small">
+											<div style="display: flex;justify-content:end;" class="head-div">
+												<div style="margin: auto;">
+													<span style="font-size:13px; font-weight:700; line-height:20px;"></span>
+													<span style="padding-left: 5px;cursor:pointer;">
+												</span>
+												</div>
+												<div class="slds-float_right dealer-amt subtotalRetail"
+													style="margin: auto;">
+													<span if:true={selectedproduct}>{selectedproduct.totalRetailTarget}</span>
+													<span if:false={selectedproduct}>0</span>
+												</div>
+												<div if:true={isTHProduct} style="width: 85px;text-align:center;"
+													class="dealer-amt">
+													<lightning-formatted-number value={selectedproduct.demoTarget}>
+													</lightning-formatted-number>
+												</div>
+											</div>
+										</td>
+									</template>
+									<template if:false={isZone}>
+										<td class="dealerName slds-p-left_medium slds-p-top_x-small slds-p-bottom_x-small slds-p-right_x-small"
+											style="color:black;font-weight:600;font-size: 14px;background-color:white;position:sticky;left:0px;box-shadow:inset 0px -3px 0px 0px rgb(149 ,156, 162 , 30%),inset 0px 3px 0px 0px rgb(149 ,156, 162 , 30%);">
+											Grand Total :
+										</td>
+										<td class="dealer-amt slds-p-left_medium slds-p-top_x-small slds-p-bottom_x-small slds-p-right_x-small"
+											style="width:203px;box-shadow: inset -1px -3px 0px 0px rgb(149 ,156, 162 , 30%),inset 0px 3px 0px 0px rgb(149 ,156, 162 , 30%);background-color:white;position:sticky;left:220px;">
+											<div style="display: flex;justify-content:space-around;" class="head-div">
+												<div if:true={selectedproduct} style="width: 40%;text-align: center"
+													class="subtotalRetail">
+													{selectedproduct.totalRetailTarget}
+												</div>
+												<div if:false={selectedproduct} style="width: 40%;text-align: center"
+													class="subtotalRetail">
+													0
+												</div>
+												<div if:true={isTHProduct}
+													style="width: 60%;text-align: center;padding-left:25px;">
+													<lightning-formatted-number value={selectedproduct.demoTarget}
+														style="text-align: center;">
+													</lightning-formatted-number>
+												</div>
+											</div>
+										</td>
+									</template>
+									<template if:true={selectedproduct}
+										for:each={selectedproduct.subTargetAndAchievement} for:item='item'>
+										<td class="dealer-amt slds-p-left_x-small slds-p-top_x-small slds-p-bottom_x-small slds-p-right_x-small"
+											key={item.subProductId}>
+											<div class="subtotal">{item.subCategoryRetailTarget}</div>
+										</td>
+									</template>
+									<td></td>
+									<td class="btn-icon"
+										style="box-shadow: inset -1px -3px 0px 0px rgb(149 ,156, 162 , 30%),inset 0px 3px 0px 0px rgb(149 ,156, 162 , 30%);">
+									</td>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+
+					<div if:true={showfooter} class="slds-docked-form-footer footer-cancel-save">
+						<lightning-button class="slds-p-right_small" label="Cancel" variant="neutral"
+							onclick={handleCancel} icon-name="utility:close">
+						</lightning-button>
+						<lightning-button label="Save" variant="brand" onclick={handleSave} icon-name="utility:save"
+							disabled={disableSave}>
+						</lightning-button>
+					</div>
+				</div>
+			</template>
+			<!-- <p>Retail Target Page</p> -->
+		</template>
+	</div>
+	<template if:true={askConfirmation}>
+		<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+			aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+			<div class="slds-modal__container" style="width: 35rem;">
+				<header class="slds-modal__header slds-text-heading_medium">
+					<div class="slds-text-align_center modalheader">Changes Unsaved</div>
+					<div class="slds-modal__close">
+						<lightning-icon icon-name="utility:close" alternative-text="Close" size="small" title="Close"
+							onclick={closeConfirmation}></lightning-icon>
+					</div>
+				</header>
+				<div class="slds-modal__content modalbody slds-p-around_large">
+					<p>You have Unsaved changes. Do you want to save them before continuing?</p>
+				</div>
+				<footer class="slds-modal__footer modalfooter">
+					<lightning-button variant="destructive" label="Discard Changes" onclick={handleClose}
+						title="Discard Changes"></lightning-button>
+					<lightning-button variant="brand" label="Save & Continue" onclick={handleSave}
+						title="Save & Continue"></lightning-button>
+				</footer>
+			</div>
+		</section>
+		<div class="slds-backdrop slds-backdrop_open"></div>
+	</template>
+
+	<template if:true={isClone}>
+		<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+			aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+			<div class="slds-modal__container">
+				<header class="slds-modal__header" style="border-bottom: none !important;">
+					<button class="slds-button slds-button--icon-inverse slds-modal__close" name="clone"
+						onclick={closeModal}>
+						<lightning-icon name="clone" icon-name="utility:close" size="small"
+							variant="bare"></lightning-icon>
+						<span class="slds-assistive-text">Close</span>
+					</button>
+					<div class="slds-text-align_center"
+						style="font-family: Segoe UI; font-size: 20px; font-weight: 400; line-height: 30px; text-align: center;">
+						<span>Clone Incentive Value</span>
+					</div>
+					<div class="msg slds-p-top_small">
+						<span
+							style="font-family: Segoe UI; font-size: 12px; font-weight: 400; line-height: 20px; text-align: left;">Cloned
+							value from </span><span
+							style="font-family: Segoe UI; font-size: 12px; font-weight: 700; line-height: 20px; text-align: left;">{cloneMsg}</span>
+					</div>
+					<div class="slds-p-around_small slds-text-heading_medium">Dealer List</div>
+					<div class="">
+						<lightning-input type="search" name="dealerName" placeholder="Search Dealer"
+							variant="label-hidden" onchange={handleSearch} title="Seach Dealer"></lightning-input>
+					</div>
+				</header>
+				<div class="slds-modal__content slds-p-around_medium">
+					<div class="">
+						<lightning-input type="checkbox" name="All Dealer" label="Select All" onchange={handleChange}
+							class="selectAll"></lightning-input>
+					</div>
+					<div class="slds-m-top_small">
+						<lightning-checkbox-group name="dealer" options={dealerOptions} value={dealerId}
+							onchange={handleChange} class="checkList"></lightning-checkbox-group>
+					</div>
+				</div>
+				<footer class="slds-modal__footer slds-text-align_center">
+					<button class="slds-button slds-button_neutral" name="clone" onclick={closeModal}
+						title="Cancel">Cancel</button>
+					<button class="slds-button slds-button_brand" onclick={applyToDealers} disabled={disableApplyBtn}
+						title="Apply">Apply</button>
+				</footer>
+			</div>
+		</section>
+		<div class="slds-backdrop slds-backdrop_open"></div>
+	</template>
+	<template if:true={showImport}>
+		<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+			aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+			<div class="slds-modal__container">
+				<header class="slds-modal__header" style="width: 80%;">
+					<button class="slds-button  slds-modal__close" name="import"
+						onclick={closeModal}>
+						<lightning-icon name="import" icon-name="utility:close" size="small"
+							></lightning-icon>
+						<span class="slds-assistive-text">Close</span>
+					</button>
+					<div class="slds-text-align_center slds-text-title_caps" style="font-size: larger;">
+						<b>Upload Retail Template</b>
+					</div>
+				</header>
+				<div class="slds-modal__content slds-p-around_medium "
+					style="display: flex; gap:15px;width: 80%;flex-direction:column;">
+					<div class="slds-align_absolute-center">
+						<lightning-input type="file" accept={acceptedFormats} label="Attachment"
+							onchange={openfileUpload}></lightning-input>
+					</div>
+					<div class="slds-align_absolute-center">
+						<p style="font-size: larger;" if:true={fileData}>{fileData.filename}</p>
+					</div>
+				</div>
+				<footer class="slds-modal__footer slds-grid slds-grid_align-spread" style="width: 80%;">
+					<div>
+						<lightning-helptext
+							content="Note: Download New Template from here & Do not Alter the Rows and Columns in this Standard Excel Template While Upload. ">
+						</lightning-helptext>
+						<lightning-button variant="base" label="Download Template" title="Download Template"
+							onclick={exportToXLSX} class="slds-m-left_x-small"></lightning-button>
+					</div>
+					<div>
+						<button class="slds-button slds-button_neutral" name="import" onclick={closeModal}
+						title="Cancel">Cancel</button>
+						<button class="slds-button slds-button_brand" onclick={readFileHandler} title="Import"
+						disabled={disableImport}>Upload</button>
+					</div>
+				</footer>
+			</div>
+		</section>
+		<div class="slds-backdrop slds-backdrop_open"></div>
+	</template>
+	<template if:true={showAlert}>
+		<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+			aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+			<div class="slds-modal__container">
+				<header class="slds-modal__header">
+					<button class="slds-button slds-button--icon-inverse slds-modal__close" name="alert"
+						onclick={closeModal}>
+						<lightning-icon name="alert" icon-name="utility:close" size="small"
+							variant="bare"></lightning-icon>
+						<span class="slds-assistive-text">Close</span>
+					</button>
+					<div class="slds-text-align_center"><b>Confirmation</b></div>
+				</header>
+				<div class="slds-modal__content slds-p-around_medium">
+					<span>If you set zone wise volume target, Under the zone existing dealers volume target is
+						erased,</span>
+				</div>
+				<footer class="slds-modal__footer slds-text-align_center">
+					<button class="slds-button slds-button_brand" name="alert" onclick={closeModal}
+						title="Cancel">Cancel</button>
+					<button class="slds-button slds-button_neutral" onclick={setZoneLevelTarget}
+						title="Proceed">Proceed</button>
+				</footer>
+			</div>
+		</section>
+		<div class="slds-backdrop slds-backdrop_open"></div>
+	</template>
+	<template if:true={showDealerModal}>
+		<c-d-i-dealer-target-modal sub-category-list={subList} dealer-list={dealerList} oncancel={closeDealerModal}>
+		</c-d-i-dealer-target-modal>
+	</template>
+	<template if:true={showSelectmodalpage}>
+		<c-d-i-select-sub-product current-tab={productCategory} product-category-list={productCategoryList}
+			selected-products={selectedsubproducts} onselectedsubproducts={handleSelectedSubProducts}
+			is-contains={isContain} onclosesubproductsmodal={handleCloseSubProductsModal}
+			onclosemodal={handleCloseModal}>
+		</c-d-i-select-sub-product>
+	</template>
+</template>

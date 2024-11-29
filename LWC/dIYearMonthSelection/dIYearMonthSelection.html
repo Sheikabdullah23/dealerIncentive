@@ -1,0 +1,262 @@
+<template>
+	<lightning-spinner if:true={isLoading} variant="brand" size="medium" style="background: white;opacity: 75%;">
+	</lightning-spinner>
+	<lightning-spinner if:true={isStartLoading} variant="brand" size="medium" style="background: white;">
+	</lightning-spinner>
+
+	<div class="slds-card" onclick={isVisibleYearMonth} style="height:100%;" >
+		<div class="slds-grid slds-gutters slds-m-horizontal_xxx-small slds-p-bottom_small disableYearMonth"
+			style="align-items:end;" onclick={isFooterVisible}>
+			<div class="slds-col">
+				<div class="slds-grid slds-gutters" style="align-items:end;">
+					<div class="slds-p-left_x-small">
+						<p style="font-weight:bold;font-size:25px;">CONFIGURE</p>
+					</div>
+					<div class="slds-p-left_large">
+						<div style="display: flex;">
+							<div>
+								<legend class="slds-form-element__legend slds-form-element__label">Year
+								</legend>
+								<lightning-combobox name="year" value={yearVal} options={yearOpt}
+									onchange={handleChange} data-name="year" class="slds-size_xx-small disableTab"
+									placeholder="Select a year">
+								</lightning-combobox>
+							</div>
+							<div class="slds-p-left_large">
+								<legend class="slds-form-element__legend slds-form-element__label">Month
+								</legend>
+								<lightning-combobox name="month" value={monthVal} options={yearMonthOptions}
+									onchange={handleChange} data-name="month" class="slds-size_xx-small disableTab"
+									placeholder="Select a month" disabled={monthDisable}>
+								</lightning-combobox>
+							</div>
+						</div>
+					</div>
+					<div class="slds-p-left_large">
+						<div class="layout disableTab">
+							<input name="nav" type="radio" class="nav home-radio radio-none" id="product"
+								value="product" onchange={handleIncentive} checked  />
+							<div class="page home-page"></div>
+							<label class="nav" for="product"><span>KPI Target</span></label>
+
+							<input name="nav" type="radio" class="about-radio radio-none" id="dealer" value="dealer"
+								onchange={handleIncentive}  />
+							<div class="page about-page"></div>
+							<label class="nav" for="dealer"><span>Retail Target</span></label>
+
+							<input name="nav" type="radio" class="contact-radio radio-none" id="addInc"
+								value="Add Incentive" onchange={handleIncentive}  />
+							<div class="page contact-page"></div>
+							<label class="nav" for="addInc"><span>Additional Incentive</span></label>
+
+							<input name="nav" type="radio" class="radio-none " id="actAch"
+								value="Actual Achievement" onchange={handleIncentive}/>
+							<div class="page home-page"></div>
+							<label class="nav" for="actAch"><span>Actual Achievement</span></label>
+
+							<input name="nav" type="radio" class="radio-none " id="stoCon"
+							    value="Stock Condition" onchange={handleIncentive} />
+							<div class="page home-page"></div>
+							<label class="nav" for="stoCon"><span>Stock Condition</span></label>
+						</div>
+					</div>
+				</div>
+				<div style="height:51vh;width:96vw;margin-top:40px;" class="slds-align_absolute-center"
+					if:true={isLoad}>
+					<p style="font-weight: 600;font-size: 20px;" >{initialMessage}</p>
+				</div>
+			</div>
+			<div class="slds-col">
+				<template if:true={showDealerFormulaConfig}>
+					<div class="slds-clearfix">
+						<div class="slds-float_right">
+							<lightning-button variant="brand" label="Upload" class="import-button"
+								icon-name="action:upload" onclick={handleImport}>
+							</lightning-button>
+							<template if:true={showInfoToolTip}>
+
+							</template>
+						</div>
+					</div>
+				</template>
+				<template if:true={showProductFormulaConfig}>
+					<div class="slds-clearfix">
+						<div class="slds-float_right">
+							<lightning-button variant="brand-outline" label="Clone" onclick={handleClone}
+								class="import-button" title="Clone formula from any month"
+								icon-name="action:clone">
+							</lightning-button>
+						</div>
+					</div>
+				</template>
+				<template if:true={showActualAchievement}>
+					<div class="slds-clearfix">
+						<div class="slds-float_right">
+							<lightning-button variant="brand" label="Upload" onclick={handleDownloadUpload}
+								class="import-button" icon-name="action:upload" title="Download And Upload Target">
+							</lightning-button>
+						</div>
+					</div>
+				</template>
+				<template if:true={showStockCondition}>
+					<div class="slds-clearfix">
+						<div class="slds-float_right">
+							<lightning-button variant="brand" label="Upload" onclick={handleStockDownloadUpload}
+								class="import-button" icon-name="action:upload" title="Download And Upload Target">
+							</lightning-button>
+						</div>
+					</div>
+				</template>
+			</div>
+		</div>
+		<template if:true={showProductTabset}>
+			<div if:true={showborder} class="slds-grid slds-border_bottom disableTab">
+				<div class="slds-media">
+					<div if:true={hideAddTab} class="slds-tabs_default" style="background: #FFFFFF;">
+						<ul class="slds-tabs_default__nav" role="tablist"
+							style="border-block-color: #D9D9D9; z-index: 11111;">
+							<template for:each={productList} for:item="product" for:index="i">
+								<li key={product.label} class={product.active} data-index={i} role="presentation"
+									data-name={product.label} style="cursor: pointer;" disabled>
+									<a class="slds-size_1-of-1 slds-tabs_default__link" role="tab" data-index={i}
+										value="onetwo" aria-selected="false" aria-controls="tab-default-2"
+										data-name={product.label} id="tab-default-2__item"
+										onclick={handleRowIncentive}>{product.key}
+									</a>
+									<button style="top: 11px;right: 5px; cursor: pointer; z-index:11" class="slds-size_1-of-4 slds-button slds-button_icon slds-button_icon-container slds-button_icon-x-small" tabindex="0" title="close" onclick={removeTab} data-name={product.label}>
+									<lightning-icon icon-name="utility:delete" size="x-small" data-name={product.label}></lightning-icon>
+								</button>
+								</li>
+							</template>
+							<div if:true={showProductAdd}
+								class="slds-p-left_large slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open slds-media slds-p-top_x-small">
+								<div class="slds-grid" data-key="product"
+									style="z-index: 1;position: relative; cursor:pointer;"
+									onmouseover={handleKpiMouseOver} onmouseleave={handleKpiLeave}>
+									<div data-key="product" class="slds-size_1-of-4 slds-p-top_xxx-small">
+										<lightning-icon class="user-icon" icon-name='utility:add' alternative-text='add'
+											size='x-small' title='add' data-key="product" onclick={handleProduct}
+											style="display: contents;">
+										</lightning-icon>
+									</div>
+									<div class="slds-size_1-of-2" data-key="product">
+										<p data-key="product" style="font-weight: 700; color:#0176D3; font-size: 16px"
+											onclick={handleProduct}> Product
+										</p>
+									</div>
+								</div>
+								<div if:true={showproducts} data-key="product" class="slds-dropdown slds-dropdown_left"
+									style="left: 18px;" onmouseover={handleKpiMouseOver} onmouseleave={handleKpiLeave}>
+									<ul class="slds-dropdown__list" role="menu" aria-label="Show More"
+										data-key="product">
+										<template for:each={addProductList} for:item="product">
+											<li key={product.label} data-key="product" class="slds-dropdown__item"
+												role="presentation" data-name={product.label} data-order={product.order}
+												onclick={changeProduct}>
+												<a href="#" role="menuitem" tabindex="0" data-order={product.order}
+													data-name={product.label} data-key="product">
+													<span class="slds-truncate" title="Menu Item One" data-order={product.order} data-name={product.label} data-key="product">{product.label}</span>
+												</a>
+											</li>
+										</template>
+									</ul>
+								</div>
+							</div>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="slds-card productTabSet disableProductTabset" if:true={hideTab} onclick={isFooterVisible}>
+				<div class="slds-tabs_default" style="border-bottom: 1px solid rgb(116, 116, 116);">
+					<ul class="slds-tabs_default__nav" role="tablist">
+						<template for:each={productList} for:item="product">
+							<li key={product.key} data-name={product.label} data-count={product.value}
+								label={product.key} onclick={handleRowIncentive} data-key={product.key}
+								class={product.active} title={product.label} role="presentation">
+								<a class="slds-tabs_default__link" role="tab">
+									{product.label}
+									<span if:true={showDealerFormulaConfig} class="custom-badge slds-badge slds-m-left_xx-small">{product.value}</span>
+								</a>
+							</li>
+						</template>
+					</ul>
+				</div>
+			</div>
+			<div class="slds-card" style="overflow:hidden;">
+				<template if:true={showProductFormulaConfig}>
+					<c-d-i-product-formula-config-page prod-and-sub-category={prodAndSubCategory}
+						product-name={currentTab} load-product={isLoad} month={monthVal} year={yearVal}
+						ondisableparent={handledisableParent}>
+					</c-d-i-product-formula-config-page>
+				</template>
+				<template if:true={showDealerFormulaConfig}>
+					<c-d-i-dealer-formula-config-page month={monthVal} year={yearVal} product-category={currentTab}
+						onhandlecount={handlecount} product-category-list={prodAndSubCategory}
+						ondisableparent={handledisableParent} onsetcurrentproducttab={handleSetCurrentProductTab}
+						onresetingparentdata={handleResetingParentData} onretailloading={handleRetailLoading} retail-or-actual={retailOrActual}>
+					</c-d-i-dealer-formula-config-page>
+				</template>
+				<template if:true={showAdditionalIncentiveConfig}>
+					<c-d-i-additional-incentive month={monthVal} year={yearVal} product-name={currentTab}
+						is-discard-change={isDiscard} is-name={removeName} ontabremove={tabRemove}
+						ondisableparentadditional={handledisableParentAdditional} ontypename={handleTypeName}>
+					</c-d-i-additional-incentive>
+				</template>
+				<template if:true={showActualAchievement}>
+					<c-d-i-actual-achievement product-name={currentTab} month={monthVal} year={yearVal}
+						ondisableparent={handledisableParent}>
+					</c-d-i-actual-achievement>
+				</template>
+				<template if:true={showStockCondition}>
+					<c-d-i-stock-condition month={monthVal} year={yearVal} ondisableparent={handledisableParent}>
+					</c-d-i-stock-condition>
+				</template>
+			</div>
+		</template>
+	</div>
+	<template if:true={showCloneModal}>
+		<section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+			class="slds-modal slds-fade-in-open">
+			<div class="slds-modal__container">
+				<button class="slds-button slds-button--icon-inverse slds-modal__close" name="alert"
+						onclick={handleModalClose}>
+						<lightning-icon name="alert" icon-name="utility:close" size="small"></lightning-icon>
+						<span class="slds-assistive-text">Close</span>
+					</button>
+				<div class="slds-modal__header">
+					<h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1"
+						style="font-family: 'Work Sans', sans-serif;"><b>Clone Configurations</b></h1>
+					<div>Retrieve the data from any month and apply to <b>{monthVal}&nbsp;{yearVal}</b></div>
+				</div>
+				<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1"
+					style="display:flex; justify-content: center;">
+					<div style="display: flex;">
+						<div>
+							<legend class="slds-form-element__legend slds-form-element__label">Year
+							</legend>
+							<lightning-combobox name="year" value={cloneYear} options={cloneYearOptions}
+								onchange={handleCloneValues} class="slds-size_x-small" data-name="cloneYear" required>
+							</lightning-combobox>
+						</div>
+						<div class="slds-p-left_large">
+							<legend class="slds-form-element__legend slds-form-element__label">Month
+							</legend>
+							<lightning-combobox name="month" value={cloneMonth} options={cloneMonthOptions}
+								onchange={handleCloneValues} class="slds-size_x-small" data-name="cloneMonth" required>
+							</lightning-combobox>
+						</div>
+					</div>
+				</div>
+				<div class="slds-modal__footer">
+					<button class="slds-button slds-button_outline-brand" aria-label="Cancel and close"
+						onclick={handleModalClose}>Cancel</button>
+					<lightning-button variant="brand" label="Clone" onclick={handleCloneSave}
+						class="import-button slds-p-left_medium" title="Clone formula from previous month"
+						icon-name="action:clone" disabled={cloneButtonEnable}>
+					</lightning-button>
+				</div>
+			</div>
+		</section>
+		<div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+	</template>
+</template>

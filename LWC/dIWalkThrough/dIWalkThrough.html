@@ -1,0 +1,43 @@
+<template>
+    <template if:true={isWalkthroughVisible}>
+        <section aria-describedby="dialog-body-id" aria-labelledby="dialog-heading-id" class={dynamiClass}
+            role="dialog">
+            <header class="slds-popover__header slds-p-vertical_medium">
+                <h2 id="dialog-heading-id" class="slds-text-heading_medium">Guided Tour</h2>
+            </header>
+            <div class="slds-popover__body" id="dialog-body-id">
+                <p class="slds-text-body_regular">{currentStepContent}</p>
+            </div>
+            <footer class="slds-popover__footer">
+                <div class="slds-grid slds-grid_vertical-align-center">
+                    <span class="slds-text-title">Step {currentStep} of {totalSteps}</span>
+                    <template if:false={isLastStep}>
+                        <button class="slds-button slds-button_neutral slds-col_bump-left" onclick={handlePrev}
+                            disabled={isFirstStep}>
+                            Prev
+                        </button>
+
+                        <button class="slds-button slds-button_brand slds-col_bump-left" onclick={handleNext}>
+                            Next
+                        </button>
+                    </template>
+
+                    <template if:true={isLastStep}>
+                        <div class="last-step-buttons">
+                            <button class="slds-button slds-button_neutral" onclick={handlePrev}>
+                                Prev
+                            </button>
+                            <button class="slds-button slds-button_destructive" onclick={completeWalkthrough}>
+                                End Tour
+                            </button>
+                            <button class="slds-button slds-button_brand" onclick={handleRestartTour}>
+                                Restart Tour
+                            </button>
+                        </div>
+                    </template>
+
+                </div>
+            </footer>
+        </section>
+    </template>
+</template>

@@ -1,0 +1,603 @@
+<template>
+    <div style="background:white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+        <div class="FirstPage slds-border_bottom slds-no-print">
+            <div style="background:#fcb026;" class="slds-grid">
+                <div class="slds-size_1-of-4">
+                    <img src={icon} style="width:40%;" />
+                </div>
+                <div class="slds-size_1-of-4">
+                    <lightning-combobox class="slds-size_x-small slds-align_absolute-center" name="year" label="Year"
+                        value={year} placeholder="Select Year" options={yearOptions} onchange={handleChange}>
+                    </lightning-combobox>
+                </div>
+                <div class="slds-size_1-of-4">
+                    <lightning-combobox class="slds-size_x-small" name="month" label="Month" value={month}
+                        placeholder="Select Month" options={monthOptions} onchange={handleChange}></lightning-combobox>
+                </div>
+                <div class="slds-size_1-of-4">
+                    <!-- <lightning-button class="slds-no-print" variant="base" label="Download" title="Download"
+                        style="float: right;position: relative;top: 12px;right: 20px;" onclick={handlePDF}
+                        icon-name="utility:download"></lightning-button> -->
+                </div>
+            </div>
+        </div>
+        <div class="slds-p-around_medium">
+            <div class="slds-vertical-tabs" style="border:none !important;">
+                <lightning-spinner if:true={navSpinner} alternative-text="Loading" size="small" variant="brand">
+                </lightning-spinner>
+                <ul class="slds-vertical-tabs__nav" role="tablist" aria-orientation="vertical"
+                    style="background: #d3d3d326 !important;">
+                    <li style="font-weight:700; font-weight: 700; height: 50px; font-size: 15px;"
+                        class="slds-align-absolute_center">Product Category</li>
+                    <template for:each={productDetails} for:item="prod" for:index="ind">
+                        <li key={prod.label} data-name={prod.label} class={prod.productClass} title={prod.label}
+                            role="presentation" style="border-bottom:none !important;" data-id={ind}
+                            onclick={handleChangeProducts}>
+                            <a class="slds-vertical-tabs__link" href="#" role="tab" tabindex="0" aria-selected="true"
+                                aria-controls="slds-vertical-tabs-0" id="slds-vertical-tabs-0__nav" data-id={ind}
+                                data-name={prod.label}>
+                                <span data-id={ind} class="slds-truncate" title={prod.label} style="font-weight:600;"
+                                    data-name={prod.label}>
+                                    {prod.label} </span>
+                            </a>
+                        </li>
+                    </template>
+                </ul>
+
+                <template for:each={productDetails} for:item="prod" for:index="ind">
+                    <div key={prod.label} class={prod.navBarClass} id={prod.id} role="tabpanel"
+                        aria-labelledby={prod.navbodyId} style="background:#d3d3d326;">
+                        <div class="slds-grid slds-wrap section-navigation">
+                            <div class="slds-col slds-size_11-of-12 ">
+                                <button class="slds-button index-button" onclick={handleAdditionalNavigate}>Additional
+                                    Incentive</button> |
+                                <button class="slds-button index-button" onclick={handleGrowthNavigate}>Growth
+                                    Incentive</button> |
+                                <button class="slds-button index-button"
+                                    onclick={handleMultipleKpiNavigate}>MultipleKPI</button> |
+                                <button class="slds-button index-button" onclick={handlePayoutNavigate}>Payout
+                                    Configuration</button>
+                            </div>
+                            <div class="slds-col slds-size_1-of-12 ">
+                                <button class="slds-button index-button" title="Expand All"
+                                    onclick={expandAll}>Expand</button> |
+                                <button class="slds-button index-button" title="Collapse All"
+                                    onclick={collapseAll}>Collapse</button>
+                            </div>
+                        </div><br>
+                        <div class="slds-text-longform">
+                            <h3 class="slds-text-heading_medium"> {prod.label} </h3>
+                            <div class="slds-p-right_xx-small slds-m-top_small" style="margin-left: 10px;">
+                                <p>The Total Dealer earning potential is structured as below</p>
+                                <div style="margin-left: 20px;">
+                                    <p>1. The Dealer Margin per machine will continue</p>
+                                    <p>2. <b> Performance Variable Incentive:</b> To be paid in completiob to minimum
+                                        threshold targey for
+                                        each Dealer as per the criteria mentioned in below Table</p>
+                                    <p>3. <b>Salesperson Incentive:</b> Dealer Salesperson incentive to be paid on
+                                        monthly basis
+                                        as per Table below and would be credited to dealer accounts basis documents
+                                        submitted by
+                                        dealerships as proof of payment to their respective employees </p>
+                                </div>
+                            </div>
+
+                            <lightning-accordion allow-multiple-sections-open active-section-name={activeKpiSection}
+                                onsectiontoggle={handleSectionToggle}>
+                                <template for:each={prod.questionAnswer} for:item="quest">
+                                    <lightning-accordion-section name={quest.label} label={quest.label}
+                                        key={quest.label} class="accordion-section">
+                                        <div key={quest.label} if:false={quest.isAnswer}>
+                                            <div style="width:85%;">
+                                                <div class="slabsData slds-p-left_xx-large" if:false={quest.isTarget}
+                                                    style="width:80%;">
+                                                    <p>
+                                                        <lightning-icon icon-name="utility:label" size="x-small"
+                                                            alternative-text="Indicates approval">
+                                                        </lightning-icon>&nbsp;{quest.label} shall be applicable on
+                                                        achievement
+                                                        basis below
+                                                        target slabs for <b>{prod.label}</b>.
+                                                    </p>
+                                                    <table class="slds-m-top_small" cellpadding="5">
+                                                        <tr class="slds-border_top slds-border_bottom slds-border_left slds-border_right"
+                                                            style="border-color:#00000078; background-color: #E7AF28;">
+                                                            <th class="slds-border_right slds-p-around_xx-small"
+                                                                style="text-align: center;border-color:#00000078;">
+                                                                Performance Variable Incentive Criteria </th>
+                                                            <th class="slds-border_right slds-p-around_xx-small"
+                                                                style="text-align: center;border-color:#00000078;">
+                                                                Target Achievement </th>
+                                                            <th class="slds-border_right slds-p-around_xx-small"
+                                                                style="text-align: center;border-color:#00000078;">
+                                                                Proposed Pay-outs as per Incentive Criteria</th>
+                                                        </tr>
+
+                                                        <template for:each={quest.slabsData} for:item="slabsList"
+                                                            for:index="sub">
+                                                            <tr key={slabsList.slabRange}
+                                                                class="slds-border_top slds-border_bottom slds-border_left slds-border_right"
+                                                                style="border-color:#00000078;">
+                                                                <td class="slds-border_right slds-p-around_xx-small"
+                                                                    style="text-align: center;border-color:#00000078; font-weight: bold;">
+                                                                    Scenario {slabsList.slno}</td>
+                                                                <td class="slds-border_right slds-p-around_xx-small"
+                                                                    style="text-align: center;border-color:#00000078;">
+                                                                    {slabsList.slabRange} </td>
+                                                                <template if:false={slabsList.isProrata}>
+                                                                    <td class="slds-border_right slds-p-around_xx-small"
+                                                                        if:true={slabsList.isPercent}
+                                                                        style="text-align: center;border-color:#00000078;">
+                                                                        {slabsList.payoutPercentage}% </td>
+                                                                </template>
+                                                                <template if:true={slabsList.isProrata}>
+                                                                    <td class="slds-border_right slds-p-around_xx-small"
+                                                                        if:true={slabsList.isPercent}
+                                                                        style="text-align: center;border-color:#00000078;">
+                                                                        Pro-Rata </td>
+                                                                </template>
+                                                                <td class="slds-border_right slds-p-around_xx-small"
+                                                                    if:false={slabsList.isPercent}
+                                                                    style="text-align: center;border-color:#00000078;">
+                                                                    <lightning-formatted-number value={slabsList.amount}
+                                                                        format-style="currency" currency-code="INR"
+                                                                        currency-display-as="symbol"></lightning-formatted-number>
+                                                                </td>
+
+                                                            </tr>
+                                                        </template>
+                                                    </table><br>
+                                                </div>
+                                                <div class="slabsDataTarget slds-p-left_xx-large"
+                                                    if:true={quest.isTarget}>
+                                                    <template for:each={quest.slabsData} for:item="slab">
+                                                        <p key={slab.slabRange}>
+                                                            <lightning-icon icon-name="utility:label" size="x-small"
+                                                                alternative-text="Indicates approval">
+                                                            </lightning-icon>&nbsp;If a
+                                                            dealer achieves <b>{slab.slabRange}%</b>, they will be
+                                                            eligible
+                                                            for <b>{quest.label}</b> Payout.
+                                                        </p>
+                                                    </template>
+                                                </div>
+                                                <div if:true={quest.isExample} class="slabsData slds-p-left_xx-large ">
+                                                    <p><b>Example:</b>{quest.exampleText}</p>
+                                                </div>
+                                                <div class=" slds-p-left_xx-large" if:true={quest.isSalesmanIncentive}
+                                                    style="width:80%;">
+                                                    <p style="font-weight:400; font-size:17px;">SalesPerson Incentive
+                                                    </p>
+                                                    <p><b>Pre-Condition:</b> SalesPerson Incentive for <b>{quest.label}:
+                                                            {quest.tivSalesIncentive.salesPersonTarget}%</b></p>
+                                                    <table class="slds-m-top_small" cellpadding="5">
+                                                        <tr class="slds-border_top slds-border_bottom slds-border_left slds-border_right"
+                                                            style="border-color:#00000078; background-color: #E7AF28;">
+                                                            <th class="slds-border_right slds-p-around_xx-small"
+                                                                style="text-align: center;border-color:#00000078;">
+                                                                Performance Variable Incentive Criteria </th>
+                                                            <th class="slds-border_right slds-p-around_xx-small"
+                                                                style="text-align: center;border-color:#00000078;">
+                                                                Target Achievement </th>
+                                                            <th class="slds-border_right slds-p-around_xx-small"
+                                                                style="text-align: center;border-color:#00000078;">
+                                                                Proposed Pay-outs as per Incentive Criteria</th>
+                                                        </tr>
+                                                        <template for:each={quest.tivSalesIncentive.slabInfo}
+                                                            for:item="slabinfo" for:index="slabIndex">
+                                                            <tr if:true={slabinfo.isSales} key={slabinfo.slabRange}
+                                                                class="slds-border_top slds-border_bottom slds-border_left slds-border_right"
+                                                                style="border-color:#00000078;">
+                                                                <td class="slds-border_right slds-p-around_xx-small"
+                                                                    style="text-align: center;border-color:#00000078; font-weight: bold;">
+                                                                    Scenario {slabinfo.id}</td>
+                                                                <td class="slds-border_right slds-p-around_xx-small"
+                                                                    style="text-align: center;border-color:#00000078;">
+                                                                    {slabinfo.slabRange} </td>
+
+                                                                <td class="slds-border_right slds-p-around_xx-small"
+                                                                    style="text-align: center;border-color:#00000078;">
+                                                                    {slabinfo.payoutPercentage}%</td>
+                                                            </tr>
+                                                        </template>
+                                                    </table>
+                                                </div>
+                                                <div class=" slds-p-left_xx-large" if:true={quest.isIndustryIncentive}
+                                                    style="width:80%;">
+                                                    <p style="font-weight:400; font-size:17px;">TIV Incentive</p>
+                                                    <table class="slds-m-top_small" cellpadding="5">
+                                                        <tr class="slds-border_top slds-border_bottom slds-border_left slds-border_right"
+                                                            style="border-color:#00000078; background-color: #E7AF28;">
+                                                            <th class="slds-border_right slds-p-around_xx-small"
+                                                                style="text-align: center;border-color:#00000078;">
+                                                                Performance Variable Incentive Criteria </th>
+                                                            <th class="slds-border_right slds-p-around_xx-small"
+                                                                style="text-align: center;border-color:#00000078;">
+                                                                Target Achievement </th>
+                                                            <th class="slds-border_right slds-p-around_xx-small"
+                                                                style="text-align: center;border-color:#00000078;">
+                                                                Proposed Pay-outs as per Incentive Criteria</th>
+                                                        </tr>
+                                                        <template for:each={quest.tivSalesIncentive.slabInfo}
+                                                            for:item="slabinfo" for:index="slabIndex">
+                                                            <tr if:false={slabinfo.isSales} key={slabinfo.slabRange}
+                                                                class="slds-border_top slds-border_bottom slds-border_left slds-border_right"
+                                                                style="border-color:#00000078;">
+                                                                <td class="slds-border_right slds-p-around_xx-small"
+                                                                    style="text-align: center;border-color:#00000078; font-weight: bold;">
+                                                                    Scenario {slabinfo.id}</td>
+                                                                <td class="slds-border_right slds-p-around_xx-small"
+                                                                    style="text-align: center;border-color:#00000078;">
+                                                                    {slabinfo.slabRange} </td>
+
+                                                                <td class="slds-border_right slds-p-around_xx-small"
+                                                                    style="text-align: center;border-color:#00000078;">
+                                                                    {slabinfo.payoutPercentage}%</td>
+                                                            </tr>
+                                                        </template>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </lightning-accordion-section>
+                                </template>
+                            </lightning-accordion>
+
+                            <div if:true={prod.isActual}>
+                                <p style="font-weight:600; font-size: larger;">
+                                    <b>Actual Achievement</b>
+                                </p>
+                                <table class="slds-m-top_small" cellpadding="5" style="width: 40%;">
+                                    <tr
+                                    class="slds-border_top slds-border_bottom slds-border_left slds-border_right"
+                                    style="border-color:#00000078;">
+                                    <td class="slds-border_right slds-p-around_xx-small "
+                                        style="text-align: center;border-color:#00000078; font-weight: bold; background-color: #E7AF28; width: 25%;">
+                                        KPI
+                                    </td>
+                                    <td class="slds-border_right slds-p-around_xx-small "
+                                        style="text-align: center;border-color:#00000078; font-weight: bold; width: 25%;background-color: #E7AF28;">
+                                        Actual Achievement
+                                    </td>
+                                </tr>
+                                    <template for:each={prod.actualAchievement.actualAchieve} for:item="actual">
+                                        <tr key={actual}
+                                            class="slds-border_top slds-border_bottom slds-border_left slds-border_right"
+                                            style="border-color:#00000078;">
+                                            <td class="slds-border_right slds-p-around_xx-small "
+                                                style="text-align: center;border-color:#00000078;width: 25%;">
+                                                {actual.kpiName}
+                                            </td>
+                                            <td class="slds-border_right slds-p-around_xx-small "
+                                                style="text-align: center;border-color:#00000078;width: 25%;">
+                                                {actual.achievedKPIPerncentage}%
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </table><br>
+                            </div>
+                            <div if:true={prod.additional.isAdditional}>
+                                <p data-id={prod.additional.dataId} style="font-weight:600; font-size: larger;">
+                                    <b>Additional Incentive</b>
+                                </p>
+                                <lightning-accordion allow-multiple-sections-open active-section-name={activeSections}
+                                    onsectiontoggle={handleSectionToggle}>
+                                    <template for:each={prod.additional.addKpidetail} for:item="kpi" for:index="subkpi">
+                                        <lightning-accordion-section name={kpi.label} label={kpi.label} key={kpi.label}>
+                                            <div class="slabsData slds-p-left_xx-large" if:true={kpi.hasSlab}
+                                                style="width:70%; margin-top: -15px;">
+                                                <p>
+                                                    <lightning-icon icon-name="utility:label" size="x-small"
+                                                        alternative-text="Indicates approval">
+                                                    </lightning-icon>&nbsp;Additional incentive shall be applicable if
+                                                    the
+                                                    dealer achieves the conditions for the month basis
+                                                    below slabs of <b>{prod.label}</b>.
+                                                </p>
+                                                <table class="slds-m-top_small" cellpadding="5">
+                                                    <tr class="slds-border_top slds-border_bottom slds-border_left slds-border_right"
+                                                        style="border-color:#00000078; background-color: #E7AF28;">
+                                                        <th class="slds-border_right slds-p-around_xx-small"
+                                                            style="text-align: center;border-color:#00000078;">
+                                                            Performance Variable Incentive Criteria </th>
+                                                        <th class="slds-border_right slds-p-around_xx-small"
+                                                            style="text-align: center;border-color:#00000078;">
+                                                            Target Achievement </th>
+                                                        <th class="slds-border_right slds-p-around_xx-small"
+                                                            style="text-align: center;border-color:#00000078;">
+                                                            Proposed Pay-outs Amount</th>
+                                                    </tr>
+
+                                                    <template for:each={kpi.slabinfo} for:item="slabinfo"
+                                                        for:index="slabIndex">
+                                                        <tr key={slabinfo.slabRange}
+                                                            class="slds-border_top slds-border_bottom slds-border_left slds-border_right"
+                                                            style="border-color:#00000078;">
+                                                            <td class="slds-border_right slds-p-around_xx-small"
+                                                                style="text-align: center;border-color:#00000078; font-weight: bold;">
+                                                                Scenario {slabinfo.id}</td>
+                                                            <td class="slds-border_right slds-p-around_xx-small"
+                                                                style="text-align: center;border-color:#00000078;">
+                                                                {slabinfo.slabRange} </td>
+
+                                                            <td class="slds-border_right slds-p-around_xx-small"
+                                                                style="text-align: center;border-color:#00000078;">
+                                                                <lightning-formatted-number value={slabinfo.Amount}
+                                                                    format-style="currency" currency-code="INR"
+                                                                    currency-display-as="symbol"></lightning-formatted-number>
+                                                            </td>
+                                                        </tr>
+                                                    </template>
+                                                </table>
+                                            </div>
+
+                                            <div class="slabsDataTarget slds-p-left_xx-large" if:false={kpi.hasSlab}>
+                                                <template for:each={kpi.slabinfo} for:item="slab">
+                                                    <p key={slab.slabRange} style="margin-top: -15px;">
+                                                        <lightning-icon icon-name="utility:label" size="x-small"
+                                                            alternative-text="Indicates approval">
+                                                        </lightning-icon>&nbsp;If a
+                                                        dealer achieves <b>{slab.slabRange}%</b>, they will be
+                                                        eligible
+                                                        for <b><lightning-formatted-number value={slab.amount}
+                                                                format-style="currency" currency-code="INR"
+                                                                currency-display-as="symbol"></lightning-formatted-number></b>
+                                                        Additional Incentive Amount
+                                                    </p>
+                                                </template>
+                                            </div>
+                                        </lightning-accordion-section>
+                                    </template>
+                                </lightning-accordion>
+                            </div>
+                            <div if:true={prod.growth.isGrowth}>
+                                <p data-id={prod.growth.dataId} style="font-weight:600; font-size: larger;"><b>Growth
+                                        Additional Incentive</b></p>
+                                <lightning-accordion allow-multiple-sections-open
+                                    active-section-name={activeSectionsGrowth} onsectiontoggle={handleSectionToggle}>
+                                    <template for:each={prod.growth.growthKpidetail} for:item="growthkpi"
+                                        for:index="subkpi">
+                                        <lightning-accordion-section name={growthkpi.label} label={growthkpi.label}
+                                            key={growthkpi.label}>
+                                            <div class="slabsData slds-p-left_xx-large" if:true={growthkpi.hasSlab}
+                                                style="width:70%; margin-top: -15px">
+                                                <p>
+                                                    <lightning-icon icon-name="utility:label" size="x-small"
+                                                        alternative-text="Indicates approval">
+                                                    </lightning-icon>&nbsp;if the dealer achieves the 'growth %', as per
+                                                    the below
+                                                    slabs basis the YTD Dec'23' performanace ,dealer shall be eligible
+                                                    for incentive
+                                                    basis below slabs of <b>{prod.label}</b>.
+                                                </p>
+                                                <table class="slds-m-top_small" cellpadding="5">
+                                                    <tr class="slds-border_top slds-border_bottom slds-border_left slds-border_right"
+                                                        style="border-color:#00000078; background-color: #E7AF28;">
+                                                        <th class="slds-border_right slds-p-around_xx-small"
+                                                            style="text-align: center;border-color:#00000078;">
+                                                            Performance Variable Incentive Criteria </th>
+                                                        <th class="slds-border_right slds-p-around_xx-small"
+                                                            style="text-align: center;border-color:#00000078;">
+                                                            Target Achievement </th>
+                                                        <th class="slds-border_right slds-p-around_xx-small"
+                                                            style="text-align: center;border-color:#00000078;">
+                                                            %Growth vs Prev Year</th>
+                                                        <th class="slds-border_right slds-p-around_xx-small"
+                                                            style="text-align: center;border-color:#00000078;">
+                                                            Incentive Amount</th>
+                                                    </tr>
+                                                    <template for:each={growthkpi.slabinfo} for:item="slabinfo"
+                                                        for:index="slabIndex">
+                                                        <tr key={slabinfo.slabRange}
+                                                            class="slds-border_top slds-border_bottom slds-border_left slds-border_right"
+                                                            style="border-color:#00000078;">
+                                                            <td class="slds-border_right slds-p-around_xx-small"
+                                                                style="text-align: center;border-color:#00000078; font-weight: bold;">
+                                                                Scenario {slabinfo.id}</td>
+                                                            <td class="slds-border_right slds-p-around_xx-small"
+                                                                style="text-align: center;border-color:#00000078;">
+                                                                {slabinfo.slabRange} </td>
+                                                            <td class="slds-border_right slds-p-around_xx-small"
+                                                                style="text-align: center;border-color:#00000078;">
+                                                                {slabinfo.growthRange} </td>
+                                                            <td class="slds-border_right slds-p-around_xx-small"
+                                                                style="text-align: center;border-color:#00000078;">
+                                                                <lightning-formatted-number value={slabinfo.Amount}
+                                                                    format-style="currency" currency-code="INR"
+                                                                    currency-display-as="symbol"></lightning-formatted-number>
+                                                            </td>
+                                                        </tr>
+                                                    </template>
+                                                </table>
+                                            </div>
+                                            <div class="slabsDataTarget slds-p-left_xx-large"
+                                                if:false={growthkpi.hasSlab}>
+                                                <template for:each={growthkpi.slabinfo} for:item="slab">
+                                                    <p class="slds-p-top_small" key={slab.slabRange}
+                                                        style="margin-top: -15px;">
+                                                        <lightning-icon icon-name="utility:label" size="x-small"
+                                                            alternative-text="Indicates approval">
+                                                        </lightning-icon>&nbsp;If a
+                                                        dealer achieves <b>{slab.slabRange}%</b>, they will be
+                                                        eligible
+                                                        for <b><lightning-formatted-number value={slab.amount}
+                                                                format-style="currency" currency-code="INR"
+                                                                currency-display-as="symbol"></lightning-formatted-number></b>
+                                                        Additional Incentive Amount
+                                                    </p>
+                                                </template>
+                                            </div>
+                                        </lightning-accordion-section>
+                                    </template>
+                                </lightning-accordion>
+                            </div>
+                            <div if:true={prod.multiKpi}>
+                                <p data-id={prod.multiKpi.dataId}
+                                    style="font-weight:600; font-size: larger; width:70%;"><b>Additional With Multiple
+                                        KPI</b></p>
+                                <div class="slabsData slds-p-left_xx-large slds-p-top_small"
+                                    style="width:80%; margin-top: -10px;">
+                                    <p>
+                                        <lightning-icon icon-name="utility:label" size="x-small"
+                                            alternative-text="Indicates approval">
+                                        </lightning-icon>&nbsp;Additional incentive shall be applicable
+                                        If the dealer achieves the conditions for the month basis
+                                        below slabs of <b>{prod.multiKpi.label}</b>.
+                                    </p>
+                                    <table class="slds-m-top_small" cellpadding="5">
+                                        <tr class="slds-border_top slds-border_bottom slds-border_left slds-border_right"
+                                            style="border-color:#00000078; background-color: #E7AF28;">
+                                            <th class="slds-border_right slds-p-around_xx-small"
+                                                style="text-align: center;border-color:#00000078;">
+                                                Performance Variable Incentive Criteria </th>
+                                            <th class="slds-border_right slds-p-around_xx-small"
+                                                style="text-align: center;border-color:#00000078;">
+                                                Condition Logic</th>
+                                            <th class="slds-border_right slds-p-around_xx-small"
+                                                style="text-align: center;border-color:#00000078;">
+                                                MultiKPI </th>
+                                            <th class="slds-border_right slds-p-around_xx-small"
+                                                style="text-align: center;border-color:#00000078;">
+                                                Incentive Amount</th>
+                                        </tr>
+                                        <template for:each={prod.multiKpi.multiKpidetails} for:item="multi">
+                                            <tr key={multi}
+                                                class="slds-border_top slds-border_bottom slds-border_left slds-border_right"
+                                                style="border-color:#00000078;">
+                                                <td class="slds-border_right slds-p-around_xx-small"
+                                                    style="text-align: center;border-color:#00000078; font-weight: bold; ">
+                                                    Scenario {multi.id}</td>
+                                                <td class="slds-border_right slds-p-around_xx-small"
+                                                    style="text-align: center;border-color:#00000078;">
+                                                    {multi.conditionLogic} </td>
+                                                <td class="slds-border_right slds-p-around_xx-small"
+                                                    style="text-align: center;border-color:#00000078;">
+                                                    <div>
+                                                        <table cellpadding="5">
+                                                            <template for:each={multi.multiKpSlabs}
+                                                                for:item="multikpislabs">
+                                                                <tr key={multikpislabs}
+                                                                    class="slds-border_top slds-border_bottom slds-border_left slds-border_right"
+                                                                    style="border-color:#00000078; border-style: solid;">
+                                                                    <td class="slds-border_right slds-p-around_xx-small"
+                                                                        style="text-align: center;border-color:#00000078; width:60%; font-weight: 700; background-color: #E4B74C;">
+                                                                        {multikpislabs.productKPI.kpiName} </td>
+                                                                    <td class="slds-border_right slds-p-around_xx-small"
+                                                                        style="text-align: center;border-color:#00000078; width:40%;">
+                                                                        {multikpislabs.slabRange} </td>
+                                                                </tr>
+                                                            </template>
+                                                        </table>
+                                                    </div>
+                                                </td>
+                                                <td class="slds-border_right slds-p-around_xx-small"
+                                                    style="text-align: center;border-color:#00000078;">
+                                                    <lightning-formatted-number value={multi.incentiveAmount}
+                                                        format-style="currency" currency-code="INR"
+                                                        currency-display-as="symbol"></lightning-formatted-number>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </table>
+                                </div>
+                            </div><br>
+                            <div>
+                                <p data-id={prod.dataId} style="font-weight:600; font-size: larger;"><b>Payout
+                                        Configurations Details</b></p>
+                                <div class=" slds-p-left_xx-large slds-p-top_small" style="margin-top:-15px;">
+                                    <p>
+                                        The following table lists the payout amounts, which may vary based on one of the
+                                        following criteria:
+                                    </p>
+                                    <ol>
+                                        <li>Payout varies by region.</li>
+                                        <li>Payout varies by 4WD or 2WD configuration.</li>
+                                        <li>Payout varies by both region and 4WD/2WD configuration.</li>
+                                        <li>Common payout applicable to all.</li>
+                                    </ol>
+                                </div>
+
+                                <table class="slds-m-top_small slds-truncate slds-p-left_xx-large" cellpadding="5"
+                                    style="width: 80%;">
+                                    <tr class="slds-border_top slds-border_bottom slds-border_left slds-border_right"
+                                        style="border-color:#00000078; background-color: #E7AF28;">
+                                        <th class="slds-border_right slds-p-around_xx-small"
+                                            style="text-align:left;border-color:#00000078;">Product</th>
+                                        <th class="slds-border_right slds-p-around_xx-small"
+                                            style="text-align:center;border-color:#00000078;">Retail Target</th>
+                                        <template for:each={prod.questionAnswer} for:item="quest">
+                                            <th key={quest} class="slds-border_right"
+                                                style="text-align: center;border-color:#00000078;">{quest.label}
+                                                <template if:true={quest.variesBy4WD}>
+                                                    <div class="slds-grid slds-wrap"
+                                                        style="border-top:1px solid;border-color: #00000078; text-align: center;">
+                                                        <div class="slds-col slds-size_6-of-12"
+                                                            style="border-right:1px solid;border-color:#00000078;">2WD
+                                                        </div>
+                                                        <div class="slds-col slds-size_6-of-12">4WD</div>
+                                                    </div>
+                                                </template>
+                                                <template if:false={quest.variesBy4WD}>
+                                                    <div
+                                                        style="border-top:1px solid;border-color: #00000078 ;text-align: center;">
+                                                        Amount</div>
+                                                </template>
+                                            </th>
+                                        </template>
+                                    </tr>
+                                    <template for:each={prod.subProductData} for:item="subdata">
+                                        <tr class="slds-border_top slds-border_bottom slds-border_left slds-border_right"
+                                            style="border-color:#00000078;" key={subdata}>
+                                            <td class="slds-border_right"
+                                                style="text-align:left;border-color:#00000078; padding: 5px;">
+                                                {subdata.subProd}
+                                            </td>
+                                            <td if:true={subdata.isRetailTarget} class="slds-border_right"
+                                                style="text-align:center;border-color:#00000078; padding: 5px;">
+                                                <b>{subdata.subCategoryRetailTarget}</b>
+                                            </td>
+                                            <td if:false={subdata.isRetailTarget} class="slds-border_right"
+                                                style="text-align:center;border-color:#00000078; padding: 5px;">
+                                                <b>0</b>
+                                            </td>
+
+                                            <template for:each={subdata.payout} for:item="payout">
+                                                <td if:true={payout.variesByTrue} key={payout}
+                                                    class="slds-border_right "
+                                                    style="text-align:right;border-color:#00000078;">
+                                                    <div class="slds-grid slds-wrap">
+                                                        <div class="slds-col slds-size_6-of-12 "
+                                                            style="border-right:1px solid;border-color:#00000078; padding:5px;">
+                                                            <lightning-formatted-number value={payout.twoWDPayoutAmount}
+                                                                format-style="currency" currency-code="INR"
+                                                                currency-display-as="symbol"></lightning-formatted-number>
+                                                        </div>
+                                                        <div class="slds-col slds-size_6-of-12" style="padding:5px;">
+                                                            <lightning-formatted-number
+                                                                value={payout.fourWDPayoutAmount}
+                                                                format-style="currency" currency-code="INR"
+                                                                currency-display-as="symbol"></lightning-formatted-number>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td if:false={payout.variesByTrue} key={payout}
+                                                    class="slds-border_right"
+                                                    style="text-align:right;border-color:#00000078; padding:5px;">
+                                                    <lightning-formatted-number value={payout.amount}
+                                                        format-style="currency" currency-code="INR"
+                                                        currency-display-as="symbol"></lightning-formatted-number>
+                                                </td>
+                                            </template>
+                                        </tr>
+                                    </template>
+                                </table>
+                            </div>
+                        </div>
+                        <lightning-icon icon-name='utility:jump_to_top' class="scroll-to-top" variant='inverse'
+                            size='medium' onclick={scrollToTop} title='jump_to_top'></lightning-icon>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+</template>

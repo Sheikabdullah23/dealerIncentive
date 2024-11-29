@@ -1,0 +1,2404 @@
+<template>
+	<div style="border: 2px solid #E7AF28; border-radius:15px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;"
+		class="slds-p-bottom_medium">
+		<div class="slds-m-around_small">
+			<div
+				class="slds-grid slds-wrap slds-max-small-size--12-of-12 slds-medium-size--12-of-12 slds-large-size--12-of-12">
+				<div
+					class="slds-col slds-max-small-size--6-of-12 slds-medium-size--2-of-6 slds-large-size--2-of-12 slds-p-right_small">
+					<lightning-combobox name="year" label="Year" value={year} placeholder="Select Year"
+						options={yearOptions} onchange={handleChange} required style="font-weight: 600;">
+					</lightning-combobox>
+				</div>
+				<div
+					class="slds-col slds-max-small-size--6-of-12 slds-medium-size--2-of-6 slds-large-size--2-of-12 slds-p-left_small">
+					<lightning-combobox name="month" label="Month" value={month} placeholder="Select Month"
+						options={monthOptions} onchange={handleChange} required style="font-weight: 600;">
+					</lightning-combobox>
+				</div>
+				<div class="slds-col slds-max-small-size--12-of-12 slds-medium-size--2-of-6 slds-large-size--2-of-12 slds-p-top_large"
+					style="text-align: center;">
+					<lightning-button variant="brand" label="Check Incentive" onclick={handleCheckIncentive}
+						disabled={disableButton} class="actionBtn slds-hide_small  full-width-button">
+					</lightning-button>
+					<lightning-button variant="brand" label="Check Incentive" onclick={handleCheckIncentive}
+						disabled={disableButton} class="actionBtn slds-show_small"></lightning-button>
+				</div>
+				<div
+					class="radio-group slds-p-top_x-large slds-max-small-size--12-of-12 slds-medium-size--6-of-12 slds-large-size--3-of-12">
+					<div class="radio-option">
+						<input type="radio" id="radio-59" value="radio-59" name="mode" data-key="projection" checked
+							onclick={toggleMode} />
+						<label for="radio-59" class="slds-p-left_xx-small"
+							style="font-size: 13px; font-weight: 400;">Projection Mode</label>
+					</div>
+					<div class="radio-option second-radio">
+						<input type="radio" id="radio-60" value="radio-60" name="mode" data-key="actual"
+							onclick={toggleMode} />
+						<label for="radio-60" class="slds-p-left_xx-small"
+							style="font-size: 13px; font-weight: 400;">Actual Mode</label>
+					</div>
+				</div>
+
+				<div
+					class="slds-col slds-max-small-size--12-of-12 slds-medium-size-6-of-12 slds-large-size--3-of-12 slds-show_small">
+					<template if:true={showDownloadBtn}>
+						<div if:true={isProjectionMode} class="slds-float_right slds-p-top_large">
+							<lightning-button variant="brand" label="Save" onclick={handleSave} title="Save"
+								icon-name="utility:save" class="actionBtn"></lightning-button>
+							<lightning-button class="clsBtn slds-p-left_large" variant="brand-outline" label="Download"
+								title="Download Report" icon-name="utility:download" onclick={downloadReport}
+								disabled={isDownloadButtonEnabled}>
+							</lightning-button>
+						</div>
+					</template>
+				</div>
+				<div style="height:78vh;width:96vw;margin-top:40px;" class="slds-align_absolute-center"
+				if:false={enableCalculator}>
+				<p style="font-weight: 600;font-size: 20px;" >{initialMessage}</p>
+			</div>
+			</div>
+		</div>
+
+		<div if:true={enableCalculator}>
+			<div>
+				<div class="slds-grid slds-wrap">
+					<div
+						class="slds-p-horizontal_small slds-p-vertical_xx-small slds-max-small-size--12-of-12 slds-medium-size--5-of-5 slds-large-size--3-of-5">
+						<div class="slds-p-around_small"
+							style="border: 1px solid #C3C5C8; border-radius: 7px; min-height: 120px;">
+							<div class="slds-grid slds-wrap slds-p-top_x-small">
+								<div if:true={isProjectionMode}
+									class="slds-max-small-size--1-of-1 slds-medium-size--1-of-3 slds-large-size--1-of-3 total-section slds-p-left_small"
+									style="display: flex;">
+									<div>
+										<img src={jcbImg1} alt="JCBIMAGE">
+									</div>
+									<div class="slds-p-left_medium" style="display: block;">
+										<p style="font-size:11px; font-weight:bold;">Total Projected
+											Incentive</p>
+										<lightning-formatted-number style="font-size: large; font-weight: bold;"
+											value={projectedIncentive} currency-display-as="symbol"
+											format-style="currency" currency-code="INR"></lightning-formatted-number>
+										<div class="slds-m-top_xx-small slds-p-top_xx-small"
+											style="border-top: 1px solid #DADADA;">
+											<table style="font-size: 11px; color: #080707;">
+												<tr>
+													<td>Dealer:</td>
+													<td style="text-align: right; font-weight: bold;">
+														₹{dealerGrandTotalPayout}</td>
+												</tr>
+												<tr>
+													<td>Sales Person:</td>
+													<td style="text-align: right; font-weight: bold;">
+														₹{salesPersonGrandTotal}</td>
+												</tr>
+											</table>
+										</div>
+									</div>
+								</div>
+								<div if:false={isProjectionMode}
+									class="slds-max-small-size--1-of-1 slds-medium-size--1-of-3 slds-large-size--1-of-3 total-section slds-p-left_small"
+									style="display: flex;">
+									<div>
+										<img src={jcbImg2} alt="JCBIMAGE">
+									</div>
+									<div class="slds-p-left_medium" style="display: block;">
+										<p style="font-size:11px; font-weight:bold;">Total Actual
+											Incentive</p>
+										<lightning-formatted-number style="font-size: large; font-weight: bold;"
+											value={actualIncentive} currency-display-as="symbol" format-style="currency"
+											currency-code="INR"></lightning-formatted-number>
+										<table
+											style="font-weight: bold; font-size: 11px; color: gray; border-top: 1px solid #DADADA;">
+											<tr>
+												<td>Dealer</td>
+												<td style="text-align: right;">₹{dealerActualPayout}</td>
+											</tr>
+											<tr>
+												<td>Sales Person</td>
+												<td style="text-align: right;">₹{salesPersonActualPayout}</td>
+											</tr>
+										</table>
+									</div>
+								</div>
+								<div if:true={showTargetSection}
+									class="slds-max-small-size--1-of-1 slds-medium-size--1-of-3 slds-large-size--1-of-3 total-section slds-p-left_small"
+									style="display: flex;">
+									<div>
+										<img src={jcbImg3} alt="JCBIMAGE">
+									</div>
+									<div class="slds-p-left_medium slds-p-top_small" style="display: block;">
+										<p style="font-size:11px; font-weight:bold;">Total
+											Target Incentive</p>
+										<lightning-formatted-number style="font-size: large; font-weight: bold;"
+											value={targetIncentive} currency-display-as="symbol" format-style="currency"
+											currency-code="INR">
+										</lightning-formatted-number>
+										<div style="display: flex; align-items: baseline; font-size: smaller;">
+											<lightning-icon icon-name="utility:info_alt" alternative-text="info_alt"
+												size="xx-small"></lightning-icon>
+											<span class="slds-p-left_xx-small">This is an approximate value, subject to
+												change.</span>
+										</div>
+									</div>
+								</div>
+								<div if:true={showTargetSection}
+									class="slds-max-small-size--1-of-1 slds-medium-size--1-of-3 slds-large-size--1-of-3 slds-p-top_x-small slds-p-left_small"
+									style="display: flex;">
+									<div if:true={isProjectionMode} style="display: flex;">
+
+										<table>
+											<tr>
+												<td>Total Retail Volume:&nbsp;</td>
+												<td style="font-weight: bold;">{grandTotalVolume}</td>
+											</tr>
+											<tr>
+												<td>Total Retail Volume in (%):&nbsp;</td>
+												<td style="font-weight: bold;">{grandRetailPercentage}%</td>
+											</tr>
+											<tr>
+												<td>Total Retail Target:&nbsp;</td>
+												<td style="font-weight: bold;">{grandTotalTarget}</td>
+											</tr>
+										</table>
+									</div>
+									<div if:false={isProjectionMode} style="display: flex;">
+
+										<table>
+											<tr>
+												<td>Total Actual Volume:&nbsp;</td>
+												<td style="font-weight: bold;">{grandTotalActual}</td>
+											</tr>
+											<tr>
+												<td>Total Actual
+													Volume in (%):&nbsp;</td>
+												<td style="font-weight: bold;">{grandActualPercentage}%</td>
+											</tr>
+											<tr>
+												<td>Total Retail Target:&nbsp;</td>
+												<td style="font-weight: bold;">{grandTotalTarget}</td>
+											</tr>
+										</table>
+									</div>
+								</div>
+								<div class="slds-hide_small slds-p-top_x-small"
+									style="width: 100%; text-align: center; color: #E7AF28;">
+									<!-- onclick={handleTargetChevron} -->
+									<span>{targetSectionLabel}
+										<lightning-icon if:true={chevronDown} icon-name="utility:chevrondown"
+											size="x-small" class="arrow-icon slds-p-left_small"
+											style="--sds-c-icon-color-foreground-default: #E7AF28;">
+										</lightning-icon>
+										<lightning-icon if:false={chevronDown} icon-name="utility:chevronup"
+											size="x-small" class="arrow-icon slds-p-left_small"
+											style="--sds-c-icon-color-foreground-default: #E7AF28;">
+										</lightning-icon>
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="slds-p-horizontal_small	slds-p-vertical_xx-small slds-max-small-size--12-of-12 slds-medium-size--5-of-5 slds-large-size--2-of-5"
+						style="position:relative;">
+						<div
+							style="border: 1px solid #E7AF28; background-image: linear-gradient(to right, #E7AF28, #F0CC77, #FFFFFE); border-radius: 7px; display:flex; height: 120px;">
+							<div class="slds-p-left_xx-small" style="width:100%;">
+								<div style="font-size: 18px; font-weight: 600; align-items: end;"
+									class="slds-grid slds-wrap">
+									<div class="slds-size_3-of-4">
+										<img src={jcbImg7} alt="JCBIMAGE"
+											style="border-radius: 30px; height: 25px; width: 25px;">
+										<span class="slds-p-left_x-small">Maximize Your Earnings</span>
+									</div>
+									<div class="slds-size_1-of-4">
+										<button class="button slds-float_right checkBtn" onclick={toggleDiv}
+											onmouseover={handleKpiMouseOver} onmouseleave={handleKpiLeave}
+											data-key="dropdown">{buttonName}</button>
+									</div>
+								</div>
+								<div class="slds-grid slds-wrap">
+									<div onclick={showPrev}
+										class="cursor_pointer slds-size_1-of-12 slds-align_absolute-center slds-text-title_bold">
+										{isDisplay}</div>
+									<div class="slds-carousel slds-size_10-of-12">
+										<div class="slds-carousel__stage" style="max-height: 68px;">
+											<div class="slds-carousel__panels slds-is-active" style={contentTransform}>
+												<template for:each={groupedAchievements} for:item="pair"
+													for:index="index">
+													<div class="slds-carousel__panel slds-grid slds-wrap" key={pair}>
+														<template for:each={pair} for:item="achievement">
+															<div class="slds-carousel__content slds-size_1-of-2"
+																style="background: transparent" key={achievement}>
+																<div class="slds-text-align_left slds-truncate">
+																	{achievement.kpiName}
+																</div>
+																<div if:true={isProjectionMode}
+																	class="text_size slds-text-align_left">
+																	<!-- ₹{achievement.earningPotentialCalc} -->
+																	<lightning-formatted-number
+																		value={achievement.earningPotentialCalc}
+																		currency-display-as="symbol"
+																		format-style="currency" currency-code="INR">
+																	</lightning-formatted-number>
+																</div>
+																<div if:false={isProjectionMode}
+																	class="text_size slds-text-align_left">
+																	<!-- ₹{achievement.earningPotentialActual} -->
+																	<lightning-formatted-number
+																		value={achievement.earningPotentialActual}
+																		currency-display-as="symbol"
+																		format-style="currency" currency-code="INR">
+																	</lightning-formatted-number>
+																</div>
+															</div>
+														</template>
+													</div>
+												</template>
+											</div>
+										</div>
+										<ul class="slds-carousel__indicators" style="text-align: center; margin: -9px;">
+											<template for:each={groupedAchievements} for:item="pair" for:index="index">
+												<li class="slds-carousel__indicator" role="presentation" key={pair}>
+													<a id="indicator-id-70"
+														class="slds-carousel__indicator-action slds-is-active" href="#"
+														onclick={handleIndicatorClick}>
+													</a>
+												</li>
+											</template>
+										</ul>
+									</div>
+									<div onclick={showNext}
+										class="cursor_pointer slds-size_1-of-12 slds-align_absolute-center slds-text-title_bold">
+										{isVisible}</div>
+								</div>
+							</div>
+						</div>
+						<div class="absolute-div slds-size_1-of-1" if:true={showDiv} onmouseover={handleKpiMouseOver}
+							onmouseleave={handleKpiLeave} data-key="dropdown">
+							<lightning-accordion class="example-accordion" onsectiontoggle={handleToggleSection}
+								active-section-name={allSectionNames} allow-multiple-sections-open data-key="dropdown">
+								<template for:each={configuredProducts} for:item="product">
+									<lightning-accordion-section name={product.productName} label={product.productName}
+										key={product.productName} data-key="dropdown">
+
+
+										<table>
+											<template for:each={product.kpiAchievement} for:item="kpi">
+												<tr key={kpi} data-key="dropdown">
+													<td class="totEarning" data-key="dropdown">{kpi.kpiName}</td>
+													<td if:true={isProjectionMode} class="totEarning"
+														style="text-align: right;" data-key="dropdown">
+														{kpi.earningPotentialCalc}</td>
+													<td if:false={isProjectionMode} class="totEarning"
+														style="text-align: right;" data-key="dropdown">
+														{kpi.earningPotentialActual}</td>
+												</tr>
+											</template>
+										</table>
+
+									</lightning-accordion-section>
+								</template>
+							</lightning-accordion>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="subCard slds-m-around_medium" if:true={enableCalculator}>
+			<lightning-spinner if:true={isLoading} alternative-text="Loading....." variant="brand" size="medium"
+				class="slds-align_absolute-center slds-m-bottom_none slds-m-top_none">
+			</lightning-spinner>
+
+			<div class="slds-grid slds-wrap " style="overflow-y: hidden;height: auto;">
+				<div class="slds-large-size--2-of-12 slds-show_small">
+					<div class="slds-grid" style="cursor: pointer;">
+						<div class="slds-tabs_default">
+							<ul class="slds-tabs_default__nav" role="tablist">
+								<li class="slds-tabs_default__item slds-active" title="Sales" role="presentation"
+									data-name="sales" style="width:100%;--slds-c-tabs-item-text-color: black;">
+									<a class="slds-tabs_default__link" role="tab" data-id='sales'
+										onclick={handleTabClick}
+										style="text-align: center; font-size: 20px; font-weight: 600;">Sales
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+
+					<div style="padding-top:10px;">
+						<table class="slds-table slds-table_cell-buffer slds-table_header-hidden slds-table_bordered"
+							style="cursor: pointer;">
+							<tbody>
+								<template for:each={calculatedProducts} for:item="product">
+									<tr key={product} data-name={product.productName} onclick={handleMenuSelection}
+										class="slds-hint-parent">
+										<td data-prodname={product.productName} data-name={product.productName}
+											data-label="Product Name" style="font-weight: 500;"
+											onclick={handleMenuSelection}>
+											<div class="slds-grid slds-wrap" title={product.productName}
+												data-name={product.productName}>
+												<div class="slds-grid slds-wrap">
+													<img onclick={handleMenuSelection} src={product.imageUrl}
+														data-prodname={product.productName}
+														data-name={product.productName} data-label="Product Name"
+														alt="JCBIMAGE" width="40px" height="40px"
+														style="border: 1px solid #DADADA; border-radius: 10px;">
+													<div class="slds-p-left_medium" onclick={handleMenuSelection}
+														data-prodname={product.productName}
+														data-name={product.productName} data-label="Product Name">
+														<div data-name={product.productName}
+															onclick={handleMenuSelection}
+															class="slds-col slds-size_8-of-12"
+															style="font-weight:600; width: 100%;">
+															{product.productName}
+
+															<template if:true={isProjectionMode}>
+																<span if:true={product.showBadgeProjected}
+																	class="slds-p-left_x-small"
+																	data-name={product.productName}
+																	onclick={handleMenuSelection}>
+																	<svg width="8" height="8" viewBox="0 0 8 8"
+																		fill="none" xmlns="http://www.w3.org/2000/svg">
+																		<circle cx="4" cy="4" r="4" fill="#E33434"
+																			data-name={product.productName}
+																			onclick={handleMenuSelection} />
+																	</svg>
+																</span>
+															</template>
+															<template if:false={isProjectionMode}>
+																<span if:true={product.showBadgeActual}
+																	class="slds-p-left_x-small"
+																	data-name={product.productName}
+																	onclick={handleMenuSelection}>
+																	<svg width="8" height="8" viewBox="0 0 8 8"
+																		fill="none" xmlns="http://www.w3.org/2000/svg">
+																		<circle cx="4" cy="4" r="4" fill="#E33434"
+																			data-name={product.productName}
+																			onclick={handleMenuSelection} />
+																	</svg>
+																</span>
+															</template>
+														</div>
+														<div if:true={isProjectionMode} data-prod={product.productName}
+															data-name={product.productName}
+															onclick={handleMenuSelection} data-label="Product Value"
+															class={product.predictCSS} style="margin-left:auto;">
+															<!-- <b onclick={handleMenuSelection} data-name={product.productName} data-label="Product Value">₹</b>{product.totalPayout} -->
+															<lightning-formatted-number onclick={handleMenuSelection}
+																data-name={product.productName}
+																data-label="Product Value" value={product.totalPayout}
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+														</div> <!-- class="totalProductpayout" -->
+														<div if:false={isProjectionMode} data-name={product.productName}
+															class={product.actualCSS} onclick={handleMenuSelection}
+															data-label="Product Value" style="margin-left:auto;">
+															<!-- <b onclick={handleMenuSelection} data-name={product.productName} data-label="Product Value">₹</b>{product.totalActualPayout} -->
+															<lightning-formatted-number onclick={handleMenuSelection}
+																data-name={product.productName}
+																data-label="Product Value"
+																value={product.totalActualPayout}
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+														</div>
+													</div>
+												</div>
+
+
+											</div>
+
+										</td>
+									</tr>
+								</template>
+								<tr onclick={handleAddSelection}>
+									<td data-label="Product Name" style="font-weight: 500;">
+										<div class="slds-grid slds-wrap" title="Additional Incentive">
+											<img src={addInc} alt="JCBIMAGE" width="40px" height="40px">
+											<div class="slds-p-left_medium">
+												<div class="slds-col slds-size_8-of-12" style="font-weight:600;">
+													Additional</div>
+												<div data-label="Product Value" style="margin-left:auto;">
+													<!-- <b>₹</b>{addGrandTotalPayout} -->
+													<lightning-formatted-number value={totalAddGrandTotalPayout}
+														if:true={isProjectionMode} currency-display-as="symbol"
+														format-style="currency" currency-code="INR">
+													</lightning-formatted-number>
+													<lightning-formatted-number value={totalAddActualPayout}
+														if:false={isProjectionMode} currency-display-as="symbol"
+														format-style="currency" currency-code="INR">
+													</lightning-formatted-number>
+												</div>
+											</div>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+
+				<template for:each={calculatedProducts} for:item="product">
+					<div data-prodname={product.productName} data-name={product.productName} key={product}
+						data-label="Product Name" style="font-weight: 500; width:100%;" onclick={handleMenuSelection}
+						class="slds-hide_small">
+
+						<div class="slds-grid slds-wrap" title={product.productName} data-name={product.productName}
+							style="border: 1px solid #E7AF28; padding: 10px; border-radius: 5px; background: #FFFDFA;">
+
+							<!-- Image and Product Name -->
+							<div class="slds-grid slds-wrap slds-align_absolute-center slds-size_12-of-12">
+								<!-- Product Image -->
+								<div class="slds-col slds-size_1-of-6">
+									<img onclick={handleMenuSelection} src={product.imageUrl}
+										data-prodname={product.productName} data-name={product.productName}
+										data-label="Product Name" alt="JCBIMAGE" width="40px" height="40px"
+										style="border: 1px solid #DADADA; border-radius: 10px;">
+								</div>
+
+								<!-- Product Name and Price -->
+								<div class="slds-col slds-size_4-of-6 slds-p-left_medium">
+									<div onclick={handleMenuSelection} class="slds-text-heading_small slds-truncate"
+										style="font-weight: 600;">
+										{product.productName}
+									</div>
+									<template if:true={isProjectionMode}>
+										<span class="slds-text-color_error slds-m-left_xx-small">
+											<svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+												<circle cx="4" cy="4" r="4" fill="#E33434" />
+											</svg>
+										</span>
+									</template>
+									<div>
+										<lightning-formatted-number value={product.totalPayout}
+											currency-display-as="symbol" format-style="currency" currency-code="INR">
+										</lightning-formatted-number>
+									</div>
+								</div>
+
+								<!-- Icon aligned properly -->
+								<div class="slds-col slds-size_1-of-6 slds-text-align_right slds-align_absolute-center">
+									<lightning-icon icon-name="utility:picklist_type" size="small"
+										alternative-text="Product-Name" class="icon-style" onclick={handleMenuClic}>
+									</lightning-icon>
+								</div>
+							</div>
+						</div>
+					</div>
+				</template>
+
+
+				<!-- </tr> -->
+
+
+				<!-- <div class="slds-hide_small slds-p-bottom_medium" style="height: 70px; border : 1px solid black;">
+					<div class="slds-grid">
+						<div class="slds-col slds-max-small-size--11-of-12">
+							{selectedProduct.productName}
+						</div>
+						<div class="slds-col slds-max-small-size--1-of-12">
+							<lightning-icon icon-name="utility:rows" alternative-text="row icon" ></lightning-icon>
+						</div>
+					</div>
+				</div> -->
+
+				<div class={changeGridSize} if:true={hasProduct}
+					style="border: 2px solid #E7AF28; border-radius:15px; min-height: 40rem;">
+					<!-- align-items: center; -->
+					<template if:false={isAddIncentive}>
+						<div class="slds-grid slds-p-around_medium slds-m-around_small"
+							style="width:100%;background:#EFEFEF;border-radius: 5px;">
+							<div class="slds-col">
+								<div class="slds-grid slds-wrap">
+									<div if:true={isProjectionMode}
+										class="slds-max-small-size--12-of-12 slds-medium-size--2-of-12 slds-large-size--2-of-12 slds-p-bottom_small"
+										style="display: flex;">
+										<div>
+											<img src={jcbImg4} alt="JCBIMAGE" style="border-radius: 30px;">
+										</div>
+										<div class="slds-p-left_x-small" style="display: block;">
+											<p style="font-weight: bold;">Total {selectedProduct.productName} Incentive
+											</p>
+											<!-- <p if:true={selectedProduct.isStockPredicted} style="font-weight: bold;">
+												₹{selectedProduct.totalPredictedPayout}</p>
+											<p if:false={selectedProduct.isStockPredicted}
+												style="font-weight: bold; text-decoration: line-through;">
+												₹{selectedProduct.totalPredictedPayout}</p> -->
+											<lightning-formatted-number if:true={selectedProduct.isStockPredicted}
+												style="font-weight: bold;" value={selectedProduct.totalPredictedPayout}
+												currency-display-as="symbol" format-style="currency"
+												currency-code="INR"></lightning-formatted-number>
+											<lightning-formatted-number if:false={selectedProduct.isStockPredicted}
+												style="font-weight: bold; text-decoration: line-through;"
+												value={selectedProduct.totalPredictedPayout}
+												currency-display-as="symbol" format-style="currency"
+												currency-code="INR"></lightning-formatted-number>
+										</div>
+									</div>
+									<div if:false={isProjectionMode}
+										class="slds-max-small-size--12-of-12 slds-medium-size--2-of-12 slds-large-size--2-of-12 slds-p-bottom_small"
+										style="display: flex;">
+										<div>
+											<img src={jcbImg5} alt="JCBIMAGE" style="border-radius: 30px;">
+										</div>
+										<div class="slds-p-left_x-small" style="display: block;">
+											<p style="font-weight: bold;">{selectedProduct.productName} Actual Incentive
+											</p>
+											<!-- <p if:true={selectedProduct.isStockAchieved} style="font-weight: bold;">
+												₹{selectedProduct.totalActualPayout}</p>
+											<p if:false={selectedProduct.isStockAchieved}
+												style="font-weight: bold; text-decoration: line-through;">
+												₹{selectedProduct.totalActualPayout}</p> -->
+											<lightning-formatted-number if:true={selectedProduct.isStockAchieved}
+												style="font-weight: bold;" value={selectedProduct.totalActualPayout}
+												currency-display-as="symbol" format-style="currency"
+												currency-code="INR"></lightning-formatted-number>
+											<lightning-formatted-number if:false={selectedProduct.isStockAchieved}
+												style="font-weight: bold; text-decoration: line-through;"
+												value={selectedProduct.totalActualPayout} currency-display-as="symbol"
+												format-style="currency" currency-code="INR">
+											</lightning-formatted-number>
+										</div>
+									</div>
+									<div class="slds-max-small-size--12-of-12 slds-medium-size--2-of-12 slds-large-size--2-of-12 slds-p-bottom_small"
+										style="display: flex;" if:true={isProjectionMode}>
+										<div>
+											<svg width="34" height="34" viewBox="0 0 34 34" fill="none"
+												xmlns="http://www.w3.org/2000/svg">
+												<rect x="0.5" y="0.5" width="33" height="33" rx="16.5" fill="white" />
+												<rect x="0.5" y="0.5" width="33" height="33" rx="16.5"
+													stroke="#E7AF28" />
+												<g clip-path="url(#clip0_8913_4310)">
+													<path
+														d="M28.9651 18.0357L27.2338 10.4767C27.0651 9.74083 26.3292 9.2792 25.5933 9.44783L24.2019 9.76662C23.4661 9.93525 23.0044 10.6709 23.1731 11.407L23.2078 11.5588L22.6701 11.7926C22.2411 11.9792 21.7914 11.9534 21.3697 11.718C20.9485 11.4825 20.5746 11.2631 20.2447 11.0698C18.7026 10.165 17.8532 9.6667 16.5669 10.1476C16.2054 10.2828 15.8465 10.547 15.4777 10.8952H10.8451C10.7623 10.3564 10.3604 9.89561 9.7975 9.76662L8.4061 9.44783C7.66994 9.2792 6.93432 9.74083 6.76569 10.4767L5.03485 18.0357C4.95339 18.3912 5.01584 18.7581 5.21054 19.0684C5.40524 19.3788 5.70829 19.5947 6.06374 19.6762L7.45514 19.995C7.55697 20.0183 7.65962 20.0297 7.76172 20.0297C8.01616 20.0297 8.26625 19.958 8.48783 19.8193C8.73847 19.662 8.9272 19.4345 9.03337 19.1657L14.0309 24.1072C14.3407 24.4171 14.7538 24.5876 15.1942 24.5876C15.6347 24.5876 16.048 24.4168 16.3578 24.107C16.5335 23.9313 16.6646 23.7222 16.745 23.4936L17.2569 24.0054C17.5667 24.3153 17.9797 24.4858 18.4202 24.4858C18.8606 24.4858 19.2739 24.315 19.5838 24.0051C19.7616 23.8276 19.8933 23.6158 19.9737 23.3841C20.2672 23.6272 20.6336 23.7591 21.0213 23.7591C21.4618 23.7591 21.8751 23.5883 22.1849 23.2785C22.4947 22.9687 22.6653 22.5556 22.6653 22.1152C22.6653 22.0609 22.6625 22.0068 22.6577 21.9533C23.0563 21.9273 23.4267 21.7603 23.7102 21.4765C24.1338 21.0529 24.2774 20.4541 24.1417 19.9113L25.1377 19.4717C25.2384 19.6077 25.3647 19.7253 25.5127 19.8182C25.7343 19.9572 25.9844 20.0286 26.2388 20.0286C26.3409 20.0286 26.4436 20.0172 26.5454 19.9939L27.9368 19.6751C28.2922 19.5936 28.5953 19.378 28.79 19.0674C28.9841 18.7581 29.0466 18.3915 28.9651 18.0357ZM16.8954 11.0255C17.7242 10.7157 18.2461 10.9837 19.7706 11.8782C20.1046 12.074 20.4828 12.2961 20.9127 12.5364C21.5897 12.9144 22.3467 12.9557 23.0443 12.6523L23.4207 12.4886L24.8178 18.5889L23.6588 19.1005L19.3888 14.8299C18.5584 13.9995 17.255 13.8819 16.2896 14.5505C14.8116 15.5739 13.8346 15.96 12.8986 15.1221C13.5766 14.491 14.2088 13.7426 14.7766 13.07C15.5714 12.1288 16.3222 11.2398 16.8954 11.0255ZM7.98955 19.025C7.89125 19.0866 7.77584 19.1065 7.66423 19.0809L6.27283 18.7621C6.1615 18.7366 6.06619 18.6685 6.00427 18.5702C5.94263 18.4719 5.92281 18.3564 5.94833 18.2448L7.67971 10.6858C7.72533 10.486 7.90374 10.3504 8.10061 10.3504C8.13238 10.3504 8.16469 10.354 8.19701 10.3613L9.58841 10.6801C9.82031 10.7333 9.96586 10.9652 9.91291 11.1974L8.18153 18.7564C8.156 18.868 8.08785 18.9634 7.98955 19.025ZM23.0468 20.8145C22.914 20.9473 22.7364 21.0203 22.5463 21.0203C22.3562 21.0203 22.1786 20.9473 22.0459 20.8145L18.7167 17.4851C18.5337 17.302 18.2369 17.302 18.0539 17.4851C17.8708 17.6681 17.8708 17.9649 18.0539 18.1479C18.0539 18.1479 21.5055 21.5995 21.5215 21.6155C21.6543 21.7483 21.7273 21.9259 21.7273 22.1157C21.7273 22.3058 21.6543 22.4834 21.5215 22.6162C21.3887 22.749 21.2111 22.822 21.021 22.822C20.8312 22.822 20.6534 22.749 20.5209 22.6162L16.9394 19.035C16.7564 18.852 16.4596 18.852 16.2766 19.035C16.0936 19.2181 16.0936 19.5149 16.2766 19.6979L18.9329 22.3541C19.058 22.4853 19.1267 22.658 19.1267 22.8424C19.1267 23.0325 19.0537 23.2101 18.9209 23.3428C18.7881 23.4756 18.6105 23.5487 18.4205 23.5487C18.2306 23.5487 18.053 23.4756 17.9203 23.3428L15.012 20.4346C14.829 20.2516 14.5322 20.2516 14.3492 20.4346C14.1661 20.6176 14.1661 20.9144 14.3492 21.0974L15.705 22.4533C15.8315 22.585 15.9013 22.7585 15.9013 22.9439C15.9013 23.134 15.8283 23.3116 15.6955 23.4444C15.5627 23.5772 15.3851 23.6502 15.195 23.6502C15.0052 23.6502 14.8276 23.5772 14.6929 23.4425L9.29297 18.1036L10.7292 11.8325H14.5993C14.4238 12.0348 14.2446 12.2469 14.0602 12.4655C13.3822 13.2682 12.6813 14.0986 11.9232 14.734C11.7252 14.8999 11.6989 15.1946 11.8642 15.3931C12.554 16.2215 13.2882 16.5118 13.9937 16.5118C15.1041 16.5118 16.143 15.7925 16.8235 15.3214C17.4258 14.9043 18.2081 14.9749 18.7259 15.4927L23.0468 19.8136C23.3227 20.0895 23.3227 20.5386 23.0468 20.8145ZM27.9954 18.5704C27.9338 18.6687 27.8385 18.7369 27.7269 18.7624L26.3355 19.0812C26.2239 19.1067 26.1085 19.0866 26.0102 19.0253C25.9119 18.9636 25.8437 18.8683 25.8182 18.757L24.0871 11.1974C24.0339 10.9655 24.1794 10.7333 24.4116 10.6801L25.803 10.3613C26.0349 10.3084 26.267 10.4536 26.3203 10.6858L28.0517 18.2451C28.0769 18.3567 28.0571 18.4721 27.9954 18.5704Z"
+														fill="#2B98B0" />
+												</g>
+												<defs>
+													<clipPath id="clip0_8913_4310">
+														<rect width="24" height="24" fill="white"
+															transform="translate(5 5)" />
+													</clipPath>
+												</defs>
+											</svg>
+										</div>
+										<div class="slds-p-left_x-small" style="display: block;">
+											<p style="font-weight: bold;">{selectedProduct.productName} Dealer
+												Incentive</p>
+											<lightning-formatted-number style="font-weight: bold;"
+												value={selectedProduct.totalDealerPredictedPayout}
+												currency-display-as="symbol" format-style="currency"
+												currency-code="INR"></lightning-formatted-number>
+										</div>
+									</div>
+									<div class="slds-max-small-size--12-of-12 slds-medium-size--2-of-12 slds-large-size--2-of-12 slds-p-bottom_small"
+										style="display: flex;" if:false={isProjectionMode}>
+										<div>
+											<svg width="34" height="34" viewBox="0 0 34 34" fill="none"
+												xmlns="http://www.w3.org/2000/svg">
+												<rect x="0.5" y="0.5" width="33" height="33" rx="16.5" fill="white" />
+												<rect x="0.5" y="0.5" width="33" height="33" rx="16.5"
+													stroke="#E7AF28" />
+												<g clip-path="url(#clip0_8913_4310)">
+													<path
+														d="M28.9651 18.0357L27.2338 10.4767C27.0651 9.74083 26.3292 9.2792 25.5933 9.44783L24.2019 9.76662C23.4661 9.93525 23.0044 10.6709 23.1731 11.407L23.2078 11.5588L22.6701 11.7926C22.2411 11.9792 21.7914 11.9534 21.3697 11.718C20.9485 11.4825 20.5746 11.2631 20.2447 11.0698C18.7026 10.165 17.8532 9.6667 16.5669 10.1476C16.2054 10.2828 15.8465 10.547 15.4777 10.8952H10.8451C10.7623 10.3564 10.3604 9.89561 9.7975 9.76662L8.4061 9.44783C7.66994 9.2792 6.93432 9.74083 6.76569 10.4767L5.03485 18.0357C4.95339 18.3912 5.01584 18.7581 5.21054 19.0684C5.40524 19.3788 5.70829 19.5947 6.06374 19.6762L7.45514 19.995C7.55697 20.0183 7.65962 20.0297 7.76172 20.0297C8.01616 20.0297 8.26625 19.958 8.48783 19.8193C8.73847 19.662 8.9272 19.4345 9.03337 19.1657L14.0309 24.1072C14.3407 24.4171 14.7538 24.5876 15.1942 24.5876C15.6347 24.5876 16.048 24.4168 16.3578 24.107C16.5335 23.9313 16.6646 23.7222 16.745 23.4936L17.2569 24.0054C17.5667 24.3153 17.9797 24.4858 18.4202 24.4858C18.8606 24.4858 19.2739 24.315 19.5838 24.0051C19.7616 23.8276 19.8933 23.6158 19.9737 23.3841C20.2672 23.6272 20.6336 23.7591 21.0213 23.7591C21.4618 23.7591 21.8751 23.5883 22.1849 23.2785C22.4947 22.9687 22.6653 22.5556 22.6653 22.1152C22.6653 22.0609 22.6625 22.0068 22.6577 21.9533C23.0563 21.9273 23.4267 21.7603 23.7102 21.4765C24.1338 21.0529 24.2774 20.4541 24.1417 19.9113L25.1377 19.4717C25.2384 19.6077 25.3647 19.7253 25.5127 19.8182C25.7343 19.9572 25.9844 20.0286 26.2388 20.0286C26.3409 20.0286 26.4436 20.0172 26.5454 19.9939L27.9368 19.6751C28.2922 19.5936 28.5953 19.378 28.79 19.0674C28.9841 18.7581 29.0466 18.3915 28.9651 18.0357ZM16.8954 11.0255C17.7242 10.7157 18.2461 10.9837 19.7706 11.8782C20.1046 12.074 20.4828 12.2961 20.9127 12.5364C21.5897 12.9144 22.3467 12.9557 23.0443 12.6523L23.4207 12.4886L24.8178 18.5889L23.6588 19.1005L19.3888 14.8299C18.5584 13.9995 17.255 13.8819 16.2896 14.5505C14.8116 15.5739 13.8346 15.96 12.8986 15.1221C13.5766 14.491 14.2088 13.7426 14.7766 13.07C15.5714 12.1288 16.3222 11.2398 16.8954 11.0255ZM7.98955 19.025C7.89125 19.0866 7.77584 19.1065 7.66423 19.0809L6.27283 18.7621C6.1615 18.7366 6.06619 18.6685 6.00427 18.5702C5.94263 18.4719 5.92281 18.3564 5.94833 18.2448L7.67971 10.6858C7.72533 10.486 7.90374 10.3504 8.10061 10.3504C8.13238 10.3504 8.16469 10.354 8.19701 10.3613L9.58841 10.6801C9.82031 10.7333 9.96586 10.9652 9.91291 11.1974L8.18153 18.7564C8.156 18.868 8.08785 18.9634 7.98955 19.025ZM23.0468 20.8145C22.914 20.9473 22.7364 21.0203 22.5463 21.0203C22.3562 21.0203 22.1786 20.9473 22.0459 20.8145L18.7167 17.4851C18.5337 17.302 18.2369 17.302 18.0539 17.4851C17.8708 17.6681 17.8708 17.9649 18.0539 18.1479C18.0539 18.1479 21.5055 21.5995 21.5215 21.6155C21.6543 21.7483 21.7273 21.9259 21.7273 22.1157C21.7273 22.3058 21.6543 22.4834 21.5215 22.6162C21.3887 22.749 21.2111 22.822 21.021 22.822C20.8312 22.822 20.6534 22.749 20.5209 22.6162L16.9394 19.035C16.7564 18.852 16.4596 18.852 16.2766 19.035C16.0936 19.2181 16.0936 19.5149 16.2766 19.6979L18.9329 22.3541C19.058 22.4853 19.1267 22.658 19.1267 22.8424C19.1267 23.0325 19.0537 23.2101 18.9209 23.3428C18.7881 23.4756 18.6105 23.5487 18.4205 23.5487C18.2306 23.5487 18.053 23.4756 17.9203 23.3428L15.012 20.4346C14.829 20.2516 14.5322 20.2516 14.3492 20.4346C14.1661 20.6176 14.1661 20.9144 14.3492 21.0974L15.705 22.4533C15.8315 22.585 15.9013 22.7585 15.9013 22.9439C15.9013 23.134 15.8283 23.3116 15.6955 23.4444C15.5627 23.5772 15.3851 23.6502 15.195 23.6502C15.0052 23.6502 14.8276 23.5772 14.6929 23.4425L9.29297 18.1036L10.7292 11.8325H14.5993C14.4238 12.0348 14.2446 12.2469 14.0602 12.4655C13.3822 13.2682 12.6813 14.0986 11.9232 14.734C11.7252 14.8999 11.6989 15.1946 11.8642 15.3931C12.554 16.2215 13.2882 16.5118 13.9937 16.5118C15.1041 16.5118 16.143 15.7925 16.8235 15.3214C17.4258 14.9043 18.2081 14.9749 18.7259 15.4927L23.0468 19.8136C23.3227 20.0895 23.3227 20.5386 23.0468 20.8145ZM27.9954 18.5704C27.9338 18.6687 27.8385 18.7369 27.7269 18.7624L26.3355 19.0812C26.2239 19.1067 26.1085 19.0866 26.0102 19.0253C25.9119 18.9636 25.8437 18.8683 25.8182 18.757L24.0871 11.1974C24.0339 10.9655 24.1794 10.7333 24.4116 10.6801L25.803 10.3613C26.0349 10.3084 26.267 10.4536 26.3203 10.6858L28.0517 18.2451C28.0769 18.3567 28.0571 18.4721 27.9954 18.5704Z"
+														fill="#2B98B0" />
+												</g>
+												<defs>
+													<clipPath id="clip0_8913_43102">
+														<rect width="24" height="24" fill="white"
+															transform="translate(5 5)" />
+													</clipPath>
+												</defs>
+											</svg>
+										</div>
+										<div class="slds-p-left_x-small" style="display: block;">
+											<p style="font-weight: bold;">{selectedProduct.productName} Dealer
+												Incentive</p>
+											<lightning-formatted-number style="font-weight: bold;"
+												value={selectedProduct.totalDealerActualPayout}
+												currency-display-as="symbol" format-style="currency"
+												currency-code="INR"></lightning-formatted-number>
+										</div>
+									</div>
+
+
+									<div class="slds-max-small-size--12-of-12 slds-medium-size--2-of-12 slds-large-size--2-of-12 slds-p-bottom_small"
+										style="display: flex;" if:true={isProjectionMode}>
+										<div>
+											<!-- <img src={jcbImg4} alt="JCBIMAGE" style="border-radius: 30px;"> -->
+											<svg width="34" height="34" viewBox="0 0 34 34" fill="none"
+												xmlns="http://www.w3.org/2000/svg">
+												<rect x="0.5" y="0.5" width="33" height="33" rx="16.5" fill="white" />
+												<rect x="0.5" y="0.5" width="33" height="33" rx="16.5"
+													stroke="#E7AF28" />
+												<path
+													d="M22.7549 18.9999C23.5349 18.9999 24.2219 19.3969 24.6249 19.9999H18.4999C17.9369 19.9999 17.4179 20.1859 16.9999 20.4999H11.2529C11.054 20.4999 10.8632 20.5789 10.7226 20.7196C10.5819 20.8602 10.5029 21.051 10.5029 21.2499V21.8269C10.5029 22.3619 10.6949 22.8799 11.0429 23.2869C12.1379 24.5699 13.7769 25.3029 15.9999 25.4669V26.4999C15.9999 26.6619 16.0149 26.8192 16.0449 26.9719C13.3679 26.8029 11.3049 25.9059 9.90191 24.2619C9.32229 23.583 9.00388 22.7196 9.00391 21.8269V21.2489C9.00417 20.6525 9.2412 20.0806 9.66292 19.6589C10.0846 19.2372 10.6565 19.0001 11.2529 18.9999H22.7549ZM16.9999 7.00488C17.6565 7.00488 18.3067 7.13421 18.9133 7.38548C19.52 7.63676 20.0711 8.00506 20.5354 8.46935C20.9997 8.93364 21.368 9.48484 21.6193 10.0915C21.8706 10.6981 21.9999 11.3483 21.9999 12.0049C21.9999 12.6615 21.8706 13.3117 21.6193 13.9183C21.368 14.5249 20.9997 15.0761 20.5354 15.5404C20.0711 16.0047 19.52 16.373 18.9133 16.6243C18.3067 16.8756 17.6565 17.0049 16.9999 17.0049C15.6738 17.0049 14.4021 16.4781 13.4644 15.5404C12.5267 14.6027 11.9999 13.331 11.9999 12.0049C11.9999 10.6788 12.5267 9.40703 13.4644 8.46935C14.4021 7.53167 15.6738 7.00488 16.9999 7.00488ZM16.9999 8.50488C16.5403 8.50488 16.0852 8.59541 15.6605 8.7713C15.2359 8.9472 14.85 9.205 14.525 9.53001C14.2 9.85501 13.9422 10.2409 13.7663 10.6655C13.5904 11.0901 13.4999 11.5453 13.4999 12.0049C13.4999 12.4645 13.5904 12.9196 13.7663 13.3443C13.9422 13.7689 14.2 14.1548 14.525 14.4798C14.85 14.8048 15.2359 15.0626 15.6605 15.2385C16.0852 15.4144 16.5403 15.5049 16.9999 15.5049C17.9282 15.5049 18.8184 15.1361 19.4748 14.4798C20.1312 13.8234 20.4999 12.9331 20.4999 12.0049C20.4999 11.0766 20.1312 10.1864 19.4748 9.53001C18.8184 8.87363 17.9282 8.50488 16.9999 8.50488ZM16.9999 22.4999C16.9999 22.1021 17.1579 21.7205 17.4392 21.4392C17.7206 21.1579 18.1021 20.9999 18.4999 20.9999H26.4999C26.8977 20.9999 27.2793 21.1579 27.5606 21.4392C27.8419 21.7205 27.9999 22.1021 27.9999 22.4999V26.4999C27.9999 26.8977 27.8419 27.2792 27.5606 27.5605C27.2793 27.8418 26.8977 27.9999 26.4999 27.9999H18.4999C18.1021 27.9999 17.7206 27.8418 17.4392 27.5605C17.1579 27.2792 16.9999 26.8977 16.9999 26.4999V22.4999ZM26.9999 22.9999C26.7347 22.9999 26.4803 22.8945 26.2928 22.707C26.1053 22.5195 25.9999 22.2651 25.9999 21.9999H24.9999C24.9999 22.5303 25.2106 23.039 25.5857 23.4141C25.9608 23.7892 26.4695 23.9999 26.9999 23.9999V22.9999ZM26.9999 24.9999C26.4695 24.9999 25.9608 25.2106 25.5857 25.5857C25.2106 25.9607 24.9999 26.4694 24.9999 26.9999H25.9999C25.9999 26.7347 26.1053 26.4803 26.2928 26.2928C26.4803 26.1052 26.7347 25.9999 26.9999 25.9999V24.9999ZM18.9999 21.9999C18.9999 22.2651 18.8945 22.5195 18.707 22.707C18.5195 22.8945 18.2651 22.9999 17.9999 22.9999V23.9999C18.5303 23.9999 19.039 23.7892 19.4141 23.4141C19.7892 23.039 19.9999 22.5303 19.9999 21.9999H18.9999ZM19.9999 26.9999C19.9999 26.4694 19.7892 25.9607 19.4141 25.5857C19.039 25.2106 18.5303 24.9999 17.9999 24.9999V25.9999C18.2651 25.9999 18.5195 26.1052 18.707 26.2928C18.8945 26.4803 18.9999 26.7347 18.9999 26.9999H19.9999ZM24.2499 24.4999C24.2499 24.0358 24.0655 23.5906 23.7373 23.2624C23.4092 22.9343 22.964 22.7499 22.4999 22.7499C22.0358 22.7499 21.5907 22.9343 21.2625 23.2624C20.9343 23.5906 20.7499 24.0358 20.7499 24.4999C20.7499 24.964 20.9343 25.4091 21.2625 25.7373C21.5907 26.0655 22.0358 26.2499 22.4999 26.2499C22.964 26.2499 23.4092 26.0655 23.7373 25.7373C24.0655 25.4091 24.2499 24.964 24.2499 24.4999Z"
+													fill="#3516A4" />
+											</svg>
+
+										</div>
+										<div class="slds-p-left_x-small" style="display: block;">
+											<p style="font-weight: bold;">{selectedProduct.productName} Sales Person
+												Incentive</p>
+											<!-- <p if:true={selectedProduct.isStockPredicted} style="font-weight: bold;">
+												₹{selectedProduct.totalSPersonPredictedPayout}</p>
+											<p if:false={selectedProduct.isStockPredicted}
+												style="font-weight: bold; text-decoration: line-through;">
+												₹{selectedProduct.totalSPersonPredictedPayout}</p> -->
+											<lightning-formatted-number style="font-weight: bold;"
+												value={selectedProduct.totalSPersonPredictedPayout}
+												currency-display-as="symbol" format-style="currency"
+												currency-code="INR"></lightning-formatted-number>
+											<!-- <lightning-formatted-number if:false={selectedProduct.isStockPredicted}
+												style="font-weight: bold; text-decoration: line-through;"
+												value={selectedProduct.totalSPersonPredictedPayout}
+												currency-display-as="symbol" format-style="currency"
+												currency-code="INR"></lightning-formatted-number> -->
+										</div>
+									</div>
+									<div class="slds-max-small-size--12-of-12 slds-medium-size--2-of-12 slds-large-size--2-of-12 slds-p-bottom_small"
+										style="display: flex;" if:false={isProjectionMode}>
+										<div>
+											<!-- <img src={jcbImg4} alt="JCBIMAGE" style="border-radius: 30px;"> -->
+											<svg width="34" height="34" viewBox="0 0 34 34" fill="none"
+												xmlns="http://www.w3.org/2000/svg">
+												<rect x="0.5" y="0.5" width="33" height="33" rx="16.5" fill="white" />
+												<rect x="0.5" y="0.5" width="33" height="33" rx="16.5"
+													stroke="#E7AF28" />
+												<path
+													d="M22.7549 18.9999C23.5349 18.9999 24.2219 19.3969 24.6249 19.9999H18.4999C17.9369 19.9999 17.4179 20.1859 16.9999 20.4999H11.2529C11.054 20.4999 10.8632 20.5789 10.7226 20.7196C10.5819 20.8602 10.5029 21.051 10.5029 21.2499V21.8269C10.5029 22.3619 10.6949 22.8799 11.0429 23.2869C12.1379 24.5699 13.7769 25.3029 15.9999 25.4669V26.4999C15.9999 26.6619 16.0149 26.8192 16.0449 26.9719C13.3679 26.8029 11.3049 25.9059 9.90191 24.2619C9.32229 23.583 9.00388 22.7196 9.00391 21.8269V21.2489C9.00417 20.6525 9.2412 20.0806 9.66292 19.6589C10.0846 19.2372 10.6565 19.0001 11.2529 18.9999H22.7549ZM16.9999 7.00488C17.6565 7.00488 18.3067 7.13421 18.9133 7.38548C19.52 7.63676 20.0711 8.00506 20.5354 8.46935C20.9997 8.93364 21.368 9.48484 21.6193 10.0915C21.8706 10.6981 21.9999 11.3483 21.9999 12.0049C21.9999 12.6615 21.8706 13.3117 21.6193 13.9183C21.368 14.5249 20.9997 15.0761 20.5354 15.5404C20.0711 16.0047 19.52 16.373 18.9133 16.6243C18.3067 16.8756 17.6565 17.0049 16.9999 17.0049C15.6738 17.0049 14.4021 16.4781 13.4644 15.5404C12.5267 14.6027 11.9999 13.331 11.9999 12.0049C11.9999 10.6788 12.5267 9.40703 13.4644 8.46935C14.4021 7.53167 15.6738 7.00488 16.9999 7.00488ZM16.9999 8.50488C16.5403 8.50488 16.0852 8.59541 15.6605 8.7713C15.2359 8.9472 14.85 9.205 14.525 9.53001C14.2 9.85501 13.9422 10.2409 13.7663 10.6655C13.5904 11.0901 13.4999 11.5453 13.4999 12.0049C13.4999 12.4645 13.5904 12.9196 13.7663 13.3443C13.9422 13.7689 14.2 14.1548 14.525 14.4798C14.85 14.8048 15.2359 15.0626 15.6605 15.2385C16.0852 15.4144 16.5403 15.5049 16.9999 15.5049C17.9282 15.5049 18.8184 15.1361 19.4748 14.4798C20.1312 13.8234 20.4999 12.9331 20.4999 12.0049C20.4999 11.0766 20.1312 10.1864 19.4748 9.53001C18.8184 8.87363 17.9282 8.50488 16.9999 8.50488ZM16.9999 22.4999C16.9999 22.1021 17.1579 21.7205 17.4392 21.4392C17.7206 21.1579 18.1021 20.9999 18.4999 20.9999H26.4999C26.8977 20.9999 27.2793 21.1579 27.5606 21.4392C27.8419 21.7205 27.9999 22.1021 27.9999 22.4999V26.4999C27.9999 26.8977 27.8419 27.2792 27.5606 27.5605C27.2793 27.8418 26.8977 27.9999 26.4999 27.9999H18.4999C18.1021 27.9999 17.7206 27.8418 17.4392 27.5605C17.1579 27.2792 16.9999 26.8977 16.9999 26.4999V22.4999ZM26.9999 22.9999C26.7347 22.9999 26.4803 22.8945 26.2928 22.707C26.1053 22.5195 25.9999 22.2651 25.9999 21.9999H24.9999C24.9999 22.5303 25.2106 23.039 25.5857 23.4141C25.9608 23.7892 26.4695 23.9999 26.9999 23.9999V22.9999ZM26.9999 24.9999C26.4695 24.9999 25.9608 25.2106 25.5857 25.5857C25.2106 25.9607 24.9999 26.4694 24.9999 26.9999H25.9999C25.9999 26.7347 26.1053 26.4803 26.2928 26.2928C26.4803 26.1052 26.7347 25.9999 26.9999 25.9999V24.9999ZM18.9999 21.9999C18.9999 22.2651 18.8945 22.5195 18.707 22.707C18.5195 22.8945 18.2651 22.9999 17.9999 22.9999V23.9999C18.5303 23.9999 19.039 23.7892 19.4141 23.4141C19.7892 23.039 19.9999 22.5303 19.9999 21.9999H18.9999ZM19.9999 26.9999C19.9999 26.4694 19.7892 25.9607 19.4141 25.5857C19.039 25.2106 18.5303 24.9999 17.9999 24.9999V25.9999C18.2651 25.9999 18.5195 26.1052 18.707 26.2928C18.8945 26.4803 18.9999 26.7347 18.9999 26.9999H19.9999ZM24.2499 24.4999C24.2499 24.0358 24.0655 23.5906 23.7373 23.2624C23.4092 22.9343 22.964 22.7499 22.4999 22.7499C22.0358 22.7499 21.5907 22.9343 21.2625 23.2624C20.9343 23.5906 20.7499 24.0358 20.7499 24.4999C20.7499 24.964 20.9343 25.4091 21.2625 25.7373C21.5907 26.0655 22.0358 26.2499 22.4999 26.2499C22.964 26.2499 23.4092 26.0655 23.7373 25.7373C24.0655 25.4091 24.2499 24.964 24.2499 24.4999Z"
+													fill="#3516A4" />
+											</svg>
+										</div>
+										<div class="slds-p-left_x-small" style="display: block;">
+											<p style="font-weight: bold;">{selectedProduct.productName} Sales Person
+												Incentive</p>
+											<!-- <p if:true={selectedProduct.isStockPredicted} style="font-weight: bold;">
+												₹{selectedProduct.totalSPersonPredictedPayout}</p>
+											<p if:false={selectedProduct.isStockPredicted}
+												style="font-weight: bold; text-decoration: line-through;">
+												₹{selectedProduct.totalSPersonPredictedPayout}</p> -->
+											<lightning-formatted-number style="font-weight: bold;"
+												value={selectedProduct.totalSPersonActualPayout}
+												currency-display-as="symbol" format-style="currency"
+												currency-code="INR"></lightning-formatted-number>
+											<!-- <lightning-formatted-number if:false={selectedProduct.isStockAchieved}
+												style="font-weight: bold; text-decoration: line-through;"
+												value={selectedProduct.totalSPersonActualPayout}
+												currency-display-as="symbol" format-style="currency"
+												currency-code="INR"></lightning-formatted-number> -->
+										</div>
+									</div>
+									<div class="slds-max-small-size--12-of-12 slds-medium-size--2-of-12 slds-large-size--2-of-12 slds-p-bottom_small"
+										style="display: flex;">
+										<div>
+											<img src={jcbImg6} alt="JCBIMAGE" style="border-radius: 30px;">
+										</div>
+										<div class="slds-p-left_x-small" style="display: block;">
+											<p style="font-weight: bold;">Target</p>
+											<!-- <p style="font-weight: bold;">
+												₹{selectedProduct.totalProdTargetPayout}
+											</p> -->
+											<lightning-formatted-number style="font-weight: bold;"
+												value={selectedProduct.totalProdTargetPayout}
+												currency-display-as="symbol" format-style="currency"
+												currency-code="INR"></lightning-formatted-number>
+										</div>
+									</div>
+									<div class="slds-max-small-size--12-of-12 slds-medium-size--2-of-12 slds-large-size--2-of-12 slds-p-bottom_small"
+										style="display: flex;">
+										<div>
+											<img src={jcbImg7} alt="JCBIMAGE" style="border-radius: 30px;">
+										</div>
+										<div class="slds-p-left_x-small" style="display: block;">
+											<p style="font-weight: bold;">
+												Earning Potential </p>
+											<p if:false={selectedProduct.isTargetAchieved}
+												style="font-size: 13px; font-weight: 550; height:30px;">
+												You may lose
+												<span if:true={isProjectionMode}
+													style="color: red;">&nbsp;₹{selectedProduct.totalEarningPotentialCalc}</span>
+												<span if:false={isProjectionMode}
+													style="color: red;">&nbsp;₹{selectedProduct.totalEarningPotentialActual}</span>
+											</p>
+											<template if:true={isProjectionMode}>
+												<p if:true={selectedProduct.isTargetAchieved}
+													style="font-size: 12px; font-weight: 550; color: green;">
+													Congratulations! You've hit your target
+													&nbsp;for
+													&nbsp;this product. Keep up the
+													&nbsp;great work, and continue selling
+													&nbsp;to
+													&nbsp;earn even more.</p>
+											</template>
+											<template if:false={isProjectionMode}>
+												<p if:true={selectedProduct.isActualTargetAchieved}
+													style="font-size: 12px; font-weight: 550; color: green;">
+													Congratulations! You've hit your target
+													&nbsp;for
+													&nbsp;this product. Keep up the
+													&nbsp;great work, and continue selling
+													&nbsp;to
+													&nbsp;earn even more.</p>
+											</template>
+										</div>
+									</div>
+									<div
+										class="slds-max-small-size--12-of-12 slds-medium-size--2-of-12 slds-large-size--2-of-12 slds-p-bottom_small">
+										<lightning-input type="checkbox" label="Show Cost"
+											style="cursor: pointer; font-weight: bold;" onchange={handleShowCost}
+											name="Show cost" checked={isShowCost}>
+										</lightning-input>
+										<template if:true={isProjectionMode}>
+											<lightning-input type="checkbox" label="Stock Condition"
+												style="line-height: 20px; font-weight: bold;"
+												data-prod={selectedProduct.productName} name="Stock Condition"
+												checked={selectedProduct.isStockPredicted}
+												onchange={handleStockConditionToggle} message-toggle-active="Qualified"
+												message-toggle-inactive="Not Qualified">
+											</lightning-input>
+										</template>
+										<template if:false={isProjectionMode}>
+											<lightning-input type="checkbox" label="Stock Condition"
+												style="line-height: 20px; font-weight: bold;"
+												data-prod={selectedProduct.productName} name="Stock Condition"
+												checked={selectedProduct.isStockAchieved} disabled
+												onchange={handleStockConditionToggle} message-toggle-active="Qualified"
+												message-toggle-inactive="Not Qualified">
+											</lightning-input>
+										</template>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class={subcategorySize}>
+							<div class="facet_sidebar">
+								<div class="tableFix">
+									<table class="slds-table_bordered" style="border-top: none;border-bottom: none;">
+										<thead style="position: sticky; top:0px; z-index: 1;">
+											<tr style="height:50px;">
+												<th scope="col"
+													style="background: rgb(247,247,247); height:50px;font-size: 16px;font-weight: 700;"
+													class="cellPadding">
+													<p class="tableFont">{selectedProduct.kpName}</p>
+													<div class="slds-truncate tableFont" title="Model">
+														Sub Categories
+													</div>
+												</th>
+												<th scope="col"
+													style="background: rgb(247,247,247); height:50px; text-align: center;"
+													class="cellPadding">
+													<div if:true={isProjectionMode} class="slds-truncate tableFont"
+														title="Model" style="font-size: 16px;font-weight: 700;">
+														Projected
+													</div>
+													<div if:false={isProjectionMode} class="slds-truncate tableFont"
+														title="Model" style="font-size: 16px;font-weight: 700;">
+														Actual
+													</div>
+													<div if:true={isBHL} class="slds-grid slds-wrap"
+														style="font-size: 13px;font-weight: 600;">
+														<div class="slds-col slds-size_6-of-12">
+															4WD
+														</div>
+														<div class="slds-col slds-size_6-of-12">
+															2WD
+														</div>
+													</div>
+												</th>
+												<th scope="col"
+													style="background: rgb(247,247,247); height:50px;font-size: 16px;font-weight: 700; text-align: center;"
+													class="cellPadding">
+													<div class="slds-truncate tableFont" title="Model">
+														Target
+													</div>
+												</th>
+											</tr>
+										</thead>
+										<tbody style="line-height: 10px;">
+											<template for:each={selectedProduct.subProducts} for:item="subProd">
+												<tr key={subProd.name} class="slds-hint-parent" style="height:60px;">
+													<td class="cellPadding">
+														<div style="font-size: 12px;font-weight: 600;">
+															<lightning-formatted-text value={subProd.name}>
+															</lightning-formatted-text>
+														</div>
+													</td>
+
+													<td if:true={isProjectionMode} class="cellPadding">
+														<template if:false={isShowCost}>
+															<div if:true={isBHL} class="slds-grid slds-wrap">
+																<div class="slds-col slds-size_6-of-12">
+																	<lightning-input
+																		class="slds-size_xx-small slds-p-right_small slds-align_absolute-center"
+																		name={subProd.name}
+																		data-subid={subProd.subCategoryId}
+																		value={subProd.fourWd}
+																		onchange={handleSubProdInput} data-protype="4wd"
+																		onkeypress={handleKeyPressValidation}
+																		onpaste={handlePasteValidation}
+																		oninput={handleInputValidation}
+																		onblur={handleBlur} data-type="retail">
+																	</lightning-input>
+																</div>
+																<div class="slds-col slds-size_6-of-12">
+																	<lightning-input
+																		class="slds-size_xx-small slds-p-left_small slds-align_absolute-center"
+																		name={subProd.name}
+																		data-subid={subProd.subCategoryId}
+																		value={subProd.twoWd} data-protype="2wd"
+																		onchange={handleSubProdInput}
+																		onkeypress={handleKeyPressValidation}
+																		onpaste={handlePasteValidation}
+																		onblur={handleBlur}
+																		oninput={handleInputValidation}
+																		data-type="retail">
+																	</lightning-input>
+																</div>
+															</div>
+
+															<lightning-input if:false={isBHL}
+																class="slds-size_xx-small slds-align_absolute-center"
+																name={subProd.name} data-subid={subProd.subCategoryId}
+																value={subProd.volume} onchange={handleSubProdInput}
+																onkeypress={handleKeyPressValidation}
+																onpaste={handlePasteValidation} onblur={handleBlur}
+																oninput={handleInputValidation} data-type="retail">
+															</lightning-input>
+														</template>
+														<template if:true={isShowCost}>
+															<template if:true={isBHL}>
+																<div class="slds-grid slds-wrap"
+																	style="text-align:center;">
+																	<div if:true={projectedSc} style="font-weight: 600;"
+																		class="slds-col slds-size_6-of-12">
+																		<template
+																			if:true={subProd.variesBy4WD}>{subProd.fourWd}
+																			× {subProd.fourWDPayoutAmount} =</template>
+																		<template
+																			if:false={subProd.variesBy4WD}>{subProd.fourWd}
+																			× {subProd.payout} =</template>
+																		<span
+																			style={subProd.colorProj}>&nbsp;₹{subProd.showCost4WDTotal}</span>
+																	</div>
+																	<div if:true={projectedSc}
+																		class="slds-col slds-size_6-of-12"
+																		style="font-weight: 600;">
+																		<template
+																			if:true={subProd.variesBy4WD}>{subProd.twoWd}
+																			× {subProd.twoWDPayoutAmount} =</template>
+																		<template
+																			if:false={subProd.variesBy4WD}>{subProd.twoWd}
+																			× {subProd.payout} =</template>
+																		<span
+																			style={subProd.colorProj}>&nbsp;₹{subProd.showCost2WDTotal}</span>
+																	</div>
+																</div>
+															</template>
+															<template if:false={isBHL}>
+																<div if:true={projectedSc}
+																	style="font-weight: 600;text-align:center;">
+																	{subProd.volume} × {subProd.payout} =
+																	<span
+																		style={subProd.colorProj}>&nbsp;₹{subProd.showCostProjTotal}</span>
+																</div>
+															</template>
+														</template>
+													</td>
+
+													<td if:false={isProjectionMode} class="cellPadding">
+														<template if:false={isShowCost}>
+															<div if:true={isBHL} class="slds-grid slds-wrap"
+																style="text-align:center;">
+																<div class="slds-col slds-size_6-of-12">
+																	<div class="slds-align_absolute-center"
+																		style="font-size: 13px;font-weight: 600;">
+																		{subProd.retail4WdActual}
+																	</div>
+																</div>
+																<div class="slds-col slds-size_6-of-12">
+																	<div class="slds-align_absolute-center"
+																		style="font-size: 13px;font-weight: 600;">
+																		{subProd.retail2WdActual}
+																	</div>
+																</div>
+															</div>
+															<div if:false={isBHL} class="slds-align_absolute-center"
+																style="font-size: 13px;font-weight: 600; text-align:center;">
+																{subProd.retailActual}
+															</div>
+														</template>
+														<template if:true={isShowCost}>
+															<template if:true={isBHL}>
+																<div class="slds-grid slds-wrap"
+																	style="text-align:center;">
+																	<div if:true={projectedSc} style="font-weight: 600;"
+																		class="slds-col slds-size_6-of-12">
+																		{subProd.retail4WdActual} × {subProd.payout} =
+																		<span
+																			style={subProd.colorAct}>&nbsp;₹{subProd.showCost4WDActual}</span>
+																	</div>
+																	<div if:true={projectedSc}
+																		class="slds-col slds-size_6-of-12"
+																		style="font-weight: 600;">
+																		{subProd.retail2WdActual} × {subProd.payout} =
+																		<span
+																			style={subProd.colorAct}>&nbsp;₹{subProd.showCost2WDActual}</span>
+																	</div>
+																</div>
+															</template>
+															<template if:false={isBHL}>
+																<div if:true={projectedSc}
+																	style="font-weight: 600; text-align:center;">
+																	{subProd.retailActual} × {subProd.payout} =
+																	<span
+																		style={subProd.colorAct}>&nbsp;₹{subProd.actualShowPayout}</span>
+																</div>
+															</template>
+														</template>
+													</td>
+
+													<template if:true={isShowCost}>
+														<td class="cellPadding">
+															<div
+																style="font-size: 13px;font-weight: 600; text-align:center;">
+																{subProd.retailTarget} × {subProd.payout} =
+																<span>&nbsp;₹{subProd.targetShowPayout}</span>
+															</div>
+														</td>
+													</template>
+													<template if:false={isShowCost}>
+														<td class="cellPadding" style="text-align: center;">
+															<div style="font-size: 13px;font-weight: 600;">
+																{subProd.retailTarget}
+															</div>
+														</td>
+													</template>
+												</tr>
+											</template>
+										</tbody>
+										<thead style="position: sticky; bottom:0px; z-index: 1;">
+											<tr style="height:40px;">
+												<th scope="col" class="cellPadding table-footer">
+													<div class="slds-truncate tableFont" title="Model">
+														Total (Retail Volume)
+													</div>
+												</th>
+												<th if:true={isProjectionMode} scope="col"
+													class="cellPadding table-footer">
+													<div class="slds-truncate tableFont" title="Model"
+														style="text-align:center;">
+														{selectedProduct.totalRetail}
+													</div>
+												</th>
+												<th if:false={isProjectionMode} scope="col"
+													class="cellPadding table-footer">
+													<div class="slds-truncate tableFont" title="Model"
+														style="text-align:center;">
+														{selectedProduct.totalRetailActual}
+													</div>
+												</th>
+												<th scope="col" class="cellPadding table-footer"
+													style="text-align: center;">
+													<div class="slds-truncate tableFont" title="Model">
+														{selectedProduct.totalRetailTarget}
+													</div>
+												</th>
+											</tr>
+											<tr style="height: 40px;">
+												<th scope="col" class="cellPadding table-footer">
+													<div class="slds-truncate tableFont" title="Model">
+														Retail Volume in (%)
+													</div>
+												</th>
+												<th if:true={isProjectionMode} scope="col"
+													class="cellPadding table-footer" style="text-align: center;">
+													<div class="slds-truncate tableFont" title="Model">
+														{selectedProduct.totalRetailPercentage}%
+													</div>
+												</th>
+												<th if:false={isProjectionMode} scope="col"
+													class="cellPadding table-footer" style="text-align: center;">
+													<div class="slds-truncate tableFont" title="Model">
+														{selectedProduct.totalRetailActualPercentage}%
+													</div>
+												</th>
+												<th scope="col" class="cellPadding table-footer"
+													style="text-align: center;">
+													<div class="slds-truncate tableFont" title="Model">
+														100%
+													</div>
+												</th>
+											</tr>
+											<template if:true={isProjectionMode}>
+												<tr if:true={selectedProduct.showWarningCalc} class="slds-hint-parent"
+													style="height:20px;background: rgb(247, 247, 247);">
+													<td class="cellPadding" style="font-size: 12px; font-weight: 550;"
+														colspan="4">
+														<p>Try to sell
+															<span
+																style="color: red;">&nbsp;{selectedProduct.targetRemain}&nbsp;</span>
+															more machines to get
+															<template if:true={selectedProduct.earningPotentialMinCalc}>
+																<span
+																	style="color: red;">&nbsp;₹&nbsp;{selectedProduct.earningPotentialMinCalc}&nbsp;to
+																	&nbsp;₹&nbsp;{selectedProduct.earningPotentialMaxCalc}&nbsp;</span>
+															</template>
+															<template
+																if:false={selectedProduct.earningPotentialMinCalc}>
+																&nbsp;upto
+																<span
+																	style="color: red;">&nbsp;₹&nbsp;{selectedProduct.earningPotentialMaxCalc}&nbsp;</span>
+															</template>
+															payout on Volume Incentive.
+														</p>
+													</td>
+												</tr>
+												<tr if:true={selectedProduct.addShowWarningCalc}
+													class="slds-hint-parent"
+													style="height:20px;background: rgb(247, 247, 247);">
+													<td class="cellPadding" style="font-size: 12px; font-weight: 550;"
+														colspan="4">
+														<p>Try to sell
+															<span
+																style="color: red;">&nbsp;{selectedProduct.addTargetRemainCalc}&nbsp;</span>
+															more machines to get
+															<span
+																style="color: red;">&nbsp;₹&nbsp;{selectedProduct.addEarningPotentialCalc}&nbsp;</span>
+															payout on Additional Volume Incentive.
+														</p>
+													</td>
+												</tr>
+												<tr if:true={selectedProduct.showSalesCalc} class="slds-hint-parent"
+													style="height:20px;background: rgb(247, 247, 247);">
+													<td class="cellPadding" style="font-size: 12px; font-weight: 550;"
+														colspan="4">
+														<p>Try to sell
+															<span
+																style="color: red;">&nbsp;{selectedProduct.calcSalesRemain}&nbsp;</span>
+															more machines to get
+															<template if:true={selectedProduct.salesPotentialMinCalc}>
+																<span
+																	style="color: red;">&nbsp;₹&nbsp;{selectedProduct.salesPotentialMinCalc}&nbsp;to
+																	&nbsp;₹&nbsp;{selectedProduct.salesPotentialMaxCalc}&nbsp;</span>
+															</template>
+															<template if:false={selectedProduct.salesPotentialMinCalc}>
+																&nbsp;upto
+																<span
+																	style="color: red;">&nbsp;₹&nbsp;{selectedProduct.salesPotentialMaxCalc}&nbsp;</span>
+															</template>
+															payout on Sales Person Incentive.
+														</p>
+													</td>
+												</tr>
+												<tr if:true={selectedProduct.showTIVWarningCalc}
+													class="slds-hint-parent"
+													style="height:20px;background: rgb(247, 247, 247);">
+													<td class="cellPadding" style="font-size: 12px; font-weight: 550;"
+														colspan="4">
+														<p>Try to sell
+															<span
+																style="color: red;">&nbsp;{selectedProduct.tivTargetCalc}&nbsp;</span>
+															more machines to get
+															<template if:true={selectedProduct.tivEarningsMinCalc}>
+																<span
+																	style="color: red;">&nbsp;₹&nbsp;{selectedProduct.tivEarningsMinCalc}&nbsp;to
+																	&nbsp;₹&nbsp;{selectedProduct.tivEarningsMaxCalc}&nbsp;</span>
+															</template>
+															<template if:false={selectedProduct.tivEarningsMinCalc}>
+																&nbsp;upto
+																<span
+																	style="color: red;">&nbsp;₹&nbsp;{selectedProduct.tivEarningsMaxCalc}&nbsp;</span>
+															</template>
+															payout on Variable Incentive Payout.
+														</p>
+													</td>
+												</tr>
+											</template>
+											<template if:false={isProjectionMode}>
+												<tr if:true={selectedProduct.showWarningActual} class="slds-hint-parent"
+													style="height:40px;background: rgb(247, 247, 247);">
+													<td class="cellPadding" style="font-size: 12px; font-weight: 550;"
+														colspan="4">Try to sell {selectedProduct.actualTargetRemain}
+														&nbsp;more
+														&nbsp;machines to get
+														<template if:true={selectedProduct.earningPotentialMinActual}>
+															&nbsp;<span
+																style="color: red;">₹&nbsp;{selectedProduct.earningPotentialMinActual}&nbsp;to&nbsp;₹&nbsp;{selectedProduct.earningPotentialMaxActual}</span>
+															&nbsp;payout on Volume Incentive.
+														</template>
+														<template if:false={selectedProduct.earningPotentialMinActual}>
+															&nbsp;upto
+															&nbsp;<span
+																style="color: red;">₹&nbsp;{selectedProduct.earningPotentialMaxActual}</span>
+															&nbsp;payout on Volume Incentive.
+														</template>
+													</td>
+												</tr>
+												<tr if:true={selectedProduct.addShowWarningActual}
+													class="slds-hint-parent"
+													style="height:40px;background: rgb(247, 247, 247);">
+													<td class="cellPadding" style="font-size: 12px; font-weight: 550;"
+														colspan="4">Try to sell {selectedProduct.addTargetRemainActual}
+														&nbsp;more
+														&nbsp;machines to get
+														&nbsp;<span
+															style="color: red;">₹&nbsp;{selectedProduct.addEarningPotentialMaxActual}</span>
+														&nbsp;payout on Additional Volume incentive.
+													</td>
+												</tr>
+												<tr if:true={selectedProduct.showSalesActual} class="slds-hint-parent"
+													style="height:20px;background: rgb(247, 247, 247);">
+													<td class="cellPadding" style="font-size: 12px; font-weight: 550;"
+														colspan="4">
+														<p>Try to sell
+															<span
+																style="color: red;">&nbsp;{selectedProduct.actualSalesRemain}&nbsp;</span>
+															more machines to get
+															<template if:true={selectedProduct.salesPotentialMinActual}>
+																<span
+																	style="color: red;">&nbsp;₹&nbsp;{selectedProduct.salesPotentialMinActual}&nbsp;to
+																	&nbsp;₹&nbsp;{selectedProduct.salesPotentialMaxActual}&nbsp;</span>
+															</template>
+															<template
+																if:false={selectedProduct.salesPotentialMinActual}>
+																&nbsp;upto
+																<span
+																	style="color: red;">&nbsp;₹&nbsp;{selectedProduct.salesPotentialMaxActual}&nbsp;</span>
+															</template>
+															payout on Sales Person Incentive.
+														</p>
+													</td>
+												</tr>
+												<tr if:true={selectedProduct.showTIVWarningActual}
+													class="slds-hint-parent"
+													style="height:20px;background: rgb(247, 247, 247);">
+													<td class="cellPadding" style="font-size: 12px; font-weight: 550;"
+														colspan="4">
+														<p>Try to sell
+															<span
+																style="color: red;">&nbsp;{selectedProduct.tivTargetActual}&nbsp;</span>
+															more machines to get
+															<template if:true={selectedProduct.tivEarningsMinActual}>
+																<span
+																	style="color: red;">&nbsp;₹&nbsp;{selectedProduct.tivEarningsMinActual}&nbsp;to
+																	&nbsp;₹&nbsp;{selectedProduct.tivEarningsMaxActual}&nbsp;</span>
+															</template>
+															<template if:false={selectedProduct.tivEarningsMinActual}>
+																&nbsp;upto
+																<span
+																	style="color: red;">&nbsp;₹&nbsp;{selectedProduct.tivEarningsMaxActual}&nbsp;</span>
+															</template>
+															payout on Variable Incentive Payout.
+														</p>
+													</td>
+												</tr>
+											</template>
+										</thead>
+									</table>
+								</div>
+							</div>
+						</div>
+						<div class={kpiSize} style="display:flex;">
+							<div if:true={showKpis} class={kpiClass}>
+								<div class="kpiContainer slds-size_1-of-1 slds-p-right_x-small">
+									<template for:each={selectedProduct.kpiAchivement} for:item="kpiAch">
+										<template if:false={kpiAch.isCalculated}>
+											<div key={kpiAch.Label} class="kpi-cards">
+												<div class="slds-size_2-of-2" style="display: flex;">
+													<div style="font-weight :600;" class="slds-size_3-of-4">
+														{kpiAch.Label}
+													</div>
+													<div class="slds-size_1-of-4"
+														style="display:flex; justify-content: flex-end;">
+														<lightning-icon icon-name="utility:chevrondown" size="x-small"
+															if:false={kpiAch.showWarning} onclick={handleArrow}
+															class="down-transition arrow-icon"
+															data-kpid={kpiAch.productKPIId}>
+														</lightning-icon>
+														<lightning-icon icon-name="utility:chevronup" size="x-small"
+															if:true={kpiAch.showWarning} onclick={handleArrow}
+															class="down-transition arrow-icon"
+															data-kpid={kpiAch.productKPIId}>
+														</lightning-icon>
+													</div>
+												</div>
+												<template if:true={isTHProduct}>
+													<template if:false={kpiAch.isPercentage}>
+														<template if:false={isProjectionMode}>
+															<div class="slds-size_2-of-2 slds-p-top_large"
+																style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 10px;">
+
+																<!-- Top Left: Actual -->
+																<div
+																	style="display: flex; align-items: center; justify-content: flex-start;">
+																	<img src={jcbImg5} alt="JCBIMAGE"
+																		style="border-radius: 30px; height: 20px; width: 20px; margin-right: 5px;">
+																	Actual:&nbsp;<b>{kpiAch.actualPercentage}<span
+																			if:true={kpiAch.isPercentage}>%</span></b>
+																</div>
+
+																<!-- Top Right: Target -->
+																<div
+																	style="display: flex; align-items: center; justify-content: flex-end;">
+																	<img src={jcbImg6} alt="JCBIMAGE"
+																		style="border-radius: 30px; height: 20px; width: 20px; margin-right: 5px;">
+																	Target:&nbsp;<b>{selectedProduct.demoTarget}</b>
+																</div>
+
+																<!-- Bottom Left: Actual(%) -->
+																<div
+																	style="display: flex; align-items: center; justify-content: flex-start;">
+																	<img src={jcbImg5} alt="JCBIMAGE"
+																		style="border-radius: 30px; height: 20px; width: 20px; margin-right: 5px;">
+																	Actual(%):&nbsp;<b>{kpiAch.actualKPIPercentage}<span
+																			if:true={kpiAch.isPercentage}>%</span></b>
+																</div>
+
+																<!-- Bottom Right: Target(%) -->
+																<div
+																	style="display: flex; align-items: center; justify-content: flex-end;">
+																	<img src={jcbImg6} alt="JCBIMAGE"
+																		style="border-radius: 30px; height: 20px; width: 20px; margin-right: 5px;">
+																	Target:&nbsp;<b>{kpiAch.targetPercentageActual}<span
+																			if:true={kpiAch.targetPercentEndActual}>&nbsp;to&nbsp;{kpiAch.targetPercentEndActual}</span>%</b>
+																</div>
+
+															</div>
+														</template>
+													</template>
+												</template>
+
+
+												<!-- Default Layout for Other Products -->
+												<template if:false={isTHProduct}>
+													<template if:false={isProjectionMode}>
+														<div if:true={kpiAch.isProductToCE} class="slds-p-around_small" style="font-size:11px; font-weight:400;">Note: The {selectedProduct.productName} To CE Ratio from <span style="font-weight:600;">Q4 {prevYear}</span> will serve as the baseline for calculating <span style="font-weight:600;">{year} growth.</span></div>
+														<!-- Existing layout for other products goes here -->
+														<div class="slds-size_2-of-2 slds-p-top_large"
+															style="display: flex;">
+															<div class="slds-size_1-of-2"
+																style="display:flex; justify-content: flex-start;">
+																<div style="display: flex; align-items: center;">
+																	<img src={jcbImg5} alt="JCBIMAGE"
+																		style="border-radius: 30px; height: 20px; width: 20px; margin-right: 5px;">
+																	Actual:&nbsp;<b>{kpiAch.actualPercentage}<span
+																			if:true={kpiAch.isPercentage}>%</span></b>
+																</div>
+															</div>
+															<div if:true={kpiAch.showTarget} class="slds-size_1-of-2"
+																style="display:flex; justify-content: flex-end;">
+																<div style="display: flex; align-items: center;">
+																	<img src={jcbImg6} alt="JCBIMAGE"
+																		style="border-radius: 30px; height: 20px; width: 20px; margin-right: 5px;">
+																	Target:&nbsp;<b>{kpiAch.targetPercentageActual}<span
+																			if:true={kpiAch.targetPercentEndActual}>&nbsp;to&nbsp;{kpiAch.targetPercentEndActual}</span>%</b>
+																</div>
+															</div>
+														</div>
+													</template>
+												</template>
+												<template if:true={isProjectionMode}>
+													<div if:true={kpiAch.isProductToCE} class="slds-p-around_small">Note: The {selectedProduct.productName} To CE Ratio from Q4 {prevYear} will serve as the baseline for calculating {year} growth.</div>
+													<div if:true={isProjectionMode} class="slds-form-element">
+														<template if:true={kpiAch.isPercentage}>
+															<div class="slds-form-element__control"
+																if:true={kpiAch.isEditable}>
+																<div class="slds-slider tick-icon">
+																	<div class="rangeslider">
+																		<input if:true={kpiAch.showTarget}
+																			class="input-ranges target" type="range" min="0"
+																			max="200" value={kpiAch.targetPercentageCalc}
+																			disabled>
+																		<input class="input-ranges" data-kpid={kpiAch.kpiId}
+																			name={kpiAch.Label} type="range" min="0"
+																			max="200" value={kpiAch.achievedPercentage}
+																			oninput={handleKpiAchiveMentInput}
+																			disabled={kpiAch.isIndent}>
+																	</div>
+																	<lightning-input
+																		class="slds-p-left_large slds-p-bottom_large"
+																		data-kpid={kpiAch.kpiId}
+																		style="display:block;width: 120px;"
+																		value={kpiAch.achievedPercentage}
+																		name="marketingPenetration"
+																		onchange={handleKpiAchiveMentInput}
+																		formatter="percent-fixed" onblur={handleBlur}
+																		onkeypress={handleKeyPressValidation}
+																		onpaste={handlePasteValidation}
+																		oninput={handleInputValidation}
+																		disabled={kpiAch.isIndent} data-type="decimal">
+																	</lightning-input>
+																</div>
+																<div if:true={kpiAch.isIndent}
+																	style="display: flex; justify-content: space-evenly;">
+																	<lightning-input class="slds-p-bottom_large"
+																		label="Indent Order" data-kpid={kpiAch.kpiId}
+																		style="display:block;width: 120px;font-weight:600;"
+																		value={kpiAch.indentOrder} name="indentOrder"
+																		onchange={handleIndentInput} onblur={handleBlur}
+																		onkeypress={handleKeyPressValidation}
+																		onpaste={handlePasteValidation}
+																		oninput={handleInputValidation} data-type="decimal">
+																	</lightning-input>
+																	<lightning-input
+																		class="slds-p-left_small slds-p-bottom_large"
+																		label="Indent Wholesale" data-kpid={kpiAch.kpiId}
+																		style="display:block;width: 120px; font-weight:600;"
+																		value={kpiAch.indentWholesale}
+																		name="indentWholesale" onchange={handleIndentInput}
+																		onblur={handleBlur}
+																		onkeypress={handleKeyPressValidation}
+																		onpaste={handlePasteValidation}
+																		oninput={handleInputValidation} data-type="decimal">
+																	</lightning-input>
+																</div>
+																<template if:true={kpiAch.showTarget}>
+																	<template if:true={kpiAch.isEditable}>
+																		<div if:true={isProjectionMode}>
+																			<img src={jcbImg6} alt="JCBIMAGE"
+																				style="border-radius: 30px; height: 20px; width: 20px; margin-right: 5px;">Target:&nbsp;
+																			<b>{kpiAch.targetPercentageCalc}<span
+																					if:true={kpiAch.targetPercentEndCalc}>&nbsp;to&nbsp;{kpiAch.targetPercentEndCalc}</span><span>%</span>
+																			</b><!-- <span if:true={kpiAch.isPercentage}>%</span>-->
+																		</div>
+																	</template>
+																</template>
+															</div>
+															<div class="slds-size_2-of-2 slds-p-top_large"
+																style="display: flex;" if:false={kpiAch.isEditable}>
+																<div class="slds-size_1-of-2"
+																	style="display:flex; justify-content: flex-start;">
+																	<div style="display: flex; align-items: center;">
+																		<img src={jcbImg5} alt="JCBIMAGE"
+																			style="border-radius: 30px; height: 20px; width: 20px; margin-right: 5px;">
+																		Projection:&nbsp;
+																		<b>{kpiAch.achievedPercentage}<span
+																				if:true={kpiAch.isPercentage}>%</span></b>
+																	</div>
+																</div>
+																<div if:true={kpiAch.showTarget} class="slds-size_1-of-2"
+																	style="display:flex; justify-content: flex-end;">
+																	<div style="display: flex; align-items: center;">
+																		<img src={jcbImg6} alt="JCBIMAGE"
+																			style="border-radius: 30px; height: 20px; width: 20px; margin-right: 5px;">Target:&nbsp;
+																		<b>{kpiAch.targetPercentageCalc}<span>%</span></b>
+																		<!-- <span if:true={kpiAch.isPercentage}>%</span> -->
+																	</div>
+																</div>
+															</div>
+														</template>
+														<template if:false={kpiAch.isPercentage}>
+															<div class="slds-grid slds-wrap">
+																<div
+																	class="slds-col slds-size_1-of-3 slds-medium-size_4-of-12 slds-large-size_4-of-12">
+																	<lightning-input name={kpiAch.Label}
+																		value={kpiAch.achievedPercentage}
+																		data-kpid={kpiAch.kpiId}
+																		onchange={handleKpiAchiveMentInput}
+																		style="display:block;width: 120px;"
+																		onblur={handleBlur}
+																		onkeypress={handleKeyPressValidation}
+																		onpaste={handlePasteValidation}
+																		oninput={handleInputValidation} data-type="retail">
+																	</lightning-input>
+																	<div if:true={isProjectionMode}>
+																		<img src={jcbImg6} alt="JCBIMAGE"
+																			style="border-radius: 30px; height: 20px; width: 20px; margin-right: 5px;">Target:&nbsp;
+																		<b>{kpiAch.targetPercentageCalc}<span
+																				if:true={kpiAch.targetPercentEndCalc}>&nbsp;to&nbsp;{kpiAch.targetPercentEndCalc}</span><span>%</span></b>
+																		<!-- <span if:true={kpiAch.isPercentage}>%</span> -->
+																	</div>
+																</div>
+															</div>
+														</template>
+													</div>
+													<!-- </br> -->
+												</template>
+												<template if:true={kpiAch.isProductToCE}>
+													<ul style="font-size:12px; font-weight:600;" class="slds-list_dotted">
+														<li>Previous year Q4 CE Ratio achieved <span style="color:#080707;">{kpiAch.prevQuarterActualPercentage}%</span>.</li>
+														<li>Growth difference <span style="color: green;"><template if:true={isProjectionMode}>{kpiAch.growthDiffPredicted}</template><template if:false={isProjectionMode}>{kpiAch.growthDiffActual}</template>%</span></li>
+														<li>YTD of Total Retail Volume: <span style="color:#080707;"><template if:true={isProjectionMode}>{currentQRetail}</template><template if:false={isProjectionMode}>{currentQRetail}</template>.</span></li>
+														<li>Calculation: <span style="color: purple;"><template if:true={isProjectionMode}>{currentQRetail}*{kpiAch.growthDiffPredicted}(Slab Amount)-{prevPayout}</template><template if:false={isProjectionMode}>{currentQRetail}*{kpiAch.growthDiffPredicted}(Slab Amount)-{prevPayout}}</template>.</span></li>
+													</ul>
+												</template>
+												<template if:true={kpiAch.showWarning}>
+													<template if:true={isProjectionMode}>
+														<div if:true={kpiAch.isEligibleForAddCalc}
+															class="slds-m-top_small">
+															<img src={handMoney} alt="JCBIMAGE"
+																style="border-radius: 30px; height: 20px; width: 20px;">&nbsp;<span>Eligible
+																for Additional Incentive</span>
+														</div>
+														<template if:true={kpiAch.showWarningCalc}>
+															<div if:true={kpiAch.showWarningCalc}>
+																You're losing
+																<template if:true={kpiAch.earningPotentialMinCalc}>
+																	<span style="color: red;">&nbsp;<b>₹&nbsp;{kpiAch.earningPotentialMinCalc}&nbsp;<span
+																				style="color: black;">to</span>&nbsp;₹&nbsp;{kpiAch.earningPotentialMaxCalc}</b></span>
+																	&nbsp;by not projecting the remaining
+																	&nbsp;<b
+																		if:true={kpiAch.isPercentage}>{kpiAch.percentRemain}<span>%</span></b>
+																	<b
+																		if:false={kpiAch.isPercentage}>{kpiAch.targetRemain}</b>
+																</template>
+																<template if:false={kpiAch.earningPotentialMinCalc}>
+																	&nbsp;up to
+																	<span
+																		style="color: red;"><b>&nbsp;₹&nbsp;{kpiAch.earningPotentialMaxCalc}</b></span>
+																	&nbsp;by not projecting an additional
+																	&nbsp;<b
+																		if:true={kpiAch.isPercentage}>{kpiAch.percentRemain}<span>%</span></b>
+																	<b
+																		if:false={kpiAch.isPercentage}>{kpiAch.targetRemain}</b>
+																</template>
+															</div></br>
+														</template>
+														<template if:true={kpiAch.addShowWarningCalc}>
+															<div if:true={kpiAch.addShowWarningCalc}>
+																You're missing out on an additional incentive of
+																<span
+																	style="color: red;">&nbsp;<b>₹&nbsp;{kpiAch.addEarningPotentialCalc}</b></span>
+																&nbsp;by not projecting the extra&nbsp;
+																&nbsp;<b>{kpiAch.addPercentRemainCalc}<span
+																		if:true={kpiAch.isPercentage}>%</span></b>
+															</div></br>
+														</template>
+														<template if:true={kpiAch.showSalesCalc}>
+															<div if:true={kpiAch.showSalesCalc}>
+																You're losing
+																<template if:true={kpiAch.salesPotentialMinCalc}>
+																	<span style="color: red;">&nbsp;<b>₹&nbsp;{kpiAch.salesPotentialMinCalc}&nbsp;<span
+																				style="color: black;">to</span>&nbsp;₹&nbsp;{kpiAch.salesPotentialMaxCalc}
+																	of Sales Person
+																	Incentive
+																	</b></span>
+																	&nbsp;by not projecting the remaining
+																	&nbsp;<b
+																		if:true={kpiAch.isPercentage}>{kpiAch.calcSalesPercent}<span>%</span></b>
+																	<b
+																		if:false={kpiAch.isPercentage}>{kpiAch.calcSalesTarget</b>
+																</template>
+																<template if:false={kpiAch.salesPotentialMinCalc}>
+																	&nbsp;up to
+																	<span
+																		style="color: red;"><b>&nbsp;₹&nbsp;{kpiAch.salesPotentialMaxCalc}</b></span>
+																	&nbsp;of Sales Person Incentive by not projecting an
+																	additional
+																	&nbsp;<b
+																		if:true={kpiAch.isPercentage}>{kpiAch.calcSalesPercent}<span>%</span></b>
+																	<b
+																		if:false={kpiAch.isPercentage}>{kpiAch.calcSalesTarget}</b>
+																</template>
+															</div></br>
+														</template>
+														<template if:true={kpiAch.showTIVWarningCalc}>
+															<div if:true={kpiAch.showTIVWarningCalc}>
+																You're losing
+																<template if:true={kpiAch.tivEarningsMinCalc}>
+																	<span style="color: red;">&nbsp;<b>₹&nbsp;{kpiAch.tivEarningsMinCalc}&nbsp;<span
+																				style="color: black;">to</span>&nbsp;₹&nbsp;{kpiAch.tivEarningsMaxCalc}
+																	of Variable Incentive
+																	</b></span>
+																	&nbsp;by not projecting the remaining
+																	&nbsp;<b
+																		if:true={kpiAch.isPercentage}>{kpiAch.tivPercentCalc}<span>%</span></b>
+																	<b
+																		if:false={kpiAch.isPercentage}>{kpiAch.tivTargetCalc</b>
+																</template>
+																<template if:false={kpiAch.tivEarningsMinCalc}>
+																	&nbsp;up to
+																	<span
+																		style="color: red;"><b>&nbsp;₹&nbsp;{kpiAch.tivEarningsMaxCalc}</b></span>
+																	&nbsp;of Variable Incentive by not projecting an
+																	additional
+																	&nbsp;<b
+																		if:true={kpiAch.isPercentage}>{kpiAch.tivPercentCalc}<span>%</span></b>
+																	<b
+																		if:false={kpiAch.isPercentage}>{kpiAch.tivTargetCalc}</b>
+																</template>
+															</div></br>
+														</template>
+													</template>
+													<template if:false={isProjectionMode}>
+														<div if:true={kpiAch.isEligibleForAddActual}>
+															<img src={handMoney} alt="JCBIMAGE"
+																style="border-radius: 30px; height: 20px; width: 20px; margin-right: 5px;">&nbsp;<span>Eligible
+																for Additional Incentive</span>
+														</div>
+														<template if:true={kpiAch.showWarningActual}>
+															<div>
+																You're losing
+																<template if:true={kpiAch.earningPotentialMinActual}>
+																	<span style="color: red;">&nbsp;<b>₹&nbsp;{kpiAch.earningPotentialMinActual}&nbsp;<span
+																				style="color: black;">to</span>&nbsp;₹&nbsp;{kpiAch.earningPotentialMaxActual}</b></span>
+																	&nbsp;by not achieving the
+																	&nbsp;remaining
+																	&nbsp;<b
+																		if:true={kpiAch.isPercentage}>{kpiAch.actualPercentRemain}<span>%</span></b>.
+																	<b
+																		if:false={kpiAch.isPercentage}>{kpiAch.actualSalesTarget}<span>%</span></b>.
+																</template>
+																<template if:false={kpiAch.earningPotentialMinActual}>
+																	&nbsp;up to
+																	<span
+																		style="color: red;">&nbsp;<b>₹&nbsp;{kpiAch.earningPotentialMaxActual}</b></span>
+																	&nbsp;by not projecting an additional
+																	&nbsp;<b
+																		if:true={kpiAch.isPercentage}>{kpiAch.actualPercentRemain}<span>%</span></b>
+																	<b
+																		if:false={kpiAch.isPercentage}>{kpiAch.actualSalesTarget}<span>%</span></b>
+																</template>
+															</div></br>
+														</template>
+														<template if:true={kpiAch.addShowWarningActual}>
+															<div>
+																<p>You're missing out on an additional incentive
+																	<span
+																		style="color: red;"><b>&nbsp;₹&nbsp;{kpiAch.addEarningPotentialMaxActual}</b></span>
+																	&nbsp;by not achieving the extra
+																	&nbsp;<b>{kpiAch.addPercentRemainActual}<span
+																			if:true={kpiAch.isPercentage}>%</span></b>.
+																</p>
+															</div></br>
+														</template>
+														<template if:true={kpiAch.showSalesActual}>
+															<div>
+																You're losing
+																<template if:true={kpiAch.salesPotentialMinActual}>
+																	<span style="color: red;">&nbsp;<b>₹&nbsp;{kpiAch.salesPotentialMinActual}&nbsp;<span
+																				style="color: black;">to</span>&nbsp;₹&nbsp;{kpiAch.salesPotentialMaxActual}
+																	of Sales Person
+																	Incentive
+																	</b></span>
+																	&nbsp;by not projecting the remaining
+																	&nbsp;<b
+																		if:true={kpiAch.isPercentage}>{kpiAch.actualSalesPercent}<span>%</span></b>
+																	<b
+																		if:false={kpiAch.isPercentage}>{kpiAch.actualSalesTarget</b>
+																</template>
+																<template if:false={kpiAch.salesPotentialMinActual}>
+																	&nbsp;up to
+																	<span
+																		style="color: red;"><b>&nbsp;₹&nbsp;{kpiAch.salesPotentialMaxActual}</b></span>
+																	&nbsp;of Sales Person Incentive by not projecting an
+																	additional
+																	&nbsp;<b
+																		if:true={kpiAch.isPercentage}>{kpiAch.actualSalesPercent}<span>%</span></b>
+																	<b
+																		if:false={kpiAch.isPercentage}>{kpiAch.actualSalesTarget}</b>
+																</template>
+															</div></br>
+														</template>
+														<div if:true={kpiAch.showTIVWarningActual}>
+															You're losing
+															<template if:true={kpiAch.tivEarningsMinActual}>
+																<span style="color: red;">&nbsp;<b>₹&nbsp;{kpiAch.tivEarningsMinActual}&nbsp;<span
+																			style="color: black;">to</span>&nbsp;₹&nbsp;{kpiAch.tivEarningsMaxActual}
+																of Variable Incentive
+																</b></span>
+																&nbsp;by not projecting the remaining
+																&nbsp;<b
+																	if:true={kpiAch.isPercentage}>{kpiAch.tivPercentActual}<span>%</span></b>
+																<b
+																	if:false={kpiAch.isPercentage}>{kpiAch.tivTargetActual</b>
+															</template>
+															<template if:false={kpiAch.tivEarningsMinActual}>
+																&nbsp;up to
+																<span
+																	style="color: red;"><b>&nbsp;₹&nbsp;{kpiAch.tivEarningsMaxActual}</b></span>
+																&nbsp;of Variable Incentive by not projecting an
+																additional
+																&nbsp;<b
+																	if:true={kpiAch.isPercentage}>{kpiAch.tivPercentActual}<span>%</span></b>
+																<b
+																	if:false={kpiAch.isPercentage}>{kpiAch.tivTargetActual}</b>
+															</template>
+														</div>
+													</template>
+												</template>
+											</div>
+										</template>
+									</template>
+								</div>
+							</div>
+							<div class={summaryClass}>
+								<!-- add this to below div when working on flipcard -  -->
+								<div class="flip-card" style="cursor: pointer;" onclick={flipCard}>
+									<div class={flipClass}>
+										<div class="flip-card-front">
+											<div class="container slds-size_1-of-1"  >
+												<div class="slds-p-left_small slds-p-top_small"
+													style="font-weight: bold; display:flex;">
+													<div if:true={isProjectionMode} class="slds-size_4-of-5"
+														style="display: flex;justify-content: flex-start;">
+														Projected Incentive Summary
+													</div>
+													<div if:false={isProjectionMode} class="slds-size_4-of-5"
+														style="display: flex;justify-content: flex-start;">
+														Actual Incentive Summary</div>
+													<div class="slds-size_1-of-5 slds-p-right_medium"
+														style="display: flex;justify-content: flex-end; cursor:pointer;">
+														<!-- onclick={flipCard} -->
+														<span if:true={isProjectionMode} onclick={flipCard}>
+															<svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+																xmlns="http://www.w3.org/2000/svg">
+																<path fill-rule="evenodd" clip-rule="evenodd"
+																	d="M9.35891 1.33914C9.35879 1.2001 9.40213 1.06451 9.48289 0.951331C9.56364 0.838152 9.67776 0.753053 9.80927 0.707942C9.94078 0.662831 10.0831 0.659966 10.2163 0.699748C10.3496 0.739529 10.467 0.819967 10.5522 0.929804L15.2189 6.9298C15.3099 7.04683 15.3594 7.19087 15.3594 7.33914C15.3594 7.48741 15.3099 7.63144 15.2189 7.74847L10.5522 13.7485C10.467 13.8583 10.3496 13.9387 10.2163 13.9785C10.0831 14.0183 9.94078 14.0154 9.80927 13.9703C9.67776 13.9252 9.56364 13.8401 9.48289 13.7269C9.40213 13.6138 9.35879 13.4782 9.35891 13.3391V10.6791C5.77291 10.7538 4.05025 11.4345 3.18491 12.1745C2.36225 12.8778 2.21158 13.7051 2.05491 14.5718L2.01425 14.7951C1.98433 14.9549 1.89705 15.0983 1.76882 15.1983C1.64059 15.2982 1.48026 15.3479 1.31798 15.3379C1.15571 15.3279 1.00268 15.2589 0.887685 15.144C0.772691 15.0291 0.703661 14.8761 0.693579 14.7138C0.579579 12.8818 0.750912 10.2271 2.04491 8.00647C3.30091 5.85114 5.56225 4.1938 9.35891 4.02047V1.33914Z"
+																	fill="#E7AF28" />
+															</svg>
+														</span>
+														<span if:false={isProjectionMode} onclick={flipCard}>
+															<svg width="16" height="15" viewBox="0 0 16 15" fill="none"
+																xmlns="http://www.w3.org/2000/svg">
+																<path fill-rule="evenodd" clip-rule="evenodd"
+																	d="M6.66453 0.839137C6.66465 0.700103 6.6213 0.564509 6.54055 0.451331C6.4598 0.338152 6.34568 0.253053 6.21417 0.207942C6.08265 0.162831 5.94033 0.159966 5.80711 0.199748C5.67388 0.239529 5.55643 0.319967 5.47119 0.429804L0.804525 6.4298C0.713489 6.54683 0.664063 6.69087 0.664062 6.83914C0.664062 6.98741 0.713489 7.13144 0.804525 7.24847L5.47119 13.2485C5.55643 13.3583 5.67388 13.4387 5.80711 13.4785C5.94033 13.5183 6.08265 13.5154 6.21417 13.4703C6.34568 13.4252 6.4598 13.3401 6.54055 13.2269C6.6213 13.1138 6.66465 12.9782 6.66453 12.8391V10.1791C10.2505 10.2538 11.9732 10.9345 12.8385 11.6745C13.6612 12.3778 13.8119 13.2051 13.9685 14.0718L14.0092 14.2951C14.0391 14.4549 14.1264 14.5983 14.2546 14.6983C14.3828 14.7982 14.5432 14.8479 14.7055 14.8379C14.8677 14.8279 15.0208 14.7589 15.1358 14.644C15.2507 14.5291 15.3198 14.3761 15.3299 14.2138C15.4439 12.3818 15.2725 9.72714 13.9785 7.50647C12.7225 5.35114 10.4612 3.6938 6.66453 3.52047V0.839137Z"
+																	fill="#E7AF28" />
+															</svg>
+														</span>
+													</div>
+												</div>
+												<template for:each={selectedProduct.kpiPayouts} for:item="payout">
+													<div class="slds-grid slds-p-left_small slds-p-top_medium slds-p-right_xx-small"
+														key={payout.kpIPayoutName} if:true={payout.isCalcPayout}>
+														<div class="slds-size_2-of-4"
+															style="display: flex;justify-content: flex-start;">
+															<h4>{payout.kpIPayoutName}
+															</h4>
+														</div>
+														<div if:true={isProjectionMode} class="slds-size_2-of-4"
+															style="display: flex;justify-content: flex-end; font-weight:700; align-items: end;">
+															<!-- <span >₹{payout.payoutAmount}</span> -->
+															<lightning-formatted-number class="slds-p-right_xx-small"
+																value={payout.payoutAmount} currency-display-as="symbol"
+																format-style="currency" currency-code="INR">
+															</lightning-formatted-number>
+														</div>
+														<div if:false={isProjectionMode} class="slds-size_2-of-4"
+															style="display: flex;justify-content: flex-end; font-weight:700; align-items: end;">
+															<!-- <span class="slds-p-right_xx-small">₹{payout.actualPayoutAmount}</span> -->
+															<lightning-formatted-number class="slds-p-right_xx-small"
+																value={payout.actualPayoutAmount}
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR">
+															</lightning-formatted-number>
+														</div>
+													</div>
+												</template>
+												<div class="slds-grid slds-p-left_small slds-p-top_large">
+													<div class="slds-size_2-of-4"
+														style="display: flex;justify-content: flex-start;">
+														<h4>{selectedProduct.productName}
+															Additional Incentive
+														</h4>
+													</div>
+													<div class="slds-size_2-of-4"
+														style="display: flex;justify-content: flex-end; font-weight:700; align-items: end;">
+														<!-- <span if:true={isProjectionMode} class="slds-p-right_xx-small">₹{selectedProduct.totalAddPredictedPayout}</span> -->
+														<lightning-formatted-number if:true={isProjectionMode}
+															class="slds-p-right_xx-small"
+															value={selectedProduct.totalAddPredictedPayout}
+															currency-display-as="symbol" format-style="currency"
+															currency-code="INR"></lightning-formatted-number>
+														<lightning-formatted-number if:false={isProjectionMode}
+															class="slds-p-right_xx-small"
+															value={selectedProduct.totalAddActualPayout}
+															currency-display-as="symbol" format-style="currency"
+															currency-code="INR"></lightning-formatted-number>
+														<!-- <span if:false={isProjectionMode} class="slds-p-right_xx-small">₹{selectedProduct.totalAddActualPayout}</span> -->
+													</div>
+												</div>
+												<div class="slds-border_bottom slds-p-top_small"
+													style="width: 95%;margin-left: 12px;">
+												</div>
+												<template if:true={selectedProduct.kpiPayouts.length}>
+													<div
+														class="slds-grid slds-p-left_small  slds-p-bottom_small slds-p-top_small">
+														<div class="slds-size_2-of-4">
+															<!-- <h5
+																style="font-weight: 600;font-size: 16px; display: flex;justify-content: flex-start;">
+																Total
+																{selectedProduct.productName}
+																Incentive
+															</h5> -->
+															<h5 style="display: flex;justify-content: flex-start;">
+																Total Dealer Incentive
+															</h5>
+															<!-- <b if:true={selectedProduct.isTIVConfigured}>(Variable Incentive Payout {selectedProduct.tivPercentage}% of {selectedProduct.totalDealerPredictedPayout})</b> -->
+														</div>
+														<div if:true={isProjectionMode} class="slds-size_2-of-4"
+															style="display: flex;justify-content: flex-end; font-weight:700; align-items:end;">
+															<!-- <span if:true={selectedProduct.isStockPredicted} class="slds-p-right_xx-small" data-prod={selectedProduct.productName} style="font-weight: 700; font-size: 16px;">₹{selectedProduct.totalPredictedPayout}</span>
+															<span if:false={selectedProduct.isStockPredicted} class="slds-p-right_xx-small" data-prod={selectedProduct.productName} style="font-weight: 700; font-size: 16px; text-decoration: line-through;">₹{selectedProduct.totalPredictedPayout}</span> -->
+															<!-- <template if:false={selectedProduct.isTIVConfigured}> -->
+															<lightning-formatted-number
+																if:true={selectedProduct.isStockPredicted}
+																class="slds-p-right_xx-small"
+																value={selectedProduct.totalDealerPredictedPayout}
+																data-prod={selectedProduct.productName}
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+															<lightning-formatted-number
+																if:false={selectedProduct.isStockPredicted}
+																class="slds-p-right_xx-small"
+																value={selectedProduct.totalDealerPredictedPayout}
+																data-prod={selectedProduct.productName}
+																style="text-decoration: line-through;"
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+															<!-- </template> -->
+															<!-- <template if:true={selectedProduct.isTIVConfigured}>
+																<lightning-formatted-number
+																	if:true={selectedProduct.isStockPredicted}
+																	class="slds-p-right_xx-small"
+																	value={selectedProduct.totalTIVPredictedPayout}
+																	data-prod={selectedProduct.productName}
+																	currency-display-as="symbol" format-style="currency"
+																	currency-code="INR"></lightning-formatted-number>
+																<lightning-formatted-number
+																	if:false={selectedProduct.isStockPredicted}
+																	class="slds-p-right_xx-small"
+																	value={selectedProduct.totalTIVPredictedPayout}
+																	data-prod={selectedProduct.productName}
+																	style="text-decoration: line-through;"
+																	currency-display-as="symbol" format-style="currency"
+																	currency-code="INR"></lightning-formatted-number>
+															</template> -->
+														</div>
+														<div if:false={isProjectionMode} class="slds-size_2-of-4"
+															style="display: flex;justify-content: flex-end; font-weight:700; align-items:end;">
+															<!-- <span if:true={selectedProduct.isStockAchieved} class="slds-p-right_xx-small" style="font-weight: 700; font-size: 16px;">₹{selectedProduct.totalActualPayout}</span>
+															<span if:false={selectedProduct.isStockAchieved} class="slds-p-right_xx-small" style="font-weight: 700; font-size: 16px; text-decoration: line-through;">₹{selectedProduct.totalActualPayout}</span> -->
+															<lightning-formatted-number
+																if:true={selectedProduct.isStockAchieved}
+																value={selectedProduct.totalDealerActualPayout}
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+															<lightning-formatted-number
+																if:false={selectedProduct.isStockAchieved}
+																value={selectedProduct.totalDealerActualPayout}
+																style="text-decoration: line-through;"
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+														</div>
+													</div>
+													<div if:true={selectedProduct.isTIVConfigured}
+														class="slds-grid slds-p-left_small  slds-p-bottom_small slds-p-top_small">
+														<div class="slds-size_2-of-4">
+															<!-- <h5
+																style="font-weight: 600;font-size: 16px; display: flex;justify-content: flex-start;">
+																Total
+																{selectedProduct.productName}
+																Incentive
+															</h5> -->
+															<h5 style="display: flex;justify-content: flex-start;">
+																{selectedProduct.productName} Variable Incentive Payout
+																&nbsp;
+																<template
+																	if:true={isProjectionMode}>{selectedProduct.tivPercentageCalc}</template>
+																<template
+																	if:false={isProjectionMode}>{selectedProduct.tivPercentageActual}</template>%
+																of
+																<template
+																	if:true={isProjectionMode}>&nbsp;{selectedProduct.totalDealerPredictedPayout}</template><template
+																	if:false={isProjectionMode}>&nbsp;{selectedProduct.totalDealerActualPayout}</template>
+															</h5>
+														</div>
+														<div if:true={isProjectionMode} class="slds-size_2-of-4"
+															style="display: flex;justify-content: flex-end; font-weight:700; align-items:end;">
+															<lightning-formatted-number
+																if:true={selectedProduct.isStockPredicted}
+																class="slds-p-right_xx-small"
+																value={selectedProduct.totalTIVPredictedPayout}
+																data-prod={selectedProduct.productName}
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+															<lightning-formatted-number
+																if:false={selectedProduct.isStockPredicted}
+																class="slds-p-right_xx-small"
+																value={selectedProduct.totalTIVPredictedPayout}
+																data-prod={selectedProduct.productName}
+																style="text-decoration: line-through;"
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+														</div>
+														<div if:false={isProjectionMode} class="slds-size_2-of-4"
+															style="display: flex;justify-content: flex-end; font-weight:700; align-items:end;">
+															<!-- <span if:true={selectedProduct.isStockAchieved} class="slds-p-right_xx-small" style="font-weight: 700; font-size: 16px;">₹{selectedProduct.totalActualPayout}</span>
+															<span if:false={selectedProduct.isStockAchieved} class="slds-p-right_xx-small" style="font-weight: 700; font-size: 16px; text-decoration: line-through;">₹{selectedProduct.totalActualPayout}</span> -->
+															<lightning-formatted-number
+																if:true={selectedProduct.isStockAchieved}
+																value={selectedProduct.totalTIVActualPayout}
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+															<lightning-formatted-number
+																if:false={selectedProduct.isStockAchieved}
+																value={selectedProduct.totalTIVActualPayout}
+																style="text-decoration: line-through;"
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+														</div>
+													</div>
+													<div class="slds-grid slds-p-left_small">
+														<div class="slds-size_2-of-4">
+															<h5 style="display: flex;justify-content: flex-start;">
+																Sales Person Incentive
+															</h5>
+														</div>
+														<div if:true={isProjectionMode} class="slds-size_2-of-4"
+															style="display: flex;justify-content: flex-end; font-weight:700; align-items:end;">
+															<!-- <span if:true={selectedProduct.isStockPredicted} class="slds-p-right_xx-small" data-prod={selectedProduct.productName} style="font-weight: 700; font-size: 16px;">₹{selectedProduct.totalPredictedPayout}</span>
+															<span if:false={selectedProduct.isStockPredicted} class="slds-p-right_xx-small" data-prod={selectedProduct.productName} style="font-weight: 700; font-size: 16px; text-decoration: line-through;">₹{selectedProduct.totalPredictedPayout}</span> -->
+															<lightning-formatted-number
+																if:true={selectedProduct.isStockPredicted}
+																class="slds-p-right_xx-small"
+																value={selectedProduct.totalSPersonPredictedPayout}
+																data-prod={selectedProduct.productName}
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+															<lightning-formatted-number
+																if:false={selectedProduct.isStockPredicted}
+																class="slds-p-right_xx-small"
+																value={selectedProduct.totalSPersonPredictedPayout}
+																data-prod={selectedProduct.productName}
+																style="text-decoration: line-through;"
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+														</div>
+														<div if:false={isProjectionMode} class="slds-size_2-of-4"
+															style="display: flex;justify-content: flex-end; font-weight:700; align-items:end;">
+															<!-- <span if:true={selectedProduct.isStockAchieved} class="slds-p-right_xx-small" style="font-weight: 700; font-size: 16px;">₹{selectedProduct.totalActualPayout}</span>
+															<span if:false={selectedProduct.isStockAchieved} class="slds-p-right_xx-small" style="font-weight: 700; font-size: 16px; text-decoration: line-through;">₹{selectedProduct.totalActualPayout}</span> -->
+															<lightning-formatted-number
+																if:true={selectedProduct.isStockAchieved}
+																value={selectedProduct.totalSPersonActualPayout}
+																style="font-weight: 700; font-size: 16px;"
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+															<lightning-formatted-number
+																if:false={selectedProduct.isStockAchieved}
+																value={selectedProduct.totalSPersonActualPayout}
+																style="font-weight: 700; font-size: 16px; text-decoration: line-through;"
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+														</div>
+													</div>
+													
+													<div class="slds-border_bottom slds-p-top_small"
+														style="width: 95%;margin-left: 12px;">
+													</div>
+													<div
+														class="slds-grid slds-p-left_small  slds-p-bottom_small slds-p-top_small">
+														<div class="slds-size_2-of-4">
+															<h5
+																style="font-weight: 600;font-size: 16px; display: flex;justify-content: flex-start;">
+																Total
+																{selectedProduct.productName}
+																Incentive
+															</h5>
+														</div>
+														<div if:true={isProjectionMode} class="slds-size_2-of-4"
+															style="display: flex;justify-content: flex-end; align-items:end;">
+															<!-- <span if:true={selectedProduct.isStockPredicted} class="slds-p-right_xx-small" data-prod={selectedProduct.productName} style="font-weight: 700; font-size: 16px;">₹{selectedProduct.totalPredictedPayout}</span>
+															<span if:false={selectedProduct.isStockPredicted} class="slds-p-right_xx-small" data-prod={selectedProduct.productName} style="font-weight: 700; font-size: 16px; text-decoration: line-through;">₹{selectedProduct.totalPredictedPayout}</span> -->
+															<lightning-formatted-number
+																if:true={selectedProduct.isStockPredicted}
+																class="slds-p-right_xx-small"
+																value={selectedProduct.totalPredictedPayout}
+																data-prod={selectedProduct.productName}
+																style="font-weight: 700; font-size: 16px;"
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+															<lightning-formatted-number
+																if:false={selectedProduct.isStockPredicted}
+																class="slds-p-right_xx-small"
+																value={selectedProduct.totalPredictedPayout}
+																data-prod={selectedProduct.productName}
+																style="font-weight: 700; font-size: 16px; text-decoration: line-through;"
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+														</div>
+														<div if:false={isProjectionMode} class="slds-size_2-of-4"
+															style="display: flex;justify-content: flex-end; align-items:end;">
+															<!-- <span if:true={selectedProduct.isStockAchieved} class="slds-p-right_xx-small" style="font-weight: 700; font-size: 16px;">₹{selectedProduct.totalActualPayout}</span>
+															<span if:false={selectedProduct.isStockAchieved} class="slds-p-right_xx-small" style="font-weight: 700; font-size: 16px; text-decoration: line-through;">₹{selectedProduct.totalActualPayout}</span> -->
+															<lightning-formatted-number
+																if:true={selectedProduct.isStockAchieved}
+																value={selectedProduct.totalActualPayout}
+																style="font-weight: 700; font-size: 16px;"
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+															<lightning-formatted-number
+																if:false={selectedProduct.isStockAchieved}
+																value={selectedProduct.totalActualPayout}
+																style="font-weight: 700; font-size: 16px; text-decoration: line-through;"
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+														</div>
+													</div>
+													<!-- <div
+														class="slds-grid slds-p-left_small  slds-p-bottom_small slds-p-top_small">
+														<div class="slds-size_2-of-4">
+															<h5
+																style="font-weight: 600;font-size: 16px; display: flex;justify-content: flex-start;">
+																{selectedProduct.productName}
+																Volume Industry Incentive
+															</h5>
+														</div>
+														<div if:true={isProjectionMode} class="slds-size_2-of-4"
+															style="display: flex;justify-content: flex-end; align-items:end;">
+															<lightning-formatted-number
+																if:true={selectedProduct.isStockPredicted}
+																class="slds-p-right_xx-small"
+																value={selectedProduct.totalTIVPredictedPayout}
+																data-prod={selectedProduct.productName}
+																style="font-weight: 700; font-size: 16px;"
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+															<lightning-formatted-number
+																if:false={selectedProduct.isStockPredicted}
+																class="slds-p-right_xx-small"
+																value={selectedProduct.totalTIVPredictedPayout}
+																data-prod={selectedProduct.productName}
+																style="font-weight: 700; font-size: 16px; text-decoration: line-through;"
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+														</div>
+														<div if:false={isProjectionMode} class="slds-size_2-of-4"
+															style="display: flex;justify-content: flex-end; align-items:end;">
+															<lightning-formatted-number
+																if:true={selectedProduct.isStockAchieved}
+																value={selectedProduct.totalTIVActualPayout}
+																style="font-weight: 700; font-size: 16px;"
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+															<lightning-formatted-number
+																if:false={selectedProduct.isStockAchieved}
+																value={selectedProduct.totalTIVActualPayout}
+																style="font-weight: 700; font-size: 16px; text-decoration: line-through;"
+																currency-display-as="symbol" format-style="currency"
+																currency-code="INR"></lightning-formatted-number>
+														</div>
+													</div> -->
+												</template>
+												<div if:true={isProjectionMode}>
+													<div if:true={selectedProduct.isStockPredicted}>
+														<lightning-icon class="slds-p-around_x-small"
+															icon-name='utility:check' alternative-text='check'
+															variant='success' size='x-small' title='check'>
+														</lightning-icon>
+
+														<span
+															style="font-weight: 500; color: green; text-decoration: underline;">Stock
+															Condition Qualified</span>
+													</div>
+													<div if:false={selectedProduct.isStockPredicted}>
+														<span class="slds-p-around_x-small">
+															<svg width="14" height="14" viewBox="0 0 14 14" fill="none"
+																xmlns="http://www.w3.org/2000/svg">
+																<g clip-path="url(#clip0_7288_9333)">
+																	<path
+																		d="M9.53137 5.43829C9.5874 5.38604 9.6326 5.32328 9.66438 5.25356C9.69616 5.18385 9.71389 5.10856 9.71657 5.032C9.71925 4.95543 9.70683 4.87909 9.68001 4.80733C9.65318 4.73556 9.61249 4.66978 9.56024 4.61375C9.508 4.55771 9.44523 4.51251 9.37552 4.48074C9.30581 4.44896 9.23052 4.43122 9.15395 4.42854C9.07739 4.42586 9.00104 4.43829 8.92928 4.46511C8.85751 4.49193 8.79174 4.53263 8.7357 4.58487L7.02887 6.17621L5.43753 4.46879C5.33106 4.35973 5.18612 4.29668 5.03375 4.29313C4.88137 4.28957 4.73366 4.3458 4.62221 4.44978C4.51077 4.55375 4.44444 4.69722 4.43743 4.84947C4.43042 5.00173 4.48328 5.15068 4.5847 5.26446L6.17603 6.97129L4.46862 8.56262C4.4106 8.61434 4.36351 8.67712 4.33009 8.74729C4.29668 8.81746 4.27763 8.8936 4.27405 8.97124C4.27048 9.04888 4.28246 9.12644 4.30928 9.19939C4.3361 9.27233 4.37723 9.33918 4.43024 9.39601C4.48326 9.45283 4.5471 9.49849 4.61801 9.5303C4.68892 9.56211 4.76547 9.57943 4.84317 9.58124C4.92087 9.58306 4.99814 9.56932 5.07046 9.54085C5.14278 9.51238 5.20867 9.46975 5.26428 9.41546L6.97112 7.82471L8.56245 9.53154C8.61383 9.59063 8.67658 9.63876 8.74697 9.67308C8.81735 9.7074 8.89392 9.7272 8.97212 9.73129C9.05031 9.73539 9.12853 9.7237 9.20211 9.69692C9.2757 9.67014 9.34313 9.62883 9.40041 9.57543C9.45768 9.52203 9.50362 9.45765 9.53548 9.38613C9.56734 9.3146 9.58448 9.23739 9.58587 9.1591C9.58726 9.08081 9.57287 9.00304 9.54356 8.93043C9.51426 8.85782 9.47063 8.79185 9.41528 8.73646L7.82453 7.02962L9.53137 5.43829Z"
+																		fill="#FF0000" />
+																	<path fill-rule="evenodd" clip-rule="evenodd"
+																		d="M0.583984 7.00065C0.583984 3.4569 3.4569 0.583984 7.00065 0.583984C10.5444 0.583984 13.4173 3.4569 13.4173 7.00065C13.4173 10.5444 10.5444 13.4173 7.00065 13.4173C3.4569 13.4173 0.583984 10.5444 0.583984 7.00065ZM7.00065 12.2507C6.31121 12.2507 5.62852 12.1149 4.99156 11.851C4.3546 11.5872 3.77585 11.2005 3.28834 10.713C2.80083 10.2255 2.41412 9.6467 2.15028 9.00974C1.88645 8.37278 1.75065 7.69009 1.75065 7.00065C1.75065 6.31121 1.88645 5.62852 2.15028 4.99156C2.41412 4.3546 2.80083 3.77585 3.28834 3.28834C3.77585 2.80083 4.3546 2.41412 4.99156 2.15028C5.62852 1.88645 6.31121 1.75065 7.00065 1.75065C8.39304 1.75065 9.72839 2.30377 10.713 3.28834C11.6975 4.27291 12.2507 5.60826 12.2507 7.00065C12.2507 8.39304 11.6975 9.72839 10.713 10.713C9.72839 11.6975 8.39304 12.2507 7.00065 12.2507Z"
+																		fill="#FF0000" />
+																</g>
+																<defs>
+																	<clipPath id="clip0_7288_9333">
+																		<rect width="14" height="14" fill="white" />
+																	</clipPath>
+																</defs>
+															</svg>
+														</span>
+														<span
+															style="font-weight: 500; color: red; text-decoration: underline;">Stock
+															Condition Not Qualified</span>
+													</div>
+												</div>
+												<div if:false={isProjectionMode}>
+													<div if:true={selectedProduct.isStockAchieved}>
+														<lightning-icon class="slds-p-around_x-small"
+															icon-name='utility:check' alternative-text='check'
+															variant='success' size='x-small' title='check'>
+														</lightning-icon>
+
+														<span
+															style="font-weight: 500; color: green; text-decoration: underline;">Stock
+															Condition Qualified</span>
+													</div>
+													<div if:false={selectedProduct.isStockAchieved}>
+														<span class="slds-p-around_x-small">
+															<svg width="14" height="14" viewBox="0 0 14 14" fill="none"
+																xmlns="http://www.w3.org/2000/svg">
+																<g clip-path="url(#clip0_7288_9334)">
+																	<path
+																		d="M9.53137 5.43829C9.5874 5.38604 9.6326 5.32328 9.66438 5.25356C9.69616 5.18385 9.71389 5.10856 9.71657 5.032C9.71925 4.95543 9.70683 4.87909 9.68001 4.80733C9.65318 4.73556 9.61249 4.66978 9.56024 4.61375C9.508 4.55771 9.44523 4.51251 9.37552 4.48074C9.30581 4.44896 9.23052 4.43122 9.15395 4.42854C9.07739 4.42586 9.00104 4.43829 8.92928 4.46511C8.85751 4.49193 8.79174 4.53263 8.7357 4.58487L7.02887 6.17621L5.43753 4.46879C5.33106 4.35973 5.18612 4.29668 5.03375 4.29313C4.88137 4.28957 4.73366 4.3458 4.62221 4.44978C4.51077 4.55375 4.44444 4.69722 4.43743 4.84947C4.43042 5.00173 4.48328 5.15068 4.5847 5.26446L6.17603 6.97129L4.46862 8.56262C4.4106 8.61434 4.36351 8.67712 4.33009 8.74729C4.29668 8.81746 4.27763 8.8936 4.27405 8.97124C4.27048 9.04888 4.28246 9.12644 4.30928 9.19939C4.3361 9.27233 4.37723 9.33918 4.43024 9.39601C4.48326 9.45283 4.5471 9.49849 4.61801 9.5303C4.68892 9.56211 4.76547 9.57943 4.84317 9.58124C4.92087 9.58306 4.99814 9.56932 5.07046 9.54085C5.14278 9.51238 5.20867 9.46975 5.26428 9.41546L6.97112 7.82471L8.56245 9.53154C8.61383 9.59063 8.67658 9.63876 8.74697 9.67308C8.81735 9.7074 8.89392 9.7272 8.97212 9.73129C9.05031 9.73539 9.12853 9.7237 9.20211 9.69692C9.2757 9.67014 9.34313 9.62883 9.40041 9.57543C9.45768 9.52203 9.50362 9.45765 9.53548 9.38613C9.56734 9.3146 9.58448 9.23739 9.58587 9.1591C9.58726 9.08081 9.57287 9.00304 9.54356 8.93043C9.51426 8.85782 9.47063 8.79185 9.41528 8.73646L7.82453 7.02962L9.53137 5.43829Z"
+																		fill="#FF0000" />
+																	<path fill-rule="evenodd" clip-rule="evenodd"
+																		d="M0.583984 7.00065C0.583984 3.4569 3.4569 0.583984 7.00065 0.583984C10.5444 0.583984 13.4173 3.4569 13.4173 7.00065C13.4173 10.5444 10.5444 13.4173 7.00065 13.4173C3.4569 13.4173 0.583984 10.5444 0.583984 7.00065ZM7.00065 12.2507C6.31121 12.2507 5.62852 12.1149 4.99156 11.851C4.3546 11.5872 3.77585 11.2005 3.28834 10.713C2.80083 10.2255 2.41412 9.6467 2.15028 9.00974C1.88645 8.37278 1.75065 7.69009 1.75065 7.00065C1.75065 6.31121 1.88645 5.62852 2.15028 4.99156C2.41412 4.3546 2.80083 3.77585 3.28834 3.28834C3.77585 2.80083 4.3546 2.41412 4.99156 2.15028C5.62852 1.88645 6.31121 1.75065 7.00065 1.75065C8.39304 1.75065 9.72839 2.30377 10.713 3.28834C11.6975 4.27291 12.2507 5.60826 12.2507 7.00065C12.2507 8.39304 11.6975 9.72839 10.713 10.713C9.72839 11.6975 8.39304 12.2507 7.00065 12.2507Z"
+																		fill="#FF0000" />
+																</g>
+																<defs>
+																	<clipPath id="clip0_7288_9334">
+																		<rect width="14" height="14" fill="white" />
+																	</clipPath>
+																</defs>
+															</svg>
+														</span>
+														<span
+															style="font-weight: 500; color: red; text-decoration: underline;">Stock
+															Condition Not Qualified</span>
+													</div>
+												</div>
+											</div>
+										</div>
+
+
+
+
+
+										<div class="flip-card-back slds-p-around_small">
+											<div class="incentive-container">
+												<div class="slds-size_1-of-1 slds-clearfix">
+													<div class="slds-float_left"
+														style="justify-content: flex-start; font-size:15px; font-weight: bold;">
+														How it is calculated?</div>
+													<div class="slds-float_right"
+														style="justify-content: flex-end; cursor:pointer;"
+														onclick={flipCard}>
+														<img src={backImg} alt="JCBIMAGE">
+													</div>
+												</div>
+												<div>
+													<p>To determine the volume incentive for each month, we use
+														different slabs based on the dealer's achievement percentage
+														relative to the retail target.</p><br>
+													<p>Here’s how the slabs and their respective payout modes work:
+													</p>
+													<div style="background: #F7F7F7; border-radius: 8px;">
+														<table>
+															<tr>
+																<th class="help-table">Slab</th>
+																<th class="help-table">Condition</th>
+																<th class="help-table">Payout</th>
+															</tr>
+															<tr>
+																<td class="help-table">Slab 1</td>
+																<td class="help-table">0% to 90%</td>
+																<td class="help-table">0%</td>
+															</tr>
+															<tr>
+																<td class="help-table">Slab 2</td>
+																<td class="help-table">91% to 100%</td>
+																<td class="help-table">₹5500</td>
+															</tr>
+															<tr>
+																<td class="help-table">Slab 3</td>
+																<td class="help-table">100%</td>
+																<td class="help-table">100%</td>
+															</tr>
+														</table>
+													</div><br>
+													<p>If the user will come under Slab 2,
+														the formula for calculating the volume incentive will be:
+													</p>
+													<ol>
+														<li
+															style="    border: 2px solid #E7AF28; border-radius: 8px; padding: 5px; background: #FFF7E2;">
+															<strong>Payout Mode Amount:</strong><br><br>
+															Total Volume Incentive = <b>Total Retail Volume * Payout
+																Amount</b>
+														</li>
+													</ol>
+												</div>
+											</div>
+
+											<div class="slds-float_right" style="display:flex; align-items:center;">
+												<lightning-icon icon-name='utility:info'
+													alternative-text='Click here for more information' size='x-small'
+													title='Click here for more information'
+													style="--sds-c-icon-color-foreground-default: #E7AF28;">
+												</lightning-icon>
+												<a class="slds-p-left_xx-small" onclick={handleNavigateHelpPage}>
+													Click here for more information </a>
+											</div>
+										</div>
+									</div>
+								</div>
+								
+									  <div class="container slds-size_1-of-1 slds-m-top_x-small" style="height: 180px;">
+												<div class="slds-p-left_small slds-p-top_small"
+													style="font-weight: bold; display:flex;">
+													<div if:true={isProjectionMode} class="slds-size_4-of-5"
+														style="display: flex;justify-content: flex-start;">
+												Yearly Incentive
+													</div>
+												</div>
+											<!-- <span>
+															<svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+																xmlns="http://www.w3.org/2000/svg">
+																<path fill-rule="evenodd" clip-rule="evenodd"
+																	d="M9.35891 1.33914C9.35879 1.2001 9.40213 1.06451 9.48289 0.951331C9.56364 0.838152 9.67776 0.753053 9.80927 0.707942C9.94078 0.662831 10.0831 0.659966 10.2163 0.699748C10.3496 0.739529 10.467 0.819967 10.5522 0.929804L15.2189 6.9298C15.3099 7.04683 15.3594 7.19087 15.3594 7.33914C15.3594 7.48741 15.3099 7.63144 15.2189 7.74847L10.5522 13.7485C10.467 13.8583 10.3496 13.9387 10.2163 13.9785C10.0831 14.0183 9.94078 14.0154 9.80927 13.9703C9.67776 13.9252 9.56364 13.8401 9.48289 13.7269C9.40213 13.6138 9.35879 13.4782 9.35891 13.3391V10.6791C5.77291 10.7538 4.05025 11.4345 3.18491 12.1745C2.36225 12.8778 2.21158 13.7051 2.05491 14.5718L2.01425 14.7951C1.98433 14.9549 1.89705 15.0983 1.76882 15.1983C1.64059 15.2982 1.48026 15.3479 1.31798 15.3379C1.15571 15.3279 1.00268 15.2589 0.887685 15.144C0.772691 15.0291 0.703661 14.8761 0.693579 14.7138C0.579579 12.8818 0.750912 10.2271 2.04491 8.00647C3.30091 5.85114 5.56225 4.1938 9.35891 4.02047V1.33914Z"
+																	fill="#E7AF28" />
+															</svg>
+														</span> -->
+											<div class="slds-grid slds-p-left_small slds-p-top_medium slds-p-right_xx-small">
+												<div class="slds-size_2-of-4">
+													<h5 style="display: flex;justify-content: flex-start;">
+														BHL To CE Net Value
+													</h5>
+												</div>
+												<div if:true={isProjectionMode} class="slds-size_2-of-4"
+													style="display: flex; justify-content: flex-end; font-weight: 700; align-items: end;">
+													<!-- <span if:true={selectedProduct.isStockPredicted} class="slds-p-right_xx-small" data-prod={selectedProduct.productName} style="font-weight: 700; font-size: 16px;">₹{selectedProduct.totalPredictedPayout}</span>
+															<span if:false={selectedProduct.isStockPredicted} class="slds-p-right_xx-small" data-prod={selectedProduct.productName} style="font-weight: 700; font-size: 16px; text-decoration: line-through;">₹{selectedProduct.totalPredictedPayout}</span> -->
+													<lightning-formatted-number
+														if:true={selectedProduct.isStockPredicted}
+														class="slds-p-right_xx-small"
+														value={selectedProduct.ceRatioPredictedPayout}
+														data-prod={selectedProduct.productName}
+														currency-display-as="symbol" format-style="currency"
+														currency-code="INR"></lightning-formatted-number>
+													<lightning-formatted-number
+														if:false={selectedProduct.isStockPredicted}
+														class="slds-p-right_xx-small"
+														value={selectedProduct.ceRatioPredictedPayout}
+														data-prod={selectedProduct.productName}
+														style="text-decoration: line-through;"
+														currency-display-as="symbol" format-style="currency"
+														currency-code="INR"></lightning-formatted-number>
+												</div>
+												<div if:false={isProjectionMode} class="slds-size_2-of-4"
+													style="display: flex;justify-content: flex-end; font-weight:700; align-items:end;">
+													<!-- <span if:true={selectedProduct.isStockAchieved} class="slds-p-right_xx-small" style="font-weight: 700; font-size: 16px;">₹{selectedProduct.totalActualPayout}</span>
+															<span if:false={selectedProduct.isStockAchieved} class="slds-p-right_xx-small" style="font-weight: 700; font-size: 16px; text-decoration: line-through;">₹{selectedProduct.totalActualPayout}</span> -->
+													<lightning-formatted-number
+														if:true={selectedProduct.isStockAchieved}
+														value={selectedProduct.ceRatioActualPayout}
+														style="font-weight: 700; font-size: 16px;"
+														currency-display-as="symbol" format-style="currency"
+														currency-code="INR"></lightning-formatted-number>
+													<lightning-formatted-number
+														if:false={selectedProduct.isStockAchieved}
+														value={selectedProduct.ceRatioActualPayout}
+														style="font-weight: 700; font-size: 16px;"
+														currency-display-as="symbol" format-style="currency"
+														currency-code="INR"></lightning-formatted-number>
+												</div>
+											</div>
+												<div class="slds-grid slds-p-left_small slds-p-top_medium slds-p-right_xx-small">
+													<div class="slds-size_2-of-4"
+														style="display: flex;justify-content: flex-start;">
+															YTD Of BHL To CE Net Value
+														
+													</div>
+													<div if:true={isProjectionMode} class="slds-size_2-of-4"
+														style="display: flex; justify-content: flex-end; font-weight: 700; align-items: end;">
+														<!-- <span if:true={selectedProduct.isStockPredicted} class="slds-p-right_xx-small" data-prod={selectedProduct.productName} style="font-weight: 700; font-size: 16px;">₹{selectedProduct.totalPredictedPayout}</span>
+															<span if:false={selectedProduct.isStockPredicted} class="slds-p-right_xx-small" data-prod={selectedProduct.productName} style="font-weight: 700; font-size: 16px; text-decoration: line-through;">₹{selectedProduct.totalPredictedPayout}</span> -->
+														<lightning-formatted-number
+															if:true={selectedProduct.isStockPredicted}
+															class="slds-p-right_xx-small"
+															value={selectedProduct.ceRatioYTDPredictedPayout}
+															data-prod={selectedProduct.productName}
+															currency-display-as="symbol" format-style="currency"
+															currency-code="INR"></lightning-formatted-number>
+														<lightning-formatted-number
+															if:false={selectedProduct.isStockPredicted}
+															class="slds-p-right_xx-small"
+															value={selectedProduct.ceRatioYTDPredictedPayout}
+															data-prod={selectedProduct.productName}
+															style="text-decoration: line-through;"
+															currency-display-as="symbol" format-style="currency"
+															currency-code="INR"></lightning-formatted-number>
+													</div>
+													<div if:false={isProjectionMode} class="slds-size_2-of-4"
+														style="display: flex;justify-content: flex-end; font-weight:700; align-items:end;">
+														<!-- <span if:true={selectedProduct.isStockAchieved} class="slds-p-right_xx-small" style="font-weight: 700; font-size: 16px;">₹{selectedProduct.totalActualPayout}</span>
+															<span if:false={selectedProduct.isStockAchieved} class="slds-p-right_xx-small" style="font-weight: 700; font-size: 16px; text-decoration: line-through;">₹{selectedProduct.totalActualPayout}</span> -->
+														<lightning-formatted-number
+															if:true={selectedProduct.isStockAchieved}
+															value={selectedProduct.ceRatioYTDActualPayout}
+															style="font-weight: 700; font-size: 16px;"
+															currency-display-as="symbol" format-style="currency"
+															currency-code="INR"></lightning-formatted-number>
+														<lightning-formatted-number
+															if:false={selectedProduct.isStockAchieved}
+															value={selectedProduct.ceRatioYTDActualPayout}
+															style="font-weight: 700; font-size: 16px;"
+															currency-display-as="symbol" format-style="currency"
+															currency-code="INR"></lightning-formatted-number>
+													</div>
+												</div>
+											
+										</div>
+					
+							</div>
+						</div>
+
+						<div class="slds-clearfix slds-p-around_medium" style="width: -webkit-fill-available;">
+							<template if:true={isProjectionMode}>
+								<div class="slds-float_left" style="display:flex;"
+									if:true={selectedProduct.isEligibleForAddCalc}>
+									<lightning-icon icon-name='utility:moneybag'
+										alternative-text='Eligible for Additional Incentive' variant="success"
+										size='x-small' title='Eligible for Additional Incentive'>
+									</lightning-icon>
+									<p class="slds-p-left_xx-small" style="font-weight:700;">
+										Eligible for
+										Additional Incentive</p>
+								</div>
+							</template>
+							<template if:false={isProjectionMode}>
+								<div class="slds-float_left" style="display:flex;"
+									if:true={selectedProduct.isEligibleForAddActual}>
+									<lightning-icon icon-name='utility:moneybag'
+										alternative-text='Eligible for Additional Incentive' variant="success"
+										size='x-small' title='Eligible for Additional Incentive'>
+									</lightning-icon>
+									<p class="slds-p-left_xx-small" style="font-weight:700;">
+										Eligible for
+										Additional Incentive</p>
+								</div>
+							</template>
+						</div>
+					</template>
+
+
+					<div class="slds-grid slds-wrap slds-p-around_medium override-scroll"
+						style="width:100%;height: 97%; overflow: auto;" if:true={isAddIncentive}>
+						<template for:each={addKPITargetAndPayout} for:item="addInc">
+							<div if:true={addInc.isVisible} key={add}
+								class="slds-max-small-size--12-of-12 slds-medium-size--6-of-12 slds-large-size--4-of-12">
+								<div style="border-radius: 13px; border:1px solid #DDDBDA; height: 430px; overflow: auto;"
+									class="slds-m-around_small override-scroll">
+									<h6 class="slds-p-left_small slds-p-top_small" style="font-weight: bold;">
+										{addInc.productName}</h6>
+									<template for:each={addInc.kpiPayouts} for:item="payout">
+										<div class="slds-grid slds-p-left_small slds-p-top_small"
+											key={payout.kpIPayoutName} if:true={payout.isCalcPayout}>
+											<div class="slds-size_1-of-2">
+												<h4>{payout.kpIPayoutName}</h4>
+											</div>
+											<div class="slds-size_1-of-2"
+												style="display: flex;justify-content: flex-end; font-weight:600;">
+												<span if:true={isProjectionMode}
+													class="slds-p-right_small">{payout.addPredictedKPIPayout}</span>
+												<span if:false={isProjectionMode}
+													class="slds-p-right_small">{payout.addAchievedKPIPayout}</span>
+											</div>
+										</div>
+										<div class="slds-grid slds-p-left_small slds-p-top_small"
+											key={payout.kpIPayoutName} if:true={payout.isCalcPayout}>
+											<div class="slds-size_1-of-2">
+												<h4>Growth {payout.kpIPayoutName}</h4>
+											</div>
+											<div class="slds-size_1-of-2"
+												style="display: flex;justify-content: flex-end; font-weight:600;">
+												<span if:true={isProjectionMode}
+													class="slds-p-right_small">{payout.growthPredictedPayout}</span>
+												<span if:false={isProjectionMode}
+													class="slds-p-right_small">{payout.growthActualPayout}</span>
+											</div>
+										</div>
+									</template>
+
+									<div class="slds-border_bottom slds-p-top_small"
+										style="width: 95%;margin-left: 12px;">
+									</div>
+
+									<div class="slds-grid slds-p-left_small  slds-p-bottom_x-small slds-p-top_x-small">
+										<div class="slds-size_1-of-2">
+											<h5 style="font-weight: 600;font-size: 14px;">Total Additional Incentive
+											</h5>
+										</div>
+										<div class="slds-size_1-of-2" style="display: flex;justify-content: flex-end;">
+											<template if:true={isProjectionMode}>
+												<span class="slds-p-right_small"
+													style="font-weight: 600; font-size: 14px;">{addInc.additionalPredictedPayout}</span>
+											</template>
+											<template if:false={isProjectionMode}>
+												<span class="slds-p-right_small"
+													style="font-weight: 600; font-size: 14px;">{addInc.additionalActualPayout}</span>
+											</template>
+										</div>
+									</div>
+									<div class="slds-grid slds-p-left_small  slds-p-bottom_x-small slds-p-top_x-small">
+										<div class="slds-size_1-of-2">
+											<h5 style="font-weight: 600;font-size: 14px;">Total Growth Incentive</h5>
+										</div>
+										<div class="slds-size_1-of-2" style="display: flex;justify-content: flex-end;">
+											<template if:true={isProjectionMode}>
+												<span class="slds-p-right_small"
+													style="font-weight: 600; font-size: 14px;">{addInc.growthPredictedPayout}</span>
+											</template>
+											<template if:false={isProjectionMode}>
+												<span class="slds-p-right_small"
+													style="font-weight: 600; font-size: 14px;">{addInc.growthActualPayout}</span>
+											</template>
+										</div>
+									</div>
+									<div class="slds-grid slds-p-left_small  slds-p-bottom_x-small slds-p-top_x-small">
+										<div class="slds-size_1-of-2">
+											<h5 style="font-weight: 600;font-size: 14px;">{addInc.productName} Multi-KPI
+												Incentive</h5>
+										</div>
+										<div class="slds-size_1-of-2" style="display: flex;justify-content: flex-end;">
+											<template if:true={isProjectionMode}>
+												<span class="slds-p-right_small"
+													style="font-weight: 600; font-size: 14px;">
+													{addInc.multiKpiPredictedPayout}</span>
+											</template>
+											<template if:false={isProjectionMode}>
+												<span class="slds-p-right_small"
+													style="font-weight: 600; font-size: 14px;">{addInc.multiKpiActualPayout}</span>
+											</template>
+										</div>
+									</div>
+
+									<div class="slds-border_bottom" style="width: 95%;margin-left: 12px;">
+									</div>
+
+									<div class="slds-grid slds-p-left_small  slds-p-bottom_x-small slds-p-top_x-small">
+										<div class="slds-size_1-of-2">
+											<h5 style="font-weight: 600;font-size: 16px;">Total
+												{addInc.productName}
+												Incentive</h5>
+										</div>
+										<div class="slds-size_1-of-2" style="display: flex;justify-content: flex-end;">
+											<template if:true={isProjectionMode}>
+												<span if:true={addInc.isStockPredicted} class="slds-p-right_small"
+													style="font-weight: 600; font-size: 16px;">{addInc.totalAddPredictedPayout}</span>
+												<span if:false={addInc.isStockPredicted} class="slds-p-right_small"
+													style="font-weight: 600; font-size: 16px; text-decoration:line-through;">{addInc.totalAddPredictedPayout}</span>
+											</template>
+											<template if:false={isProjectionMode}>
+												<span if:true={addInc.isStockAchieved} class="slds-p-right_small"
+													style="font-weight: 600; font-size: 16px;">{addInc.totalAddActualPayout}</span>
+												<span if:false={addInc.isStockAchieved} class="slds-p-right_small"
+													style="font-weight: 600; font-size: 16px; text-decoration:line-through;">{addInc.totalAddActualPayout}</span>
+											</template>
+										</div>
+									</div>
+								</div>
+							</div>
+						</template>
+						<div if:false={noAddIncTargets}
+							style="height: 36rem; display:flex; justify-content:center; align-items:center; font-size:16px; width: 100%; font-weight:600;border: 2px solid rgb(231, 175, 40);border-radius: 15px;">
+							<span>Additional Incentive Targets not configured for this product.</span>
+						</div>
+					</div>
+				</div>
+				<div class={changeGridSize} if:false={hasProduct}
+					style="height: 36rem; display:flex; justify-content:center; align-items:center; font-size:16px; font-weight:600;border: 2px solid rgb(231, 175, 40);border-radius: 15px;">
+					<span>Targets not configured for this product.</span>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>

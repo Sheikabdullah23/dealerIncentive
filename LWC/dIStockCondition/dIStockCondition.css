@@ -1,0 +1,298 @@
+.outerDiv{
+	margin: 15px 15px 15px 15px;
+	border: 1px solid rgba(195, 197, 200, 1);
+	border-radius: 8px;
+}
+
+tr{
+	border-bottom: 1px solid #DDDBDA;
+}
+
+.thead{
+	position: sticky;
+	top: 0px;
+	border-bottom: 1px solid rgb(179, 179, 179);
+	z-index: 2;
+	height: 50px;
+	font-size: medium;
+	cursor: pointer;
+	background-color: white;
+	box-shadow: rgb(221, 219, 218) 1px 1px 5px 0px;;
+}
+
+tbody > tr:hover{
+	border-top: 2px solid rgb(179 ,181, 182,0.5);
+	border-bottom: 2px solid rgb(179 ,181, 182,0.5);
+}
+
+.tbody-td-div-row-edit{
+	display: none;
+}
+
+tbody>tr:hover>td>.tbody-td-div-row-edit{
+	display: block;
+}
+
+.div-input{
+	padding-top: 7px;
+	padding-bottom: 7px;
+	width: 50%;
+}
+
+.div-lwc-input{
+	width: 75px;
+}
+
+.container{
+	height: 645px;
+	overflow-y: auto;
+	overflow-x: auto;
+}
+
+.container::-webkit-scrollbar {
+	width: 5px;
+	height: 5px;
+	scroll-behavior: smooth;
+}
+
+.container::-webkit-scrollbar-track {
+	background: #f1f1f1;
+}
+
+.container::-webkit-scrollbar-thumb {
+	background: #c1c1c1;
+}
+.frst-clmn{
+	box-shadow: 4px 0px 4px 0px rgba(0, 0, 0, 0.06);
+	width: 224px;
+	position: sticky;
+	background-color: white;
+	left: 0px;
+	z-index: 1;
+	box-shadow: inset -1px 0px 0px 0px rgb(149 ,156, 162 , 30%);
+}
+
+.footer{
+	position: sticky;
+	bottom: -1px;
+	border-top: 1px solid rgb(179, 179, 179);
+	z-index: 1;
+	height: 45px;
+	background-color: white;
+	margin-top: 0px;
+	cursor: pointer;
+	border-radius: 0px 0px 8px 8px;
+}
+
+.footer-div{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 8px;
+	margin-top: 7px;
+	margin-bottom: 7px;
+}
+
+.icon-clr-overRide{
+	--slds-c-icon-color-foreground-default: #0176D3;
+}
+
+.dealer-name{
+	padding-left: 10px;
+	cursor: pointer;
+	font-weight: 400;
+	font-size: 13px;
+	line-height: 20px;
+	color: rgba(8, 7, 7,1);
+	width:224px;
+	text-overflow: ellipsis;
+	text-wrap: nowrap;
+	overflow: hidden;
+}
+
+.dealer-text{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	cursor: pointer;
+}
+
+.thead-tr-th-div-search-icon{
+	margin-right: 20px;
+}
+
+.highlightSelectedDealerRow{
+	background-color: #d6ebfc !important;
+}
+
+.dealer-search{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	cursor: pointer;
+}
+.thead-tr-th-div-search-input{
+	width: 80%;
+}
+.thead-tr-th-div-close-icon{
+	margin-right: 20px;
+}
+
+.thead-th-achievementname{
+	width: 200px;
+	border-left: 1px solid rgb(226,226,226,1);
+	height: 70px;
+}
+
+.thead-th-achievementname-div{
+	text-wrap: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-family: Segoe UI;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 17.29px;
+	text-align: center;
+
+}
+
+.thead-th-edit{
+	position: sticky;
+	right: 0px;
+	background-color: white;
+}
+
+.thead-th-achievementname-div-span{
+	font-size: 12px !important;
+	font-family: Segoe UI;
+	font-weight: 400 !important;
+	line-height: 15.96px;
+	text-align: left;
+	color:rgb(50,132,217);
+	width: 50%;
+}
+
+.thead-th-opening-stock-name{
+	font-size: 12px !important;
+	font-family: Segoe UI;
+	font-weight: 400 !important;
+	line-height: 15.96px;
+	text-align: center;
+	color:rgb(50,132,217);
+}
+
+.tbody-td-input-clmn{
+	font-family: Segoe UI;
+	font-size: 12px;
+	font-weight: 400;
+	line-height: 15.96px;
+	text-align: left;
+	color: #000000;
+	border-left: 1px solid rgb(226,226,226,1);
+}
+
+.modalfooter{
+	display: flex;
+    justify-content: end;
+    gap: 8px;
+}
+
+.download-upload-div{
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+}
+
+.downloadUpload{
+	margin-top: auto;
+}
+
+.download-upload-div-filename{
+	margin-top: 12px;
+	text-transform: uppercase;
+}
+.thead-th-div-span-wrapper{
+	width: 100%;
+	display: flex;
+}
+
+.tbody_td_div_input_wrapper{
+	display: flex;
+	width: 100%;
+}
+
+.stock_maintained{
+	color: rgba(22, 164, 45, 1);
+	font-size: 12px;
+	font-weight: 700;
+}
+
+.stock_not_maintained{
+	color:  rgba(255, 0, 0, 1);
+	font-size: 12px;
+	font-weight: 700;
+}
+
+.tbody-last-td-row-edit{
+	position: sticky;
+	right: 0px;
+	background-color: white;
+	z-index: 1;
+}
+.thead-th-in-hand-span-wrapper{
+	display: flex;
+	justify-content: space-between;
+}
+
+.thead-std-dealer-name{
+	border-radius: 8px 0px 0px 0px;
+}
+
+lightning-formatted-text::after{
+	content: ' (' attr(data-producttarget) ' days)';
+	font-family: Segoe UI;
+	font-size: 13px;
+	font-weight: 400;
+	line-height: 13.3px;
+	text-align: left;
+	color: rgba(99, 100, 101, 1);
+}
+
+.column-Edit-Span{
+	align-content: end;
+}
+
+.thead-th-productName-wrapper{
+	display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.thead-th-opening-stock-div-wrapper{
+	display: flex;
+    flex-direction: column;
+}
+
+@media only screen  and (max-width: 1300px) {
+    .container {
+        height: 333px;
+    }
+}
+
+@media only screen and (min-width: 1301px) and (max-width: 1599px) {
+    .container {
+        height: 440px;
+    }
+}
+
+@media only screen and (min-width: 1600px) and (max-width: 1800px) {
+    .container {
+        height: 565px;
+    }
+}
+
+@media only screen and (min-width: 1801px)  {
+    .container {
+        height: 645px;
+    }
+}

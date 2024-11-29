@@ -1,0 +1,581 @@
+<template>
+	<template for:each={selectedKPITarget} for:item="kpi" for:index="index">
+		<template if:true={kpi.callComponent}>
+			<div key={kpi} class="slds-grid slds-m-top_small noneWidth">
+				<div class="slds-size_9-of-12 form-check form-check-inline"
+					style="display: flex;justify-content: right; align-items: center;">
+					<template if:true={kpi.isSlab}>
+						<div if:true={showDate} class="slds-media slds-p-right_large slds-p-bottom_large">
+							<p class="slds-p-top_large slds-p-right_small">Previous Year</p>
+							<div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+								<lightning-icon size="x-small"
+									class="iconMargin slds-icon slds-input__icon slds-input__icon_right slds-icon-text-default"
+									icon-name="utility:date_input"></lightning-icon>
+								<lightning-input class="slds-size_xx-small" name="input1" value={kpi.prevYear} disabled>
+								</lightning-input>
+							</div>
+						</div>
+						<div if:true={showDate} class="slds-media slds-p-right_large slds-p-bottom_large">
+							<p class="slds-p-top_large slds-p-right_small">Month</p>
+							<lightning-record-edit-form object-api-name="DI_KPI_Target_And_Payout_Info__c"
+								class="slds-p-top_medium">
+								<lightning-input-field variant="label-hidden" field-name="Previous_Month__c"
+									value={kpi.prevMonth} onchange={handlePrevChange} data-index={index}>
+								</lightning-input-field>
+							</lightning-record-edit-form>
+						</div>
+					</template>
+					<template if:true={kpi.isSlab}>
+						<div if:true={sales} class="slds-media slds-p-bottom_large" style="margin-right: 20vh;">
+							<div>
+								<legend class="slds-form-element__legend slds-form-element__label slds-p-left_xx-small">
+									Salesperson Incentive For {kpi.kpiName}</legend>
+								<lightning-combobox data-index={index} value={kpi.salesCoverage.coverageRange}
+									style="bottom: 19px;" name="coverageRange" options={optionsIncentiveRange}
+									onchange={handleSalesInput}>
+								</lightning-combobox>
+							</div>
+							<div class="slds-p-left_x-small slds-p-right_small">
+								<lightning-input class="slds-size_xx-small slds-p-top_xx-small" name="coverageInput"
+									value={kpi.salesCoverage.coverageInput} onchange={handleSalesInput}
+									data-index={index}></lightning-input>
+							</div>
+							<p class="slds-p-top_x-large" style="font-weight: 800;">%
+							</p>
+						</div>
+					</template>
+					<div if:false={showAddSlab} class="slds-form-element slds-m-left_xx-large">
+						<div class="slds-form-element__control">
+							<div class="slds-checkbox">
+								<input type="checkbox" name="options" id={kpi.kpiTargetName} value={kpi.isSlab}
+									onchange={targetRadioNew} data-index={index} data-ind={ind} data-indexs={indexs}
+									checked={kpi.isSlab} />
+								<label class="slds-checkbox__label" for={kpi.kpiTargetName}>
+									<span class="slds-checkbox_faux"></span>
+									<span class="slds-form-element__label">Add this as Slabs?</span>
+								</label>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class={sizeEdit} style="display: flex; justify-content: center; align-items: center;">
+					<lightning-button-menu data-name="mainDiv" if:true={kpi.isSlab} icon-name="utility:add"
+						style="position:absolute;" label="New Slab" variant="border-filled">
+						<lightning-menu-item value="SingleRange" label="Single" onclick={addRow} data-index={index}
+							data-ind={ind}></lightning-menu-item>
+						<lightning-menu-item value="StartandEndRange" label="Start and End" onclick={addRow}
+							data-index={index} data-ind={ind}></lightning-menu-item>
+					</lightning-button-menu>
+					<lightning-button-menu if:true={showTargetType} data-name="mainDiv" if:false={kpi.isSlab}
+						icon-name="utility:add" label="Target Type&nbsp;" variant="border-filled"
+						menu-alignment="right">
+						<lightning-menu-item data-index={index} data-ind={ind} value="singleTarget" label="Single Range"
+							onclick={schemeTargets}></lightning-menu-item>
+						<lightning-menu-item data-index={index} data-ind={ind} value="startTarget"
+							label="Start and End Range" onclick={schemeTargets}></lightning-menu-item>
+					</lightning-button-menu>
+				</div>
+			</div>
+			<template if:true={kpi.isSlab} for:each={kpi.incentiveSlabs} for:item="slab" for:index="indx">
+				<div key={kpi} class="slds-grid slds-col">
+					<div class="slds-size_11-of-12 slds-card slds-m-top_large slab-class"
+						style="border-radius: 8px;align-items:flex-start;justify-content: space-around;"
+						data-name="slab" data-id={slab.id}>
+						<div class="slds-grid slds-size_12-of-12 slds-p-left_x-small slds-p-bottom_small">
+							<div class="slds-size_6-of-12">
+								<p style="font-weight: 550;font-size: 15px;font-family: 'Work Sans', sans-serif;">
+									Scenario
+									{slab.id}</p>
+								<div class="slds-media">
+									<div if:true={multipleKpi} class="slds-media slds-p-right_small"
+										style="align-items:end; width: 100%;">
+										<div>
+											<legend class="slds-form-element__legend"
+												style="font-size: 11px;font-weight: 600;">Multiple KPI's
+											</legend>
+											<lightning-combobox data-index={index} data-ind={ind} name="multiStart"
+												data-incen={slab.isSingle} data-indx={indx} value={slab.multiRange}
+												options={optionsRange} data-id={slab.id}
+												data-prokpid={kpi.productKPIId} onchange={handleRangeVolume}>
+											</lightning-combobox>
+										</div>
+										<div class="slds-p-left_small">
+											<lightning-input class="slds-size_xx-small" data-index={index}
+												data-ind={ind} data-indx={indx} data-id={slab.id}
+												value={slab.multiPercent} name="multiInput"
+												onchange={handleRangeVolume} onkeypress={handleKeyPressValidation}
+												oninput={handleInputValidation} maxlength="6"
+												onpaste={handlePasteValidation} data-prokpid={kpi.productKPIId}>
+											</lightning-input>
+										</div>
+										<p class="slds-p-left_x-small slds-p-bottom_x-small">&</p>
+									</div>
+									<div if:false={slab.isStartEnd} class="slds-media" style="align-items:end;">
+										<div style="width:60%;">
+											<lightning-combobox name="rangeStart" data-index={index} data-ind={ind}
+												data-incen={slab.isSingle} data-indx={indx} value={slab.rangeStart}
+												options={optionsRange} data-id={slab.id}
+												data-prokpid={kpi.productKPIId} onchange={handleRangeVolume}>
+											</lightning-combobox>
+										</div>
+										<div class="slds-p-left_small">
+											<lightning-input data-index={index} data-ind={ind} data-indx={indx}
+												style="width:51px;" data-id={slab.id} value={slab.rangeStartPercent}
+												name="rangeInput" data-prokpid={kpi.productKPIId}
+												onchange={handleRangeVolume} onkeypress={handleKeyPressValidation}
+												oninput={handleInputValidation} maxlength="6"
+												onpaste={handlePasteValidation}></lightning-input>
+										</div>
+										<p class="slds-p-left_xx-small slds-p-bottom_x-small" style="font-weight: 800;">
+											%
+										</p>
+									</div>
+									<div if:true={slab.isStartEnd}>
+										<div class="slds-media" style="align-items:end;">
+											<div style="width:60%;">
+												<lightning-combobox name="rangeStart" data-index={index} data-ind={ind}
+													data-incen={slab.isSingle} data-indx={indx}
+													value={slab.rangeStart} options={optStartRange} data-id={slab.id}
+													onchange={handleRangeVolume} data-prokpid={kpi.productKPIId}>
+												</lightning-combobox>
+											</div>
+											<div class="slds-p-left_small">
+												<lightning-input data-index={index} data-ind={ind} data-indx={indx}
+													style="width:51px;" data-id={slab.id}
+													value={slab.rangeStartPercent} name="rangeInput"
+													onchange={handleRangeVolume} step="0.01"
+													onkeypress={handleKeyPressValidation}
+													oninput={handleInputValidation} maxlength="6"
+													onpaste={handlePasteValidation} data-prokpid={kpi.productKPIId}>
+												</lightning-input>
+											</div>
+											<p class="slds-p-left_xx-small slds-p-bottom_x-small"
+												style="font-weight: 800;">
+												%
+											</p>
+										</div>
+										<div class="slds-media" style="align-items:end;">
+											<div if:true={slab.isStartEnd} style="width:60%;">
+												<lightning-combobox name="rangeEnd" value={slab.rangeEnd}
+													data-indx={indx} data-index={index} data-ind={ind} data-trgt={indx}
+													options={optEndRange} data-id={slab.id}
+													onchange={handleRangeVolume} data-prokpid={kpi.productKPIId}>
+												</lightning-combobox>
+											</div>
+											<div if:true={slab.isStartEnd} class="slds-p-left_small">
+												<lightning-input data-index={index} data-ind={ind} data-indx={indx}
+													style="width:51px;" data-id={slab.id} value={slab.rangeEndPercent}
+													name="rangeInput1" onchange={handleRangeVolume}
+													data-prokpid={kpi.productKPIId}
+													onkeypress={handleKeyPressValidation}
+													oninput={handleInputValidation} maxlength="6"
+													onpaste={handlePasteValidation}>
+												</lightning-input>
+											</div>
+											<p class="slds-p-left_xx-small slds-p-bottom_x-small"
+												style="font-weight: 800;">
+												%
+											</p>
+										</div>
+									</div>
+									<div if:true={slab.isGrowthIncentive}
+										class="slds-media slds-p-right_small slds-p-left_large">
+										<div>
+											<legend class="slds-form-element__legend"
+												style="font-size: 11px;font-weight: 600;">%Growth vs Prev.Year
+											</legend>
+											<lightning-combobox data-index={index} data-ind={ind} name="growthStart"
+												data-incen={slab.isSingle} data-indx={indx} value={slab.growthRange}
+												options={optionsRange} data-id={slab.id} onchange={handleRangeVolume}
+												data-prokpid={kpi.productKPIId}>
+											</lightning-combobox>
+										</div>
+										<div class="slds-p-left_x-small slds-p-right_small">
+											<lightning-input data-id={slab.id} data-indx={indx} style="width:55px;"
+												data-index={index} data-ind={ind} value={slab.growthPercent}
+												name="growthInput" onchange={handleRangeVolume}
+												data-prokpid={kpi.productKPIId} onkeypress={handleKeyPressValidation}
+												oninput={handleInputValidation} maxlength="6"
+												onpaste={handlePasteValidation}>
+											</lightning-input>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div if:false={enablePayoutMode} class="slds-size_3-of-12 slds-m-left_xx-large">
+								<lightning-radio-group name={slab.id} style="display: flex;justify-content:center;" 
+									label="Payout Mode" options={incentiveOptions} value={slab.incentiveRadio}
+									data-id={slab.id} data-indx={indx} data-index={index} data-ind={ind} type="radio"
+									onchange={handleRangeVolume} data-prokpid={kpi.productKPIId}>
+								</lightning-radio-group>
+							</div>
+							<div class="slds-size_2-of-12 slds-p-left_small noneleft">
+								<div class="slds-grid slds-grid_vertical">
+									<div class="slds-col">
+										<legend class="slds-form-element__legend">
+											{slab.incentive}
+										</legend>
+									</div>
+									<div class="slds-col">
+										<div class="slds-media">
+											<lightning-input style="width: 63%;bottom: 14px;" class="noneMargin"
+												data-index={index} data-ind={ind} data-indx={indx} data-id={slab.id}
+												value={slab.incentiveValue} name="rangeInput2"
+												onchange={handleRangeVolume} data-prokpid={kpi.productKPIId}
+												disabled={slab.disableIncentive} maxlength="15" onkeypress={handleKeyPressValidation} oninput={handleInputValidation}
+												onpaste={handlePasteValidation}>
+											</lightning-input>
+											<div class="slds-media__body">
+												<p class="slds-p-left_xx-small slds-p-top_medium"
+													style="font-weight: 800;">
+													{slab.incentiveSymbol}</p>
+											</div>
+										</div>
+									</div>
+									<div class="slds-col">
+										<div if:false={enablePayoutMode} class="">
+											<lightning-input data-index={index} data-ind={ind} data-indx={indx}
+												data-id={slab.id} type="checkbox" checked={slab.proRataIncentive}
+												label="Pro-rata basis" name="proRata" onchange={handleRangeVolume}
+												data-prokpid={kpi.productKPIId} onpaste={handlePaste}>
+											</lightning-input>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="slds-grid slds-size_4-of-12 slds-p-left_small slds-form-element" style="align-items:center;" if:true={forAddIncentive}>
+								<div class="slds-form-element__control">
+									<div class="slds-checkbox">
+										<input type="checkbox" name="allMachineRetail" id={slab.slabId} value={slab.allMachineRetail}
+											onchange={targetRadioNew} data-index={index} data-slabindex={indx}
+											checked={slab.allMachineRetail} />
+										<label class="slds-checkbox__label" for={slab.slabId}>
+											<span class="slds-checkbox_faux"></span>
+											<span class="slds-form-element__label">All Machine Retail</span>
+										</label>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="slds-size_12-of-12 overlap error-class error-content" data-id={slab.id}
+							title="Error: Overlap detected between Scenarios conditions. Please review the errors and try saving again.">
+							<p>Error: Overlap detected between Scenario {slab1} and Scenario {slab2} conditions. Please
+								review the errors and try saving again.</p>
+						</div>
+					</div>
+					<div class="slds-size_1-of-12 slds-align_absolute-center">
+						<div class="slds-m-right_x-small">
+							<lightning-icon onclick={removeStartRow} data-index={index} data-ind={ind} data-indx={indx}
+								icon-name='utility:delete' alternative-text='delete' size='x-small' title='delete'
+								name={slab.id} data-kpi={kpi.kpiId} data-slab={slab.slabId} class="redColor">
+							</lightning-icon>
+						</div>
+						<div>
+							<lightning-icon class="blueColor" style="cursor:pointer;" icon-name='utility:replace'
+								data-indx={indx} alternative-text='change' size='x-small' data-index={index}
+								data-ind={ind} onclick={changeRangeHandler}>
+							</lightning-icon>
+						</div>
+					</div>
+				</div>
+			</template>
+			<template if:false={kpi.isSlab}>
+				<div key={kpi} if:true={kpi.incentiveRange} class="slds-grid slds-col slds-p-left_small">
+					<template if:true={kpi.incentiveRange.isSingle}>
+						<div class="slds-grid slds-size_11-of-12 slds-card slds-m-top_small slds-p-left_small slds-p-bottom_large slds-p-right_large"
+							style="border-radius: 8px;position: relative;z-index: 11; align-items:end;">
+							<div class="slds-size_1-of-4 slds-p-top_small">
+								<div>
+									<legend
+										class="slds-form-element__legend slds-form-element__label slds-p-left_small">
+										Single Range
+									</legend>
+									<lightning-combobox name="singleRange" value={kpi.incentiveRange.singleRange}
+										options={optionsRange} data-index={index} data-ind={ind}
+										onchange={handleChange}>
+									</lightning-combobox>
+								</div>
+
+							</div>
+							<div class="slds-size_1-of-4 slds-p-left_small slds-p-right_large">
+								<div class="slds-media">
+									<lightning-input class="slds-size_xx-small" data-index={index} data-ind={ind}
+										value={kpi.incentiveRange.singlePercent} name="singlePercent"
+										onchange={handleChange} onkeypress={handleKeyPressValidation}
+										oninput={handleInputValidation} maxlength="6" onpaste={handlePasteValidation}>
+									</lightning-input>
+									<div class="slds-media__body">
+										<p class="slds-p-left_xx-small slds-p-top_large" style="font-weight: 800;">%</p>
+									</div>
+								</div>
+
+							</div>
+
+							<div if:true={forAddIncentive} class="slds-size_1-of-4">
+								<legend class="slds-form-element__legend slds-form-element__label">Incentive Amount ₹
+								</legend>
+								<lightning-input class="slds-size_x-small slds-p-right_xx-large" data-index={index}
+									data-ind={ind} value={kpi.incentiveRange.incentiveAmount} name="incentiveAmount"
+									onchange={handleChange} onkeypress={handleKeyPressValidation}
+									oninput={handleInputValidation} maxlength="10" onpaste={handlePasteValidation}>
+								</lightning-input>
+							</div>
+							<div if:true={forAddIncentive} class="slds-size_1-of-4 slds-form-element">
+								<div class="slds-form-element__control">
+									<div class="slds-checkbox">
+										<input type="checkbox" name="allMachineRetail" id={kpi} value={kpi.allMachineRetail}
+											onchange={handleChange} data-index={index} data-ind={ind}
+											checked={kpi.allMachineRetail} />
+										<label class="slds-checkbox__label" for={kpi}>
+											<span class="slds-checkbox_faux"></span>
+											<span class="slds-form-element__label">All Machine Retail</span>
+										</label>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="slds-size_1-of-12" style="display:flex; justify-content:center; align-items:center;"
+							data-index={index} data-ind={ind}>
+							<div class="slds-m-right_x-small">
+								<lightning-icon icon-name='utility:delete' class="redColor" style="cursor:pointer"
+									alternative-text='delete' size='x-small' title="delete" data-index={index}
+									data-ind={ind} onclick={removeRange}></lightning-icon>
+							</div>
+							<div>
+								<lightning-icon class="blueColor" style="cursor:pointer;" icon-name='utility:replace'
+									alternative-text='change' size='x-small' data-index={index} data-ind={ind}
+									onclick={schemeTargetsSwap}>
+								</lightning-icon>
+							</div>
+						</div>
+					</template>
+					<template if:true={kpi.incentiveRange.isStart}>
+						<div class="slds-grid slds-size_11-of-12 slds-card slds-m-top_small slds-p-left_small slds-p-bottom_small slds-p-right_large"
+							style="border-radius: 8px; align-items:center;">
+							<template if:false={forAddIncentive}>
+								<div style="width:25%;">
+									<legend class="slds-form-element__legend slds-form-element__label slds-p-left_small">
+										Start Range
+									</legend>
+									<lightning-combobox class="slds-col" name="startRange"
+										value={kpi.incentiveRange.startRange} options={optStartRange} data-index={index}
+										data-ind={ind} onchange={handleChange} title={kpi.incentiveRange.startRange}>
+									</lightning-combobox>
+								</div>
+
+								<div style="width:20%;  display: flex; align-items:end;">
+									<lightning-input class="slds-p-left_small slds-col slds-size_xx-small"
+										value={kpi.incentiveRange.startPercent} data-index={index} data-ind={ind}
+										name="startPercent" onchange={handleChange} onkeypress={handleKeyPressValidation}
+										oninput={handleInputValidation} maxlength="6" onpaste={handlePasteValidation}>
+									</lightning-input>
+									<p class="slds-p-left_xx-small slds-p-bottom_x-small" style="font-weight: 800;">%</p>
+								</div>
+
+								<span class="slds-p-top_large slds-align_absolute-center slds-p-horizontal_small slds-col slds-m-left_small"
+									style="font-weight: 400;font-size: 1rem;">to</span>
+
+								<div style="width:25%;">
+									<legend class="slds-form-element__legend slds-form-element__label slds-p-left_small">End
+										Range
+									</legend>
+									<lightning-combobox class="slds-col" name="endRange" value={kpi.incentiveRange.endRange}
+										options={optEndRange} data-index={index} data-ind={ind} onchange={handleChange}
+										title={kpi.incentiveRange.endRange}>
+									</lightning-combobox>
+								</div>
+
+								<div style="width:20%;  display: flex; align-items:end;">
+									<lightning-input class="slds-p-left_small slds-col slds-size_xx-small"
+										value={kpi.incentiveRange.endPercent} data-index={index} data-ind={ind}
+										name="endPercent" onchange={handleChange} onkeypress={handleKeyPressValidation}
+										oninput={handleInputValidation} maxlength="6" onpaste={handlePasteValidation}>
+									</lightning-input>
+									<p class="slds-p-left_xx-small slds-p-bottom_x-small" style="font-weight: 800;">%</p>
+								</div>
+							</template>
+							<div if:true={forAddIncentive} class="slds-size_5-of-12">
+								<div class="slds-media" style="align-items:end;">
+									<div style="width:60%;">
+										<lightning-combobox class="slds-col" name="startRange"
+											value={kpi.incentiveRange.startRange} options={optStartRange} data-index={index}
+											data-ind={ind} onchange={handleChange} title={kpi.incentiveRange.startRange}>
+										</lightning-combobox>
+									</div>
+									<div class="slds-p-left_small">
+										<lightning-input style="width:51px;"
+											value={kpi.incentiveRange.startPercent} data-index={index} data-ind={ind}
+											name="startPercent" onchange={handleChange} onkeypress={handleKeyPressValidation}
+											oninput={handleInputValidation} maxlength="6" onpaste={handlePasteValidation}>
+										</lightning-input>
+									</div>
+									<p class="slds-p-left_xx-small slds-p-bottom_x-small"
+										style="font-weight: 800;">
+										%
+									</p>
+								</div>
+								<div class="slds-media" style="align-items:end;">
+									<div style="width:60%;">
+										<lightning-combobox name="endRange" value={kpi.incentiveRange.endRange}
+											options={optEndRange} data-index={index} data-ind={ind} onchange={handleChange}
+											title={kpi.incentiveRange.endRange}>
+										</lightning-combobox>
+									</div>
+									<div class="slds-p-left_small">
+										<lightning-input style="width:51px;"
+											value={kpi.incentiveRange.endPercent} data-index={index} data-ind={ind}
+											name="endPercent" onchange={handleChange} onkeypress={handleKeyPressValidation}
+											oninput={handleInputValidation} maxlength="6" onpaste={handlePasteValidation}>
+										</lightning-input>
+									</div>
+									<p class="slds-p-left_xx-small slds-p-bottom_x-small"
+										style="font-weight: 800;">
+										%
+									</p>
+								</div>
+							</div>
+							<div if:true={forAddIncentive} class="slds-size_2-of-12 slds-col slds-p-left_small noneleft">
+								<legend class="slds-form-element__legend slds-form-element__label">Incentive Amount ₹
+								</legend>
+								<lightning-input class="slds-size_x-small slds-p-right_xx-large" data-index={index}
+									data-ind={ind} value={kpi.incentiveRange.incentiveAmountStart}
+									name="incentiveAmountStart" onchange={handleChange}
+									onkeypress={handleKeyPressValidation} oninput={handleInputValidation} maxlength="20"
+									onpaste={handlePasteValidation}></lightning-input>
+							</div>
+							<div if:true={forAddIncentive} class="slds-size_3-of-12 slds-col slds-form-element">
+								<div class="slds-form-element__control">
+									<div class="slds-checkbox">
+										<input type="checkbox" name="allMachineRetail" id={kpi} value={kpi.allMachineRetail}
+											onchange={handleChange} data-index={index} data-ind={ind}
+											checked={kpi.allMachineRetail} />
+										<label class="slds-checkbox__label" for={kpi}>
+											<span class="slds-checkbox_faux"></span>
+											<span class="slds-form-element__label">All Machine Retail</span>
+										</label>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="slds-size_1-of-12"
+							style="display: flex; justify-content:center; align-items:center;" data-index={index}
+							data-ind={ind}>
+							<div class="slds-m-right_x-small">
+								<lightning-icon icon-name='utility:delete' class="redColor" style="cursor:pointer"
+									alternative-text='delete' size='x-small' title="delete" data-index={index}
+									data-ind={ind} onclick={removeRange}></lightning-icon>
+							</div>
+							<div>
+								<lightning-icon class="blueColor" style="cursor:pointer;" icon-name='utility:replace'
+									alternative-text='change' size='x-small' title='Single Range' data-index={index}
+									data-ind={ind} onclick={schemeTargetsSwap}>
+								</lightning-icon>
+							</div>
+						</div>
+					</template>
+					<template if:true={isModalOpen}>
+						<section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+							<div class="slds-modal__container">
+								<header class="slds-modal__header">
+									<button
+										class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+										title="Close" onclick={handleCloseModal}>
+										<lightning-icon icon-name="utility:close" alternative-text="close"
+											size="small"></lightning-icon>
+										<span class="slds-assistive-text">Close</span>
+									</button>
+									<h2 class="slds-text-heading_medium">Warning</h2>
+								</header>
+
+								<div class="slds-modal__content slds-p-around_medium">
+									<p>Any unsaved changes will be lost. Do you want to proceed?</p>
+								</div>
+
+								<footer class="slds-modal__footer">
+									<lightning-button variant="neutral" label="Cancel" onclick={handleCloseModal}>
+									</lightning-button>
+									<lightning-button variant="destructive" label="Proceed Anyway"
+										onclick={handleProceed}>
+									</lightning-button>
+								</footer>
+							</div>
+						</section>
+						<div class="slds-backdrop slds-backdrop_open"></div>
+					</template>
+				</div>
+			</template>
+			<div key={kpi} if:true={kpi.thIncentive} class="slds-card slds-m-left_small slds-p-bottom_small"
+				style="margin-right: 77px;top: -5px;">
+				<span if:true={kpi.showMessage} class="slds-p-left_small"
+					style="font-size: 16px;font-weight: 600;">Target Achievement of TH {achievePercentage}%</span>
+				<span if:true={kpi.showTargetMessage} class="slds-p-left_small" style="color:red">If the target matches
+					the "Equal to" range, machines will be added; otherwise, machines will not be added.</span>
+				<template for:each={kpi.additionalTHIncentive} for:item="th" for:index="ind">
+					<div key={th} if:true={kpi.showTHIncentive} class="slds-grid slds-p-top_small">
+						<div class="slds-size_1-of-3 slds-p-left_small">
+							<lightning-combobox class="slds-p-top_xx-small" label="" options={optionsIncentiveRange}
+								name="target" value={th.target} data-index={index} data-incentive={ind}
+								onchange={handleAddIncentive}></lightning-combobox>
+						</div>
+						<div class="slds-size_1-of-3 slds-p-left_large">
+							<span
+								style="top: 24px;position: relative;right: 114px; font-weight: 700;font-size: 19px;">+</span>
+							<legend class="slds-form-element__legend slds-form-element__label">Volume (in nos.)
+							</legend>
+							<lightning-input style="bottom: 24px;width: 10vh;" label="" value={th.volume} name="volume"
+								data-index={index} data-incentive={ind} onchange={handleAddIncentive}
+								onkeypress={handleKeyPressValidation} oninput={handleInputValidation} maxlength="6"
+								onpaste={handlePasteValidation}></lightning-input>
+						</div>
+						<div class="slds-size_1-of-5">
+							<legend class="slds-form-element__legend slds-form-element__label">in INR
+							</legend>
+							<lightning-input label="" value={th.amount} name="amount" data-index={index}
+								data-incentive={ind} onchange={handleAddIncentive} onkeypress={handleKeyPressValidation}
+								oninput={handleInputValidation} maxlength="10" onpaste={handlePasteValidation}>
+							</lightning-input>
+						</div>
+						<div class="slds-size_1-of-5 slds-p-left_medium slds-p-top_large">
+							<lightning-icon style="cursor:pointer" icon-name="utility:delete" size="small"
+								data-index={index} data-incentive={ind} onclick={removeTHIncentive}></lightning-icon>
+						</div>
+					</div>
+				</template>
+				<div if:true={kpi.showButton} class="slds-p-left_small slds-align_absolute-center">
+					<lightning-icon icon-name='utility:add' alternative-text='add' size='x-small' title='add'
+						data-index={index} onclick={addIncentive}
+						style="font-size: 14px;font-weight: 600; cursor:pointer" class="blueColor">
+					</lightning-icon>
+					<span data-index={index} onclick={addIncentive}
+						style="font-size: 14px;font-weight: 600; color:#0176D3; cursor:pointer"> Add Machine nos.</span>
+				</div>
+			</div>
+		</template>
+	</template>
+	<template if:true={showDeleteForSlabInfo}>
+		<section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+			class="slds-modal slds-fade-in-open slds-modal_small">
+			<div class="slds-modal__container" style="width: 40rem !important;">
+				<header class="slds-modal__header">
+					<button class="slds-button slds-button--icon-inverse slds-modal__close" name="alert"
+						onclick={handleSlabCancel}>
+						<lightning-icon name="alert" icon-name="utility:close" size="small"></lightning-icon>
+						<span class="slds-assistive-text">Close</span>
+					</button>
+					<div class="slds-text-align_center">
+						<h1 class="slds-text-heading_medium" id="prompt-heading-id-4">
+							Delete Confirmation</h1>
+					</div>
+				</header>
+				<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-4">
+					<p>Are you sure want to delete the slab in database?</p>
+				</div>
+				<div class="slds-modal__footer">
+					<button class="slds-button slds-button_destructive" onclick={handleSlabCancel}>Cancel</button>
+					<button class="slds-button slds-button_brand" onclick={handleSlabDelete}>Delete</button>
+				</div>
+			</div>
+		</section>
+		<div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+	</template>
+</template>

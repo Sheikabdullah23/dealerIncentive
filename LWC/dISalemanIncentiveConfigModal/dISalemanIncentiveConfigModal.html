@@ -1,0 +1,23 @@
+<template>
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+    class="slds-modal slds-fade-in-open slds-modal_small">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <div class="slds-grid">
+                    <h1 style="text-align: left;" class="slds-col slds-text-heading_medium" id="prompt-heading-id-4">
+                        {setHeadingName}</h1>
+                    <lightning-icon style="text-align: end; cursor:pointer" class="slds-col" icon-name="utility:close" size="small"
+                    onclick={showSalesCloseModal}></lightning-icon>
+                </div>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-4" style="background:#F7F7F7;">
+                <c-d-i-product-formula-edit-page send-data={configureSalesIndustryIncentive} width="Product" is-indus={isIndustry} is-sales={isSales} onslabinfoid={handleSlabInfo}></c-d-i-product-formula-edit-page>       
+            </div>
+            <div class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral" onclick={showSalesCloseModal}>Cancel</button>
+                <button class="slds-button slds-button_brand" onclick={handleSalesSave}>Save</button>
+            </div>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+</template>

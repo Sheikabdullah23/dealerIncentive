@@ -1,0 +1,171 @@
+.whiteIcon {
+  
+}
+
+.tableFont {
+  font-size: 13px;
+  font-weight: 600;
+  color: black;
+}
+
+.imageWidth {
+  max-width: 64px;
+  border: 1px solid #DADADA;
+  margin-left: 20px;
+  border-radius: 8px;
+}
+
+.container {
+  border: 1px solid #C3C5C8;
+  border-radius: 7px;
+  height: 100%;
+}
+
+.container2 {
+  border: 1px solid #C3C5C8;
+  border-radius: 7px;
+  height: 100%;
+}
+
+.scrollfix {
+  height: 96%;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+.scrollfix::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  scroll-behavior: smooth;
+}
+
+.scrollfix::-webkit-scrollbar-track {
+  background: #f1f1f1;
+
+}
+
+.scrollfix::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+}
+
+.rangeContain {
+  border: 1px solid #C3C5C8;
+  width: 128px;
+  margin-left: 86%;
+  border-radius: 4px;
+}
+
+.blue {
+  --sds-c-icon-color-foreground-default: #0176D3;
+}
+
+.tableFix::-webkit-scrollbar {
+  width: 5px;
+  height: 4px;
+  scroll-behavior: smooth;
+}
+
+.tableFix::-webkit-scrollbar-track {
+  background: #f1f1f1;
+
+}
+
+.tableFix::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+}
+
+.tableFix {
+  overflow-y: auto;
+  height: 90%;
+}
+
+.slds-modal__container {
+  max-width: 75rem !important;
+  width: 80% !important;
+}
+
+.hide {
+  display: none;
+}
+
+.record:hover+.hide {
+  display: block;
+}
+
+.header {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.blueColor {
+  --sds-c-icon-color-foreground-default: #0176D3;
+}
+
+.redColor {
+  --sds-c-icon-color-foreground-default: #c42f21;
+}
+
+.gearIcon {
+  --lwc-squareIconMediumContentAlt: 1.45rem;
+
+}
+
+.border {
+  border-right: 2px solid #E6E6E6;
+  text-align: center;
+}
+
+.border:last-child {
+  border: none !important;
+}
+
+.cellPadding {
+  padding-left: 10px;
+}
+
+.record-hover>tr:hover>td>div>.edit {
+  display: block;
+}
+
+.record-hover>tr>td>div>.edit {
+  display: none;
+}
+
+.tooltip {
+  position: absolute;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 10px;
+  z-index: 9999;
+  width: 150px;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  left: 0;
+  top: 100%;
+}
+
+.disableLink {
+  pointer-events: none;
+}
+
+.ablelink {
+  cursor: pointer;
+}
+
+.table-body {
+  height: 100%;
+}
+
+@media only screen and (min-width: 1301px) and (max-width: 1599px) {
+  .table-body {
+    height: 85%;
+  }
+}
+
+.exampleHolder{
+    position: relative;
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+}

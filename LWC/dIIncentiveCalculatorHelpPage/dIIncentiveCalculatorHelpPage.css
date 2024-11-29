@@ -1,0 +1,44 @@
+.FirstPage {
+    background-position: top;
+    background-repeat: round;
+    background-size: cover;
+    width: -webkit-fill-available;
+    border-bottom-color: #fcb0267d;
+    position: sticky;
+    top: 0px;
+    z-index: 1;
+}
+
+.slds-nav-vertical__action {
+    background: #FFF7E2;
+}
+
+.slds-nav-vertical__item.slds-is-active .slds-nav-vertical__action:focus {
+    box-shadow: inset 4px 0 0 #E7AF28 !important;
+}
+
+.scroll-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color:#fcb026;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer; 
+}
+
+.scroll-to-top:hover {
+    transform: scale(1.2);
+}
+
+
+.index-button{
+    margin: 5px; 
+    font-weight:500;
+    
+}

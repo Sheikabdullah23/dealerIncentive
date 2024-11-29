@@ -1,0 +1,31 @@
+<template>
+    <lightning-card>
+        <lightning-button variant="brand" label="Read" onclick={handleClick}
+            class="slds-p-around_small"></lightning-button>
+        <lightning-button variant="brand" label="Show Table" onclick={showTableHandler} class="slds-p-around_small"></lightning-button>
+        <template if:true={showTable}>
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <template for:each={headerRow} for:item="headerItem">
+                            <th scope="col" key={index}>
+                                <div class="slds-truncate">{headerItem}</div>
+                            </th>
+                        </template>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template for:each={dataRows} for:item="rowData">
+                        <tr key={index} class="slds-hint-parent">
+                            <template for:each={rowData} for:item="cell">
+                                <td key={index}>
+                                    <div class="slds-truncate">{cell}</div>
+                                </td>
+                            </template>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </template>
+    </lightning-card>
+</template>
